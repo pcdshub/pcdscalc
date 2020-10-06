@@ -2,8 +2,8 @@ version: ~> 1.0
 
 env:
   global:
-    # doctr generated secure variable for documentation upload
-    - secure: "<your secure here>"
+    # Doctr deploy key for pcdshub/pcdscalc
+    - secure: "FhVeOuGzXEyLTwo6f4BicQrIFkGyKyRRhKs/0ZGVdeoKtXuzKKNYJQDLggtIsleDfXbaGw+l9AAR2434X3F/U95v5/qvtTAMcchRwXgYeOmRlzdJUmEUnMuOYI6WZ5cV2H/9i7FSgWUBYr6R1kNXoYJZ/sLNcXzi9P9ruSENoE8CUyevEhJUJrVPzpsG9ovurIfIKEIGqcAH2UggYkri3oDyOCztcm0aGouFMN4Sr7Ng1WitgUc02rq5zLvEpfV429bF5JeBMD8xzBhbuBt1Urr4xgu974wwiXZo6dJ0O7AWAtX0LjZGc325tKbK2imtEOkaVIpIck3ISvSiAB06W0MhZabdlYIpNPOKvZfixQ+h4mP9Xf6yUTcWQtRwRphlTY1ATAtbhuHc+MpnH6ZTZRj66peZ6uDsY+0OMufBQJnMwdIqPuum5zcgZZWCBAq1VJ0BCnDFRn4cjlhY+REb5ooEI1Xvyl2CiiKWsvhTDLKu3Xw6H36mbVlmNzKM0D4z4y+zISu/X8h+KHJ3O3QdvsVIZrofGn5TNVNTKWKPmaae4p789Re1nDaOvOFTdmXlJRu0AYKQewhKbiSwP6th5L5QJ/tT74EF2hwcefLLSpIhRh6R5WxP0ZJ2yHu6Tsk84fjzKx9NrXJMhrnx5PsIGoQHxVOjKmJ1fFSSK7VXK5k="
     # enable the usage of versions menu which allow versioning of the docs
     # pages and not only the master branch
     - DOCTR_VERSIONS_MENU="1"
