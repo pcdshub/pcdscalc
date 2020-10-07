@@ -2,26 +2,22 @@
 Module for Beryllium Lens Calculations
 '''
 from periodictable import xsf
+# XSF stands for XCrySDen Structure File.
+# It is used to describe (i) molecular and crystal structure, (ii)
+# forces acting on constituent atoms, and (iii) scalar fields
+# (for example: charge density, electrostatic potential).
 # from periodictable import formula as ptable_formula
 import numpy as np
-# import datetime
-# import os
-# import shutil
-# import pprint
 from itertools import product
 
-
-"""
-If you are using the IMS IOC, each lens motor should have a
-base record associated with it  i.e MFX:DIA:XFLS.
-There should also be a binary record for each state,
-that is just this base plus an arbitrary string i.e MFX:DIA:XFLS:OUT
-"""
 
 # We have sets of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
 
 
+# TODO: i might not need this function here, but
+# it si used in calc_trans_for_single_lens so I need to first
+# check if we need calc_trans_for_single_lens
 def get_att_len(E, material="Be", density=None):
     '''
     Get the attenuation length of material (in meter).
@@ -44,6 +40,7 @@ def get_att_len(E, material="Be", density=None):
     att_len : `float`
         The attenuation length of material
     '''
+    # TODO: module 'periodictable.xsf' has no attribute 'attenuation_length'
     att_len = float(xsf.attenuation_length(material, density=density,
                     energy=E))
     return att_len
@@ -73,15 +70,16 @@ def get_delta(E, material="Be", density=None):
     return delta
 
 
-def calc_focal_length_for_single_lens(E, radius, material="Be", density=None):
+def calc_focal_length_for_single_lens(E, radius, material="Be",
+                                      density=None):
     '''
     Calculate the Focal Length for a single lens.
 
     Parameters
     ----------
-    E: number
+    E : number
         Beam Energy
-    radius : float TODO: is this float or no?
+    radius : `float` TODO: is this float or no?
     material : `str`
         Default - Beryllium.
         The use of beryllium extends the range of operation
@@ -108,7 +106,7 @@ def calc_focal_length(E, lens_set, material="Be", density=None):
     E: number
         Beam Energy
     lens_set : `list`
-        [(numer1, lensthick1), (number2, lensthick2)...]
+        [numer1, lensthick1, number2, lensthick2 ...]
     material : `str`
         Default - Beryllium.
         The use of beryllium extends the range of operation
@@ -126,22 +124,24 @@ def calc_focal_length(E, lens_set, material="Be", density=None):
     # if type(lens_set) is int:
     #     lens_set = getLensSet(lens_set)
     # range() only works with integers, dividing with the / operator always
-    # results in a float value. TOo fix it, we use // floor division operator.
+    # results in a float value. To fix it, we use // floor division operator.
     for i in range(len(lens_set) // 2):
         num = lens_set[2 * i]
         rad = lens_set[2 * i + 1]
         if rad is not None:
-            # rad = float(rad)
-            # num = float(num)
+            rad = float(rad)
+            num = float(num)
             ftot_inverse += num / calc_focal_length_for_single_lens(
                             E, rad, material, density)
     return 1.0 / ftot_inverse
 
 
-def calc_beam_fwhm(E, lens_set, distance=None, material="Be",
-                   density=None, fwhm_unfocused=None, printsummary=True):
+# TODO: check what to do with fwhm_unfocused if None
+def calc_beam_fwhm(E, lens_set, distance=None, source_distance=None,
+                   material="Be", density=None, fwhm_unfocused=500e-6,
+                   printsummary=True):
     '''
-    Calculate beam parameters for certain lenses configuration
+    Calculates beam parameters for certain lenses configuration
     and energy at a given distance.
     Optionally some other parameters can be set
 
@@ -150,16 +150,18 @@ def calc_beam_fwhm(E, lens_set, distance=None, material="Be",
     E : number
         Beam Energy
     lens_set : `list`
-        [(numer1, lensthick1), (number2, lensthick2)...]
-    distance: `float`
+        [numer1, lensthick1, number2, lensthick2...]
+    distance : `float`
         Distance from the lenses to the sample is 3.852 m at XPP.
+    source_distance : `float`
+        Distance from source to lenses. This is about 160 m at XPP.
     material : `str`
-        Default - Beryllium.
-        The use of beryllium extends the range of operation
+        Beryllium. The use of beryllium extends the range of operation
         of compound refractive lenses, improving transmission,
         aperture size, and gain
     density : TODO: find out what density is
     fwhm_unfocused : `float`
+        This is about 400 microns at XPP.
     printsummary : `bool`
         Prints summary of parameters/calculations if True
 
@@ -168,12 +170,16 @@ def calc_beam_fwhm(E, lens_set, distance=None, material="Be",
     Size FWHM : `float`
     '''
     # Focal length for certain lenses configuration and energy
+    print('lens_set %s', lens_set)
     focal_length = calc_focal_length(E, lens_set, material, density)
+
+    # use lens makers equation to find distance to image of source
+    if source_distance is not None:
+        focal_length = 1 / (1 / focal_length - 1 / source_distance)
+
     lam = 1.2398 / E * 1e-9
     # the w parameter used in the usual formula is 2*sigma
 
-    # TODO: remove this next line
-    fwhm_unfocused = 2
     w_unfocused = fwhm_unfocused * 2 / 2.35
     # assuming gaussian beam divergence = w_unfocused/f we can obtain
     waist = lam / np.pi * focal_length / w_unfocused
@@ -201,7 +207,7 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
     Parameters
     ----------
     lens_set : `list`
-        [(numer1, lensthick1), (number2, lensthick2)...]
+        [numer1, lensthick1, number2, lensthick2...]
     distance : `float`
     material : str
         Beryllium. The use of beryllium extends the range of operation
@@ -209,7 +215,7 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
         aperture size, and gain
     density : TODO: find out what density is
 
-    usage findEnergy( (2,200e-6,4,500e-6) ,distance =4 )
+    usage findEnergy( (2,200e-6,4,500e-6) ,distance=4 )
 
     Returns
     -------
@@ -237,10 +243,13 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
         abs_diff = abs(distance - focal_length)
     print("Energy that would focus at a distance of %.3f is %.3f"
           % (distance, energy))
-    s = calc_beam_fwhm(energy, lens_set, distance, material, density)
+
+    s = calc_beam_fwhm(energy, lens_set, distance=distance,
+                       source_distance=None, material=material,
+                       density=density)
     # TODO: s is not used, might have to remove it
     # but for now printing it out here
-    print('s: %d', s)
+    print(f's: {s}')
     return energy
 
 
@@ -306,6 +315,7 @@ def calc_lens_set(E, size_fwhm, distance, n_max=12, max_each=5,
                         E,
                         lens_set + [1, eff_rad0],
                         distance=distance,
+                        source_distance=None,
                         printit=False,
                         fwhm_unfocused=fwhm_unfocused,
                     )
@@ -375,7 +385,9 @@ def calc_trans_lens_set(E, lens_set, material="Be", density=None,
     radius_aperture = 1.0
     # if type(lens_set) is int:
     #     lens_set = get_lens_set(lens_set)
-    for i in range(len(lens_set) / 2):
+    # TODO: might be in a situation where lens_set is not a
+    # list but a float or int? - what to do?
+    for i in range(len(lens_set) // 2):
         num = lens_set[2 * i]
         rad = lens_set[2 * i + 1]
         new_rad_ap = np.sqrt(rad * (disk_thickness - apex_distance))
