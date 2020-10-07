@@ -10,12 +10,35 @@ from periodictable import xsf
 import numpy as np
 from itertools import product
 import logging
-from tabulate import tabulate
 
 logger = logging.getLogger(__name__)
 
 # We have sets of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
+
+
+def get_delta(energy, material="Be", density=None):
+    '''
+    Calculate delta for a given material at a given energy
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy
+    material : `str`
+        Default - Beryllium.
+        The use of beryllium extends the range of operation
+        of compound refractive lenses, improving transmission,
+        aperture size, and gain
+    density : TODO: find out what density is
+
+    Returns
+    -------
+    delta : `int` TODO: not sure if int here or float?
+    '''
+    delta = 1 - np.real(xsf.index_of_refraction(material, density=density,
+                        energy=energy))
+    return delta
 
 
 def calc_focal_length_for_single_lens(energy, radius, material="Be",
@@ -343,7 +366,7 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
             break
         abs_diff = abs(distance - focal_length)
     logger.info("Energy that would focus at a distance of %.3f is %.3f"
-          % (distance, energy))
+                % (distance, energy))
 
     s = calc_beam_fwhm(energy, lens_set, distance=distance,
                        source_distance=None, material=material,
@@ -384,27 +407,3 @@ def get_att_len(energy, material="Be", density=None):
     #                energy=energy))
     # return att_len
     return 9
-
-
-def get_delta(energy, material="Be", density=None):
-    '''
-    Calculate delta for a given material at a given energy
-
-    Parameters
-    ----------
-    energy : number
-        Beam Energy
-    material : `str`
-        Default - Beryllium.
-        The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : TODO: find out what density is
-
-    Returns
-    -------
-    delta : `int` TODO: not sure if int here or float?
-    '''
-    delta = 1 - np.real(xsf.index_of_refraction(material, density=density,
-                        energy=energy))
-    return delta
