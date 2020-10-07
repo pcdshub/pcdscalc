@@ -115,7 +115,7 @@ def calc_focal_length(E, lens_set, material="Be", density=None):
     return 1.0 / ftot_inverse
 
 
- def calc_beam_fwhm(self, E, lens_set, distance=None, material="Be",
+ def calc_beam_fwhm(self, E, lens_set, distance=None, source_distance=None, material="Be",
                        density=None, fwhm_unfocused=None, printsummary=True):
     """
     Calculates beam parameters for certain lenses configuration
@@ -131,12 +131,15 @@ def calc_focal_length(E, lens_set, material="Be", density=None):
         [(numer1, lensthick1), (number2, lensthick2)...]
     distance: float
         Distance from the lenses to the sample is 3.852 m at XPP.
+    source_distance: float
+        Distance from source to lenses. This is about 160 m at XPP.
     material: str
         Beryllium. The use of beryllium extends the range of operation
         of compound refractive lenses, improving transmission,
         aperture size, and gain
     density: TODO: find out what density is
     fwhm_unfocused: float
+        This is about 400 microns at XPP.
     printsummary: boolean
         Prints summary of parameters/calculations if True
 
@@ -146,13 +149,18 @@ def calc_focal_length(E, lens_set, material="Be", density=None):
     """
     # Focal length for certain lenses configuration and energy
     focal_length = calc_focal_length(E, lens_set, material, density)
+    
+    # use lens makers equation to find distance to image of source
+    if source_distance is not None:
+        focal_length = 1 / (1 / focal_length - 1 / source_distance)
+    
     lam = 1.2398 / E * 1e-9
     # the w parameter used in the usual formula is 2*sigma
     w_unfocused = fwhm_unfocused * 2 / 2.35
     # assuming gaussian beam divergence = w_unfocused/f we can obtain
-    waist = lam / np.pi * f / w_unfocused
+    waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
-    size = waist * np.sqrt(1.0 + (distance - f) ** 2.0 / rayleigh_range ** 2)
+    size = waist * np.sqrt(1.0 + (distance - focal_length) ** 2.0 / rayleigh_range ** 2)
     size_fwhm = size * 2.35 / 2.0
 
     if printsummary:
