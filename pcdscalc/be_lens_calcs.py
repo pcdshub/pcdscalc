@@ -19,6 +19,8 @@ def get_att_len(energy, material="Be", density=None):
     Get the attenuation length (in meter) of a material, if no
     parameter is given for the predefined energy;
     then T=exp(-thickness/att_len);
+    The depth into the material measured along the surface normal where the
+    intensity of x-rays falls to 1/e of its value at the surface.
 
     Parameters
     ----------
@@ -42,7 +44,10 @@ def get_att_len(energy, material="Be", density=None):
                                            density=density,
                                            energy=energy))
     logger.debug(xdb.atomic_density(material))
-    return att_len, old_att_len
+    logger.debug('The new att_len with xraydb is: %s', att_len)
+    # keeping the old one for now to be able to test my code against the old
+    # code, then i'll have to change my tests after adding the new att_len
+    return old_att_len
 
 
 def get_delta(energy, material="Be", density=None):
@@ -66,14 +71,20 @@ def get_delta(energy, material="Be", density=None):
     '''
     # xray_delta_beta returns (delta, beta, atlen),
     # wehre delta : real part of index of refraction
+    # TODO: need to handle divizion by 0 when energy == 0 with
+    # xray_delta_beta
     delta = xdb.xray_delta_beta(material, energy=energy * 1.0e3,
                                 density=xdb.atomic_density(material))[0]
 
+    # density=xdb.atomic_density(material))
     old_delta = 1 - np.real(xsf.index_of_refraction(material,
-                            density=xdb.atomic_density(material),
                             energy=energy))
+
     logger.debug(xdb.atomic_density(material))
-    return delta, old_delta
+    logger.debug('The new delta with xraydb is: %s', delta)
+    # keeping the old one for now to be able to test my code against the old
+    # code, then i'll have to change my tests after adding the new delta
+    return old_delta  # , delta
 
 
 def calc_focal_length_for_single_lens(energy, radius, material="Be",
@@ -85,7 +96,7 @@ def calc_focal_length_for_single_lens(energy, radius, material="Be",
     ----------
     energy : number
         Beam Energy
-    radius : `float` TODO: is this float or not always?
+    radius : `float`
     material : `str`
         Default - Beryllium.
         The use of beryllium extends the range of operation
@@ -128,6 +139,9 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
     '''
     f_tot_inverse = 0
 
+    # TODO: might need these 2 lines here
+    # if type(lens_set) is int:
+    #     lens_set = get_lens_set(lens_set)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
     for num, radius in lens_set:
         fln = calc_focal_length_for_single_lens(
@@ -180,9 +194,11 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     if source_distance is not None:
         focal_length = 1 / (1 / focal_length - 1 / source_distance)
 
+    # TODO: what is 1.2398
     lam = 1.2398 / energy * 1e-9
     # the w parameter used in the usual formula is 2*sigma
 
+    # TODO: magical number: 2.35 - what is it
     w_unfocused = fwhm_unfocused * 2 / 2.35
     # assuming gaussian beam divergence = w_unfocused/f we can obtain
     waist = lam / np.pi * focal_length / w_unfocused
@@ -207,6 +223,20 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
                            fwhm_unfocused=None):
     '''
     Calculate the distance for size
+
+    Parameters
+    ----------
+    size_fwhm : `float`
+    lens_set : `list`
+        [numer1, lensthick1, number2, lensthick2...]
+    energy : number
+        Beam Energy
+    fwhm_unfocused : `float`
+        This is about 400 microns at XPP
+
+    Returns
+    -------
+    distance : `float`
     '''
     size = size_fwhm * 2.0 / 2.35
     focal_length = calc_focal_length(energy, lens_set, "Be", density=None)
@@ -216,7 +246,7 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
     # assuming gaussian beam divergence = w_unfocused/f we can obtain
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
-    # TODO: should i be handling this below it was commente out in the old code
+    # TODO: should i be handling this? it was commented out in the old code
     # bs = (size/waist)**2-1
     # if bs >= 0:
     distance = (
@@ -230,7 +260,163 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
     return distance
 
 
-# TODO: ========== WE MIGHT NOT NEED THESE FUNCTIONS BELOW =================
+def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
+                              apex_distance=30e-6):
+    '''
+    Calculate the lens aperture raidus
+    It is of importance to optimize which lens radius
+    to use at a specific photon energy
+
+    Usage
+    .. code-block:: python
+        calc_lens_aperture_radius(radius=4.0, disk_thickness=1e-3,
+                                  apex_distance=30e-6)
+
+    Parameters
+    ----------
+    radius : 'float`
+    disk_thickness : `float`
+        Default = 1.0e-3
+    apex_distance : `float`
+        Default = 30e-6
+
+    Returns
+    -------
+    aperture_radius : `numpy.float64`
+    '''
+    aperture_radius = np.sqrt(radius * (disk_thickness - apex_distance))
+    return aperture_radius
+
+
+# TODO: should i be changing the defaults here??
+def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
+                               fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
+                               apex_distance=30e-6):
+    '''
+    Calculate the transmission for a single lens.
+
+    usage :
+    .. code-block:: python
+        calc_trans_for_single_lens(energy, radius, material="Be",
+                                   density=None, fwhm_unfocused=800e-6,
+                                   disk_thickness=1.0e-3, apex_distance=30e-6)
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy
+    radius : 'float`
+    material : `str`
+        Chemical formula. Default = 'Be'
+    density : `float`
+        Material density in g/cm^3
+    fwhm_unfocused : `float`
+        This is about 400 microns at XPP.
+    disk_thickness : `float`
+        Default = 1.0e-3
+    apex_distance : `float`
+        Default = 30e-6
+
+    Returns
+    -------
+    transmission : `float`
+        Transmission for a single lens
+    '''
+    delta = get_delta(energy, material, density)
+    # TODO: delta is not used, might have to remove it
+    # but for now printing it out here
+    logger.debug('delta: %d', delta)
+    # TODO: what is mu - is that mass attenuation coefficient?
+    mu = 1.0 / get_att_len(energy, material=material, density=None)
+
+    # TODO: what is s
+    s = fwhm_unfocused / 2.35482  # TODO: where is this number comming from?
+    # TODO: what is S
+    S = (s ** (-2.0) + 2.0 * mu / radius) ** (-0.5)
+    aperture_radius = calc_lens_aperture_radius(radius=radius,
+                                                disk_thickness=disk_thickness,
+                                                apex_distance=apex_distance)
+    transmission = (
+        (S ** 2 / s ** 2)
+        * np.exp(-mu * apex_distance)
+        * (1 - np.exp(-(aperture_radius ** 2.0) / (2.0 * S ** 2)))
+    )
+    return transmission
+
+
+# TODO: should i be changing the defaults here??
+def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
+                        fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
+                        apex_distance=30e-6):
+    '''
+    Calculte the transmission of a lens set.
+    These would allow us to estimate the total transmission of the lenses
+    usage : calc_trans_lens_set(energy,lens_set,material="Be",density=None,
+            fwhm_unfocused=900e-6)
+
+    TODO: where is this document?
+    There is latex document that explains the formula.
+    Can be adapted to use different thicknesses for each lens,
+    and different apex distances, but this would require changing
+    the format of lens_set, which would mean changing
+    a whole bunch of other programs too.
+
+    usage :
+    .. code-block:: python
+        calc_trans_lens_set(energy, lens_set, material="Be", density=None,
+                            fwhm_unfocused=900e-6)
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy
+    lens_set : `list`
+        [numer1, lensthick1, number2, lensthick2...]
+    material : `str`
+        Chemical formula. Default = 'Be'
+    density : `float`
+        Material density in g/cm^3
+    fwhm_unfocused : `float`
+        This is about 400 microns at XPP. Default = 900e-6
+    disk_thickness : `float`
+        Default = 1.0e-3
+    apex_distance : `float`
+        Default = 30e-6
+
+    Returns
+    -------
+    transmission : `float`
+        Transmission for a set of lens
+    '''
+
+    apex_distance_tot = 0
+    radius_total_inv = 0
+    # this is an ugly hack: the radius will never be bigger than 1m,
+    # so will always be overwritten
+    radius_aperture = 1.0
+    #  if type(lens_set) is int:
+    #      lens_set = get_lens_set(lens_set)
+    # TODO: might be in a situation where lens_set is not a
+    # list but a float or int? - what to do?
+    lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
+    for num, radius in lens_set:
+        new_rad_ap = np.sqrt(radius * (disk_thickness - apex_distance))
+        radius_aperture = min(radius_aperture, new_rad_ap)
+        radius_total_inv += num / radius
+        apex_distance_tot += num * apex_distance
+
+    radius_total = 1.0 / radius_total_inv
+    equivalent_disk_thickness = (radius_aperture ** 2 / radius_total +
+                                 apex_distance_tot)
+
+    transmission_total = calc_trans_for_single_lens(energy, radius_total,
+                                                    material, density,
+                                                    fwhm_unfocused,
+                                                    equivalent_disk_thickness,
+                                                    apex_distance_tot)
+    return transmission_total
+
+
 def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
                   lens_radii=[100e-6, 200e-6, 300e-6, 500e-6, 1000e-6],
                   fwhm_unfocused=0.0005, eff_rad0=None):
@@ -290,78 +476,18 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
     )
 
 
-def calc_lens_aperture_radius(radius, diskthickness=1e-3, apexdistance=30e-6):
-    R0 = np.sqrt(radius * (diskthickness - apexdistance))
-    return R0
+# TODO: ========== WE MIGHT NOT NEED THESE FUNCTIONS BELOW =================
 
-
-def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
-                               fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
-                               apex_distance=30e-6):
+# TODO: distance default might need to be changed
+def find_radius(energy, distance=4.0, material="Be", density=None):
     '''
-    Calculate the transmission for a single lens.
-    Usage : calcTransForSingleLens(energy,radius,material="Be",density=None,
-            fwhm_unfocused=800e-6,diskthickness=1.0e-3,apexdistance=30e-6):
+    Find the radius of curvature of the lens that would
+    focus the energy at the distance
+      usage:  findfind_radiusRadius(E,distance=4.0,material="Be",density=None)
     '''
     delta = get_delta(energy, material, density)
-    # TODO: delta is not used, might have to remove it
-    # but for now printing it out here
-    logger.debug('delta: %d', delta)
-    mu = 1.0 / get_att_len(energy, material="Be", density=None)
-    s = fwhm_unfocused / 2.35482
-    S = (s ** (-2.0) + 2.0 * mu / radius) ** (-0.5)
-    R0 = np.sqrt(radius * (disk_thickness - apex_distance))
-    trans = (
-        (S ** 2 / s ** 2)
-        * np.exp(-mu * apex_distance)
-        * (1 - np.exp(-(R0 ** 2.0) / (2.0 * S ** 2)))
-    )
-    return trans
-
-
-def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
-                        fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
-                        apex_distance=30e-6):
-    '''
-    Calculte the transmission of a lens set.
-    usage : calcTrans(energy,lens_set,material="Be",density=None,
-            fwhm_unfocused=900e-6)
-    There is latex document that explains the formula.
-    Can be adapted to use different thicknesses for each lens,
-    and different apex distances, but this would require changing
-    the format of lens_set, which would mean changing
-    a whole bunch of other programs too.
-    '''
-
-    apex_distance_tot = 0
-    radius_total_inv = 0
-    # this is an ugly hack: the radius will never be bigger than 1m,
-    # so will always be overwritten
-    radius_aperture = 1.0
-    # if type(lens_set) is int:
-    #     lens_set = get_lens_set(lens_set)
-    # TODO: might be in a situation where lens_set is not a
-    # list but a float or int? - what to do?
-    for i in range(len(lens_set) // 2):
-        num = lens_set[2 * i]
-        rad = lens_set[2 * i + 1]
-        new_rad_ap = np.sqrt(rad * (disk_thickness - apex_distance))
-        radius_aperture = min(radius_aperture, new_rad_ap)
-        radius_total_inv += num / rad
-        apex_distance_tot += num * apex_distance
-    radius_total = 1.0 / radius_total_inv
-    equivalent_disk_thickness = (radius_aperture ** 2 / radius_total +
-                                 apex_distance_tot)
-    transtot = calc_trans_for_single_lens(
-        energy,
-        radius_total,
-        material,
-        density,
-        fwhm_unfocused,
-        equivalent_disk_thickness,
-        apex_distance_tot,
-    )
-    return transtot
+    radius = distance * 2 * delta
+    return radius
 
 
 def find_energy(lens_set, distance=3.952, material="Be", density=None):
