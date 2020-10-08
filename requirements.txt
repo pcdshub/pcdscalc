@@ -2,3 +2,4 @@ numpy
 periodictable
 scipy
 versioneer
+xraydb

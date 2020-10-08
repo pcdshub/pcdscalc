@@ -1,20 +1,48 @@
 '''
 Module for Beryllium Lens Calculations
 '''
-from periodictable import xsf
-# XSF stands for XCrySDen Structure File.
-# It is used to describe (i) molecular and crystal structure, (ii)
-# forces acting on constituent atoms, and (iii) scalar fields
-# (for example: charge density, electrostatic potential).
-# from periodictable import formula as ptable_formula
-import numpy as np
-from itertools import product
 import logging
+from itertools import product
+
+import numpy as np
+import xraydb as xdb
+from periodictable import xsf
 
 logger = logging.getLogger(__name__)
 
 # We have sets of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
+
+
+def get_att_len(energy, material="Be", density=None):
+    '''
+    Get the attenuation length (in meter) of a material, if no
+    parameter is given for the predefined energy;
+    then T=exp(-thickness/att_len);
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy given in keV
+    material : `str`
+        Default - Beryllium.
+        The use of beryllium extends the range of operation
+        of compound refractive lenses, improving transmission,
+        aperture size, and gain
+    density : `float`
+        Material density in g/cm^3
+
+    Returns
+    -------
+    att_len : `numpy.float64`
+        Attenuation length
+    '''
+    att_len = 1.0 / xdb.material_mu(material, energy * 1.0e3)
+    old_att_len = float(attenuation_length(compound=material,
+                                           density=density,
+                                           energy=energy))
+    logger.debug(xdb.atomic_density(material))
+    return att_len, old_att_len
 
 
 def get_delta(energy, material="Be", density=None):
@@ -24,21 +52,28 @@ def get_delta(energy, material="Be", density=None):
     Parameters
     ----------
     energy : number
-        Beam Energy
+        x-ray energy in eV
     material : `str`
+        Chemical formula (‘Fe2O3’, ‘CaMg(CO3)2’, ‘La1.9Sr0.1CuO4’)
         Default - Beryllium.
-        The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : TODO: find out what density is
+    density : `float`
+        Material density in g/cm^3
 
     Returns
     -------
-    delta : `int` TODO: not sure if int here or float?
+    delta : `numpy.float64`
+        Real part of index of refraction
     '''
-    delta = 1 - np.real(xsf.index_of_refraction(material, density=density,
-                        energy=energy))
-    return delta
+    # xray_delta_beta returns (delta, beta, atlen),
+    # wehre delta : real part of index of refraction
+    delta = xdb.xray_delta_beta(material, energy=energy * 1.0e3,
+                                density=xdb.atomic_density(material))[0]
+
+    old_delta = 1 - np.real(xsf.index_of_refraction(material,
+                            density=xdb.atomic_density(material),
+                            energy=energy))
+    logger.debug(xdb.atomic_density(material))
+    return delta, old_delta
 
 
 def calc_focal_length_for_single_lens(energy, radius, material="Be",
@@ -56,7 +91,8 @@ def calc_focal_length_for_single_lens(energy, radius, material="Be",
         The use of beryllium extends the range of operation
         of compound refractive lenses, improving transmission,
         aperture size, and gain
-    density : TODO: find out what density is
+    density : `float`
+        Material density in g/cm^3
 
     Returns
     -------
@@ -83,7 +119,8 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
         The use of beryllium extends the range of operation
         of compound refractive lenses, improving transmission,
         aperture size, and gain
-    density : TODO: find out what density is
+    density : `float`
+        Material density in g/cm^3
 
     Returns
     -------
@@ -101,7 +138,7 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
 
 
 # TODO: check what to do with fwhm_unfocused if None - for now
-# I added a "default" value
+# I added a "default" value but it will complain fi None
 def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
                    material="Be", density=None, fwhm_unfocused=500e-6,
                    printsummary=True):
@@ -124,7 +161,8 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
         Beryllium. The use of beryllium extends the range of operation
         of compound refractive lenses, improving transmission,
         aperture size, and gain
-    density : TODO: find out what density is
+    density : `float`
+        Material density in g/cm^3
     fwhm_unfocused : `float`
         This is about 400 microns at XPP.
     printsummary : `bool`
@@ -184,6 +222,8 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
     distance = (
         np.sqrt((size / waist) ** 2 - 1) * np.asarray([-1.0, 1.0]) *
         rayleigh_range) + focal_length
+    # TODO: the distance is in this format: [  4.         134.90095291]
+    # check to see if that's what we want
     # else:
     # distance = nan
     #
@@ -377,33 +417,46 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
     return energy
 
 
-# TODO: i might not need this function here, but
-# it si used in calc_trans_for_single_lens so I need to first
-# check if we need calc_trans_for_single_lens
-def get_att_len(energy, material="Be", density=None):
-    '''
-    Get the attenuation length of material (in meter).
-    If no parameter is given for the predefined energy,
-    then T = exp(-thickness/att_len)
+# leaving this here for now to compare with the new implementation
+# This function was part of our Frankenstein periodic table build.
+# It now lives here because it was never an official part of the module.
+# I copied it in and adjusted namespaces accordingly.
+def attenuation_length(
+    compound, density=None, natural_density=None, energy=None, wavelength=None
+):
+    """
+    Calculates the attenuation length for a compound
+    Transmisison if then exp(-thickness/attenuation_length)
+    :Parameters:
+        *compound* : Formula initializer
+            Chemical formula.
+        *density* : float | |g/cm^3|
+            Mass density of the compound, or None for default.
+        *natural_density* : float | |g/cm^3|
+            Mass density of the compound at naturally occurring isotope
+            abundance.
+        *wavelength* : float or vector | |Ang|
+            Wavelength of the X-ray.
+        *energy* : float or vector | keV
+            Energy of the X-ray, if *wavelength* is not specified.
+    :Returns:
+        *attenuation_length* : vector | |m|
+            as function of (energy)
+    :Notes:
+    against http://henke.lbl.gov/optical_constants/
+    """
 
-    Parameters
-    ----------
-    energy : number
-        Beam Energy (keV)
-    material : `str`
-        Default - Beryllium. TODO: (default Si) in the old code??
-        The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : TODO: find out what is density?
-
-    Returns
-    -------
-    att_len : `float`
-        The attenuation length of material
-    '''
-    # TODO: module 'periodictable.xsf' has no attribute 'attenuation_length'
-    # att_len = float(xsf.attenuation_length(material, density=density,
-    #                energy=energy))
-    # return att_len
-    return 9
+    if energy is not None:
+        wavelength = xsf.xray_wavelength(energy)
+    assert wavelength is not None, 'scattering calculation '
+    'needs energy or wavelength'
+    if np.isscalar(wavelength):
+        wavelength = np.array([wavelength])
+    n = xsf.index_of_refraction(
+        compound=compound,
+        density=density,
+        natural_density=natural_density,
+        wavelength=wavelength,
+    )
+    attenuation_length = (wavelength * 1e-10) / (4 * np.pi * np.imag(n))
+    return np.abs(attenuation_length)
