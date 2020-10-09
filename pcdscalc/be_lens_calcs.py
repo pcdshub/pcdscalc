@@ -106,14 +106,16 @@ def get_att_len(energy, material="Be", density=None):
         Attenuation length
     '''
     att_len = 1.0 / xdb.material_mu(material, energy * 1.0e3)
+
     old_att_len = float(attenuation_length(compound=material,
                                            density=density,
                                            energy=energy))
-    # logger.debug(xdb.atomic_density(material))
-    logger.debug('The new att_len with xraydb is: %s', att_len)
+
+    logger.debug('The new att_len with xraydb is: %s', old_att_len)
     # keeping the old one for now to be able to test my code against the old
     # code, then i'll have to change my tests after adding the new att_len
-    return old_att_len
+    # return old_att_len
+    return att_len
 
 
 def get_delta(energy, material="Be", density=None):
@@ -146,11 +148,10 @@ def get_delta(energy, material="Be", density=None):
     old_delta = 1 - np.real(xsf.index_of_refraction(material,
                             energy=energy))
 
-    # logger.debug(xdb.atomic_density(material))
-    logger.debug('The new delta with xraydb is: %s', delta)
+    logger.debug('The new delta with xraydb is: %s', old_delta)
     # keeping the old one for now to be able to test my code against the old
     # code, then i'll have to change my tests after adding the new delta
-    return old_delta  # , delta
+    return delta
 
 
 def calc_focal_length_for_single_lens(energy, radius, material="Be",
