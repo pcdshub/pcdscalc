@@ -109,7 +109,7 @@ def get_att_len(energy, material="Be", density=None):
     old_att_len = float(attenuation_length(compound=material,
                                            density=density,
                                            energy=energy))
-    logger.debug(xdb.atomic_density(material))
+    # logger.debug(xdb.atomic_density(material))
     logger.debug('The new att_len with xraydb is: %s', att_len)
     # keeping the old one for now to be able to test my code against the old
     # code, then i'll have to change my tests after adding the new att_len
@@ -146,7 +146,7 @@ def get_delta(energy, material="Be", density=None):
     old_delta = 1 - np.real(xsf.index_of_refraction(material,
                             energy=energy))
 
-    logger.debug(xdb.atomic_density(material))
+    # logger.debug(xdb.atomic_density(material))
     logger.debug('The new delta with xraydb is: %s', delta)
     # keeping the old one for now to be able to test my code against the old
     # code, then i'll have to change my tests after adding the new delta
@@ -204,15 +204,18 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
     focal_length : `float`
     '''
     f_tot_inverse = 0
-
+    # PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set'
     # TODO: might need these 2 lines here
+    # or can we do something else here to
+    # know when we want to get the len_set from the file?
     # if type(lens_set) is int:
-    #     lens_set = get_lens_set(lens_set)
+    #     lens_set = get_lens_set(1, PATH)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
     for num, radius in lens_set:
-        fln = calc_focal_length_for_single_lens(
-                    energy, radius, material, density)
-        f_tot_inverse += num/fln
+        if radius is not None:
+            fln = calc_focal_length_for_single_lens(energy, radius,
+                                                    material, density)
+            f_tot_inverse += num/fln
 
     return 1.0 / f_tot_inverse
 
@@ -253,7 +256,6 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     size_fwhm : `float`
     '''
     # Focal length for certain lenses configuration and energy
-    logger.debug('lens_set %s', lens_set)
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
     # use lens makers equation to find distance to image of source
@@ -486,6 +488,27 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
 def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
                   lens_radii=[100e-6, 200e-6, 300e-6, 500e-6, 1000e-6],
                   fwhm_unfocused=0.0005, eff_rad0=None):
+    '''
+    Calculate lens set
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy
+    size_fwhm : `float`
+    distance : `float`
+    n_max : `int`
+    max_each : `int`
+    lens_radii : `list`
+    fwhm_unfocused : `float`
+        This is about 400 microns at XPP. Default = 0.0005
+    eff_rad0 : TODO: what is it?
+
+    Returns
+    -------
+    TODO: what returns
+
+    '''
     nums = product(*([list(range(max_each + 1))] * len(lens_radii)))
     sets = []
     sizes = []
@@ -501,55 +524,59 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
             for tn, tl in zip(num, lens_radii):
                 lens_set += [tn, tl]
                 teffradinv += tn / tl
+            # TODO: why 6 here?
             teffrad = np.round(1 / teffradinv, 6)
-            # print teffrad
             if teffrad in effrads:
                 ind = effrads.index(teffrad)
-                # print num
-                # print sets[ind]
-                # raw_input()
-
                 if sum(sets[ind]) > sum(num):
                     sets[ind] = num
                 else:
                     continue
-            else:
+            elif teffrad is not None:
                 effrads.append(teffrad)
                 sets.append(num)
-                sizes.append(
-                    calc_beam_fwhm(
-                        energy,
-                        lens_set + [1, eff_rad0],
-                        distance=distance,
-                        source_distance=None,
-                        fwhm_unfocused=fwhm_unfocused,
-                        printsummary=False,
-                    )
-                )
-                foclens.append(calc_focal_length(energy, lens_set + [1,
-                               eff_rad0]))
+                size_fwhm = calc_beam_fwhm(energy, lens_set + [1, eff_rad0],
+                                           distance=distance,
+                                           source_distance=None,
+                                           fwhm_unfocused=fwhm_unfocused,
+                                           printsummary=False)
+                sizes.append(size_fwhm)
+                focal_length = calc_focal_length(energy,
+                                                 lens_set + [1, eff_rad0])
+                foclens.append(focal_length)
 
     sizes = np.asarray(sizes)
     sets = np.asarray(sets)
     foclens = np.asarray(foclens)
     indsort = (np.abs(sizes - size_fwhm)).argsort()
 
-    return (
-        sets[indsort, :],
-        np.asarray(effrads)[indsort],
-        sizes[indsort],
-        foclens[indsort],
-    )
+    lens_sets = (sets[indsort, :],
+                 np.asarray(effrads)[indsort],
+                 sizes[indsort],
+                 foclens[indsort])
+
+    return lens_sets
 
 
 # TODO: ========== WE MIGHT NOT NEED THESE FUNCTIONS BELOW =================
-
 # TODO: distance default might need to be changed
 def find_radius(energy, distance=4.0, material="Be", density=None):
     '''
     Find the radius of curvature of the lens that would
     focus the energy at the distance
-      usage:  findfind_radiusRadius(E,distance=4.0,material="Be",density=None)
+    usage:
+    .. code-block:: python
+        find_radius(energy, distance=4.0, material="Be", density=None)
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy
+    distance : `float`
+    material : `str`
+        Chemical formula. Default = 'Be'
+    density : `float`
+        Material density in g/cm^3
     '''
     delta = get_delta(energy, material, density)
     radius = distance * 2 * delta
@@ -558,20 +585,21 @@ def find_radius(energy, distance=4.0, material="Be", density=None):
 
 def find_energy(lens_set, distance=3.952, material="Be", density=None):
     '''
-    Find the energy that would focus at a given distance
+    Find the energy that would focus at a given distance.
+
+    usage :
+    .. code-block:: python
+        find_energy([2, 200e-6, 4, 500e-6], distance=4 )
 
     Parameters
     ----------
     lens_set : `list`
         [numer1, lensthick1, number2, lensthick2...]
     distance : `float`
-    material : str
-        Beryllium. The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : TODO: find out what density is
-
-    usage find_energy( (2,200e-6,4,500e-6) ,distance=4 )
+    material : `str`
+        Chemical formula. Default = 'Be'
+    density : `float`
+        Material density in g/cm^3
 
     Returns
     -------
@@ -605,8 +633,57 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
                        density=density)
     # TODO: s is not used, might have to remove it
     # but for now printing it out here
-    logger.debug(f's: {s}')
+    logger.debug('s: %s', s)
     return energy
+
+
+def find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
+               density=None, fwhm_unfocused=800e-6):
+    '''
+    Find the two distances the Be lens needs to be at
+    to get the spotsize in the chamber center
+
+    usage :
+    .. code-block:: python
+        find_z_pos(energy, lens_set, spotsizefwhm, material="Be",
+                   density=None, fwhm_unfocussed=200e-6)
+
+    Parameters
+    ----------
+    energy : number
+        Beam Energy
+    lens_set : `list`
+        [numer1, lensthick1, number2, lensthick2...]
+    spot_size_fwhm :
+    material : `str`
+        Chemical formula. Default = 'Be'
+    density : `float`
+        Material density in g/cm^3
+    fwhm_unfocused : `float`
+        This is about 400 microns at XPP. Default = 800e-6
+    Returns
+    -------
+    z_position : `tuple`
+        (z1, z2)
+    '''
+    focal_length = calc_focal_length(energy, lens_set, material, density)
+
+    lam = 1.2398 / energy * 1e-9
+    w_unfocused = fwhm_unfocused * 2 / 2.35
+    waist = lam / np.pi * focal_length / w_unfocused
+    rayleigh_range = np.pi * waist ** 2 / lam
+
+    logger.info("waist          : %.3e" % waist)
+    logger.info("waist FWHM     : %.3e" % (waist * 2.35 / 2.0))
+    logger.info("rayleigh_range : %.3e" % rayleigh_range)
+    logger.info("focal length   : %.3e" % focal_length)
+
+    w = spot_size_fwhm * 2 / 2.35
+    delta_z = rayleigh_range * np.sqrt((w / waist) ** 2 - 1)
+    z1 = focal_length - delta_z
+    z2 = focal_length + delta_z
+    z_position = (z1, z2)
+    return z_position
 
 
 # leaving this here for now to compare with the new implementation
