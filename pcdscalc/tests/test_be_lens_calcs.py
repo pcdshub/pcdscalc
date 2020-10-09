@@ -1,10 +1,34 @@
+import filecmp
 import logging
+import os
 
 import numpy as np
 import pytest
 from pcdscalc import be_lens_calcs
 
 logger = logging.getLogger(__name__)
+
+PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set'
+ORIGINAL_FILE = os.path.dirname(__file__) + '/test_lens_sets/original'
+BAD_PATH = '../lens_set'
+
+SETS_SAMPLE = '''
+[(3, 0.0001, 1, 0.0002),
+ (1, 0.0001, 1, 0.0003, 1, 0.0005),
+ (2, 0.0001, 1, 0.0005)]
+'''
+
+
+def test_set_lens_set_to_file():
+    be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, make_backup=True)
+    assert filecmp.cmp(PATH, ORIGINAL_FILE)
+
+
+def test_get_lens_set():
+    first_set = (3, 0.0001, 1, 0.0002)
+    lens_set = be_lens_calcs.get_lens_set(1, PATH)
+    logger.debug(f'result: {lens_set}')
+    assert lens_set == first_set
 
 
 @pytest.mark.parametrize('energy_sample', [
