@@ -2,6 +2,9 @@
 Module for Beryllium Lens Calculations
 '''
 import logging
+import os
+import shutil
+from datetime import date
 from itertools import product
 
 import numpy as np
@@ -12,6 +15,69 @@ logger = logging.getLogger(__name__)
 
 # We have sets of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
+
+
+def get_lens_set(set_number_top_to_bot, filename):
+    '''
+    Get the lens set from the file provided
+
+    Parameters
+    ----------
+    set_number_top_to_bot : `int`
+        The Be lens holders can take 3 different sets that we usually set
+        before experiments, this is to specify what number set
+    filename : `str`
+        File path of the lens_set file
+
+    Returns
+    -------
+    lens_set : `list`
+        [numer1, lensthick1, number2, lensthick2 ...]
+    '''
+    if not os.path.exists(filename):
+        logger.error('Provided invalid path for lens set file: %s', filename)
+        return
+    if os.stat(filename).st_size == 0:
+        logger.error('The file is empyt: %s', filename)
+        return
+    with open(filename) as f:
+        sets = eval(f.read())
+        if set_number_top_to_bot not in range(1, len(sets)):
+            logger.error('Provided and invalid set_number_top_to_bottom %s, '
+                         'please provide a number from 1 to %s ',
+                         set_number_top_to_bot, len(sets))
+            return
+        return sets[set_number_top_to_bot - 1]
+
+
+def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
+    '''
+    # The Be lens holders can take 3 different sets that we usually set before
+    # few experiments so we only vent the relevant beamline section once.
+    # We then store these sets into a config file that we can call from the
+    #  methods you redefined. Later, we save this config file to the specific
+    # experiment so users can make sure that they know which stack was used
+    #  for there beamtime. Is that something we can get as well?
+
+    usage :
+    .. code-block:: python
+        sets_list_of_tuples = [(3, 0.0001, 1, 0.0002),
+                               (1, 0.0001, 1, 0.0003, 1, 0.0005),
+                               (2, 0.0001, 1, 0.0005)]
+        set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
+    '''
+    # Make a backup with today's date
+    if make_backup:
+        backup_path = filename + str(date.today()) + '.bak'
+        try:
+            shutil.copyfile(filename, backup_path)
+        except Exception as ex:
+            logger.error('Something went wrong with copying the file %s', ex)
+            pass
+    with open(filename, 'w') as lens_file:
+        # TODO: do we want to pprint.pformat() like in the old code?
+        # lens_file.write(pprint.pformat(sets_list_of_tuples))
+        lens_file.write(sets_list_of_tuples)
 
 
 def get_att_len(energy, material="Be", density=None):
