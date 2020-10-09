@@ -75,12 +75,10 @@ def test_get_delta(energy_sample, expected):
     assert np.isclose(expected, delta)
 
 
-@pytest.mark.skip(reason='calculation for get_delta changed')
 def test_get_delta_with_0_energy():
-    # should give a nan valus since can't devide by 0
+    # should give an exception since can't devide by 0
     delta = be_lens_calcs.get_delta(0)
-    logger.debug('Expected: %s, Received: %s', np.nan, delta)
-    assert np.isnan(delta)
+    assert delta is None
 
 
 @pytest.mark.parametrize('energy_sample, radius, expected', [
@@ -118,6 +116,14 @@ def test_calc_focal_length(energy_sample, lens_set, expected):
     assert np.isclose(fl, expected)
 
 
+def test_calc_focal_length_with_file_lens_set():
+    # expected_used_set = (3, 0.0001, 1, 0.0002)
+    expected = be_lens_calcs.calc_focal_length(8, [3, 0.0001, 1, 0.0002])
+    received = be_lens_calcs.calc_focal_length(8, 1)
+    logger.debug('Expected: %s, Received: %s', expected, received)
+    assert received == expected
+
+
 @pytest.mark.parametrize('energy_sample, lens_set, dist, fwhm_unf, expect', [
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
                  4, 800e-6, 0.0007539124064936633),
@@ -150,7 +156,8 @@ def test_calc_beam_fwhm(energy_sample, lens_set, dist, fwhm_unf, expect):
 @pytest.mark.parametrize('energy_sample, lens_set, dist ,'
                          'fwhm_unf, source_dist, expected', [
                              pytest.param(8, [2, 200e-6, 4, 500e-6],
-                                          4, 500e-6, 10, 0.0003162095431898309),
+                                          4, 500e-6, 10,
+                                          0.0003162095431898309),
                          ])
 def test_calc_beam_fwhm_with_source_distance(energy_sample, lens_set, dist,
                                              fwhm_unf, source_dist, expected):
@@ -194,6 +201,7 @@ def test_calc_distance_for_size(energy, lens_set, fwhm_unf, size_fwhm, expect):
 def test_find_radius():
     radius = be_lens_calcs.find_radius(energy=8)
     print(f'radius: {radius}')
+    # TODO: needs testing here?? if we end up keeping this
 
 
 @pytest.mark.parametrize('radius, expected', [
@@ -237,6 +245,15 @@ def test_calc_trans_lens_set(energy_sample, lens_set, expected):
     trans = be_lens_calcs.calc_trans_lens_set(energy_sample, lens_set)
     logger.debug('Expected: %s Received: %s', expected, trans)
     assert np.isclose(expected, trans)
+
+
+def test_calc_trans_lens_set_with_file_len_set():
+    # expected_used_set = (3, 0.0001, 1, 0.0002)
+    expected = be_lens_calcs.calc_trans_lens_set(8, [3, 0.0001, 1, 0.0002])
+
+    received = be_lens_calcs.calc_trans_lens_set(8, 1)
+    logger.debug('Expected: %s, Received: %s', expected, received)
+    assert received == expected
 
 
 @pytest.mark.parametrize('lens_set, distance, expected', [

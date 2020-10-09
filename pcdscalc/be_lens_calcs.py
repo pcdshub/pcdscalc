@@ -16,8 +16,11 @@ logger = logging.getLogger(__name__)
 # We have sets of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
 
+# TODO: this is a test file... take care of it
+LENS_SET_FILE = os.path.dirname(__file__) + '/tests/test_lens_sets/lens_set'
 
-def get_lens_set(set_number_top_to_bot, filename):
+
+def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     '''
     Get the lens set from the file provided
 
@@ -47,6 +50,7 @@ def get_lens_set(set_number_top_to_bot, filename):
                          'please provide a number from 1 to %s ',
                          set_number_top_to_bot, len(sets))
             return
+        print(sets[set_number_top_to_bot - 1])
         return sets[set_number_top_to_bot - 1]
 
 
@@ -82,11 +86,23 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
 
 def get_att_len(energy, material="Be", density=None):
     '''
-    Get the attenuation length (in meter) of a material, if no
-    parameter is given for the predefined energy;
-    then T=exp(-thickness/att_len);
-    The depth into the material measured along the surface normal where the
-    intensity of x-rays falls to 1/e of its value at the surface.
+    Get the attenuation length (in meter) of a material
+
+    The X-ray beam intensity I(x) at depth x in a material is a function
+    of the attenuation coefficient mu, and can be calculated by the
+    Beer-Lambert law.
+    The Absorption Length (or Attenuation Length) is defined as the distance
+    into a material where the x-ray beam intensity has decreased to a value
+    of 1/e (~ 40%) of the incident beam intensity (Io)
+
+    (1/e) = e^(-mu * x)
+    ln(1/e) = ln(e^(-mu * x))
+    1 = mu * x
+    x = 1/mu
+
+    usage :
+    .. code-block:: python
+        get_att_len(energy=8, material='Be')
 
     Parameters
     ----------
@@ -105,22 +121,21 @@ def get_att_len(energy, material="Be", density=None):
     att_len : `numpy.float64`
         Attenuation length
     '''
-    att_len = 1.0 / xdb.material_mu(material, energy * 1.0e3)
-
-    old_att_len = float(attenuation_length(compound=material,
-                                           density=density,
-                                           energy=energy))
-
-    logger.debug('The new att_len with xraydb is: %s', old_att_len)
-    # keeping the old one for now to be able to test my code against the old
-    # code, then i'll have to change my tests after adding the new att_len
-    # return old_att_len
+    try:
+        att_len = 1.0 / xdb.material_mu(material, energy * 1.0e3,
+                                        density=density)
+    except Exception as ex:
+        logger.error('Get Attenuation Lenght error: %s', ex)
+        return
+    # TODO: if we return we'll get att_len == None, is this what we want?
     return att_len
 
 
 def get_delta(energy, material="Be", density=None):
     '''
-    Calculate delta for a given material at a given energy
+    Calculate delta for a given material at a given energy.
+    Anomalous components of the index of refraction for a material,
+    using the tabulated scattering components from Chantler
 
     Parameters
     ----------
@@ -139,18 +154,14 @@ def get_delta(energy, material="Be", density=None):
     '''
     # xray_delta_beta returns (delta, beta, atlen),
     # wehre delta : real part of index of refraction
-    # TODO: need to handle divizion by 0 when energy == 0 with
-    # xray_delta_beta
-    delta = xdb.xray_delta_beta(material, energy=energy * 1.0e3,
-                                density=xdb.atomic_density(material))[0]
-
-    # density=xdb.atomic_density(material))
-    old_delta = 1 - np.real(xsf.index_of_refraction(material,
-                            energy=energy))
-
-    logger.debug('The new delta with xraydb is: %s', old_delta)
-    # keeping the old one for now to be able to test my code against the old
-    # code, then i'll have to change my tests after adding the new delta
+    try:
+        delta = xdb.xray_delta_beta(material,
+                                    density=xdb.atomic_density(material),
+                                    energy=energy * 1.0e3,)[0]
+    except Exception as ex:
+        logger.error('Get Delta error: %s', ex)
+        return
+    # TODO: if we return we'll get delta == None, is this what we want?
     return delta
 
 
@@ -205,12 +216,8 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
     focal_length : `float`
     '''
     f_tot_inverse = 0
-    # PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set'
-    # TODO: might need these 2 lines here
-    # or can we do something else here to
-    # know when we want to get the len_set from the file?
-    # if type(lens_set) is int:
-    #     lens_set = get_lens_set(1, PATH)
+    if isinstance(lens_set, int):
+        lens_set = get_lens_set(lens_set)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
     for num, radius in lens_set:
         if radius is not None:
@@ -461,13 +468,12 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
 
     apex_distance_tot = 0
     radius_total_inv = 0
+    # TODO: how can i fix this hack here:
     # this is an ugly hack: the radius will never be bigger than 1m,
     # so will always be overwritten
     radius_aperture = 1.0
-    #  if type(lens_set) is int:
-    #      lens_set = get_lens_set(lens_set)
-    # TODO: might be in a situation where lens_set is not a
-    # list but a float or int? - what to do?
+    if type(lens_set) is int:
+        lens_set = get_lens_set(lens_set)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
     for num, radius in lens_set:
         new_rad_ap = np.sqrt(radius * (disk_thickness - apex_distance))
