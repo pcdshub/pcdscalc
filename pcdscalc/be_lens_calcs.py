@@ -309,6 +309,7 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
     '''
     size = size_fwhm * 2.0 / 2.35
     focal_length = calc_focal_length(energy, lens_set, "Be", density=None)
+    # TODO: what is 12.398
     lam = 12.398 / energy * 1e-10
     # the w parameter used in the usual formula is 2*sigma
     w_unfocused = fwhm_unfocused * 2 / 2.35
@@ -525,7 +526,6 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
             for tn, tl in zip(num, lens_radii):
                 lens_set += [tn, tl]
                 teffradinv += tn / tl
-            # TODO: why 6 here?
             teffrad = np.round(1 / teffradinv, 6)
             if teffrad in effrads:
                 ind = effrads.index(teffrad)
