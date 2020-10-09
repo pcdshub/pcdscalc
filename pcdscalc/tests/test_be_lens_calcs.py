@@ -31,41 +31,48 @@ def test_get_lens_set():
     assert lens_set == first_set
 
 
-@pytest.mark.parametrize('energy_sample', [
-    pytest.param(8),
-    pytest.param(9),
-    pytest.param(1),
-    pytest.param(0.1),
-    pytest.param(30),
-])
-def test_att_length(energy_sample):
-    delta = be_lens_calcs.get_att_len(energy_sample, material='Au')
-    logger.debug('At energy: %s, Received %s', energy_sample, delta)
-
-
-# @pytest.mark.skip
-@pytest.mark.parametrize('energy_sample', [
-    pytest.param(8),
-    pytest.param(9),
-    pytest.param(1),
-    pytest.param(0.1),
-    pytest.param(20),
-])
-def test_delta(energy_sample):
-    delta = be_lens_calcs.get_delta(energy_sample, material='Be')
-    logger.debug('At energy: %s, Received %s', energy_sample, delta)
-
-
-# @pytest.mark.skip(reason='calcs. for get_delta changed, using diff module')
+# TODO: these expected values are the actuall ones I got
+# from running the test - NOT A TRUE TEST!!!
 @pytest.mark.parametrize('energy_sample, expected', [
-    pytest.param(8, 5.326454632470501e-06),
-    pytest.param(9, 4.20757010499706e-06),
-    pytest.param(1, 0.0003524314661392802),
+    pytest.param(8, 0.48101132541206565),
+    pytest.param(9, 0.6507409652366966),
+    pytest.param(1, 0.0008946976460379717),
+    pytest.param(30, 3.016074690855582),
+    pytest.param(10, 0.8360110829541422),
+])
+def test_att_length(energy_sample, expected):
+    # old values (with old get_att_lenght)
+    # 0.005949593420831057),
+    # 0.00874765768614978),
+    # 9.030173195532919e-06),
+    # 0.4711761144434822),
+    # 0.01235515814053393),
+    att_len = be_lens_calcs.get_att_len(energy_sample, material='Be')
+    logger.debug('At energy: %s, Expected: %s,  Received %s',
+                 energy_sample, expected, att_len)
+    assert np.isclose(expected, att_len)
+
+
+# TODO: these expected values are the actuall ones I got
+# from running the test - NOT A TRUE TEST!!!
+@pytest.mark.parametrize('energy_sample, expected', [
+    pytest.param(8, 5.330471261281744e-06),
+    pytest.param(9, 4.21084077002856e-06),
+    pytest.param(1, 0.0003515107795702183),
+    pytest.param(0.1, 0.005621922785393444),
+    pytest.param(20, 8.521078856544226e-07),
 ])
 def test_get_delta(energy_sample, expected):
-    delta = be_lens_calcs.get_delta(energy_sample)
-    logger.debug('Expected: %s, Received %s', expected, delta)
-    assert np.isclose(delta, expected)
+    # old values (using old get_data):
+    # 5.326454632470501e-06
+    # 4.20757010499706e-06
+    # 0.0003524314661392802
+    # 0.003807346693343705
+    # 8.513802953746819e-07
+    delta = be_lens_calcs.get_delta(energy_sample, material='Be')
+    logger.debug('At energy: %s, Expected: %s, Received %s',
+                 energy_sample, expected, delta)
+    assert np.isclose(expected, delta)
 
 
 @pytest.mark.skip(reason='calculation for get_delta changed')
@@ -76,47 +83,60 @@ def test_get_delta_with_0_energy():
     assert np.isnan(delta)
 
 
-# @pytest.mark.skip(reason='get_delta changed so different results now')
 @pytest.mark.parametrize('energy_sample, radius, expected', [
-    pytest.param(8, 0.003, 281.61321244639504),
-    pytest.param(8, 0.0001, 9.387107081546501),
-    pytest.param(9, 0.003, 356.5002988823755),
-    pytest.param(1, 0.0001, 0.1418715546251483),
+    pytest.param(8, 0.003, 281.40101061895905),
+    pytest.param(8, 0.0001, 9.380033687298635),
+    pytest.param(9, 0.003, 356.2233962102125),
+    pytest.param(1, 0.0001, 0.14224314844948285),
 ])
 def test_calc_focal_length_for_single_lens(energy_sample, radius, expected):
+    # old values (with old get_delta):
+    # 281.61321244639504
+    # 9.387107081546501
+    # 356.5002988823755
+    # 0.1418715546251483
     focal_length = be_lens_calcs.calc_focal_length_for_single_lens(
         energy_sample, radius)
     logger.debug('Expected: %s, Received: %s', expected, focal_length)
     assert np.isclose(focal_length, expected)
 
 
-# @pytest.mark.skip(reason='get_delta changed so different results now')
 @pytest.mark.parametrize('energy_sample, lens_set, expected', [
-    pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02], 69.45047645294554),
-    pytest.param(8, [2, 200e-6, 4, 500e-6], 5.2150594897480556),
-    pytest.param(9, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02], 87.91887070181892),
-    pytest.param(1, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02], 1.0496361635424505),
+    pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02], 69.39814397219442),
+    pytest.param(8, [2, 200e-6, 4, 500e-6], 5.21112982627702),
+    pytest.param(9, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02], 87.85058192251857),
+    pytest.param(1, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02], 1.0523853990548204),
 ])
 def test_calc_focal_length(energy_sample, lens_set, expected):
+    # old values (with old get_delta):
+    # 69.45047645294554
+    # 5.2150594897480556
+    # 87.91887070181892
+    # 1.0496361635424505
     fl = be_lens_calcs.calc_focal_length(energy_sample, lens_set)
     logger.debug('Expected: %s, Received: %s', expected, fl)
     assert np.isclose(fl, expected)
 
 
-# @pytest.mark.skip(reason='get_delta changed so different results now')
 @pytest.mark.parametrize('energy_sample, lens_set, dist, fwhm_unf, expect', [
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
-                 4, 800e-6, 0.000753947185823854),
+                 4, 800e-6, 0.0007539124064936633),
     pytest.param(8, [2, 200e-6, 4, 500e-6],
-                 4, 800e-6, 0.00018639295509465447),
+                 4, 800e-6, 0.00018593023997294836),
     pytest.param(8, [2, 200e-6, 4, 500e-6],
-                 3, 500e-6, 0.00021237263787327295),
+                 3, 500e-6, 0.0002121557393404887),
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
-                 4, 500e-6, 0.0004712974533787206),
+                 4, 500e-6, 0.00047127559879883534),
     pytest.param(1, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
-                 3, 500e-6, 0.0009290673198171924),
+                 3, 500e-6, 0.0009253340546070372),
 ])
 def test_calc_beam_fwhm(energy_sample, lens_set, dist, fwhm_unf, expect):
+    # old values (with old get_delta):
+    # 0.000753947185823854
+    # 0.00018639295509465447
+    # 0.00021237263787327295
+    # 0.0004712974533787206
+    # 0.0009290673198171924
     fwhm = be_lens_calcs.calc_beam_fwhm(energy=energy_sample,
                                         lens_set=lens_set,
                                         distance=dist,
@@ -125,39 +145,44 @@ def test_calc_beam_fwhm(energy_sample, lens_set, dist, fwhm_unf, expect):
     assert np.isclose(fwhm, expect)
 
 
-# @pytest.mark.skip(reason='get_delta changed so different results now')
 # TODO: this was tested by adding the souce_distance implementation in
 # the old code..... so it is kind of cheating....
 @pytest.mark.parametrize('energy_sample, lens_set, dist ,'
                          'fwhm_unf, source_dist, expected', [
                              pytest.param(8, [2, 200e-6, 4, 500e-6],
-                                          4, 500e-6, 10, 0.000316498748238284),
+                                          4, 500e-6, 10, 0.0003162095431898309),
                          ])
 def test_calc_beam_fwhm_with_source_distance(energy_sample, lens_set, dist,
                                              fwhm_unf, source_dist, expected):
+    # old values (with old get_delta):
+    # 0.000316498748238284
     fwhm = be_lens_calcs.calc_beam_fwhm(energy=energy_sample,
                                         lens_set=lens_set, distance=dist,
                                         fwhm_unfocused=fwhm_unf,
                                         source_distance=source_dist)
-    # printing here for curiosity, but need to fix this
-    logger.debug('The fwhm with source_distance of 10 is: %s', fwhm)
+    logger.debug('Expected: %s, Received: %s', expected, fwhm)
     assert np.isclose(fwhm, expected)
 
 
-# @pytest.mark.skip(reason='get_delta changed so different results now')
 @pytest.mark.parametrize('energy, lens_set, fwhm_unf, size_fwhm, expect', [
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
-                 800e-6, 0.000753947185823854, [4.0, 134.90095291]),
+                 800e-6, 0.0007539124064936633, [4.0, 134.79628794]),
     pytest.param(8, [2, 200e-6, 4, 500e-6],
-                 800e-6, 0.00018639295509465447, [4.0, 6.43011898]),
+                 800e-6, 0.00018593023997294836, [4.0, 6.42225965]),
     pytest.param(8, [2, 200e-6, 4, 500e-6],
-                 500e-6, 0.00021237263787327295, [3.0, 7.43011898]),
+                 500e-6, 0.0002121557393404887, [3.0, 7.42225965]),
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
-                 500e-6, 0.0004712974533787206, [4.0, 134.90095291]),
+                 500e-6, 0.00047127559879883534, [4.0, 134.79628794]),
     pytest.param(1, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
-                 500e-6, 0.0009290673198171924, [-0.90072767, 3.0]),
+                 500e-6, 0.0009253340546070372, [-0.8952292, 3.0]),
 ])
 def test_calc_distance_for_size(energy, lens_set, fwhm_unf, size_fwhm, expect):
+    # old values (with old get_delta):
+    # [4.00301939, 134.89793351]
+    # [4.00301637, 6.42710261]
+    # [3.00226229, 7.42785669]
+    # [4.00303623, 134.89791667]
+    # [-0.89289053,  2.99216285]
     dis = be_lens_calcs.calc_distance_for_size(size_fwhm=size_fwhm,
                                                lens_set=lens_set,
                                                energy=energy,
@@ -171,38 +196,64 @@ def test_find_radius():
     print(f'radius: {radius}')
 
 
-def test_calc_lens_aperture_radius():
-    expected = 0.0009848857801796104
-    aperture_radius = be_lens_calcs.calc_lens_aperture_radius(1.0e-3)
-    logger.debug('aperture radius: %s', aperture_radius)
+@pytest.mark.parametrize('radius, expected', [
+    pytest.param(1.0e-3, 0.0009848857801796104),
+    pytest.param(2.0e-3, 0.001392838827718412),
+    pytest.param(3.0e-3, 0.0017058722109231982),
+])
+def test_calc_lens_aperture_radius(radius, expected):
+    aperture_radius = be_lens_calcs.calc_lens_aperture_radius(radius)
+    logger.debug('Expected: %s, Received: %s', expected,
+                 aperture_radius)
     assert np.isclose(expected, aperture_radius)
 
 
-def test_calc_trans_for_single_lens():
-    expected = 0.7596648170811011
-    trans = be_lens_calcs.calc_trans_for_single_lens(energy=8, radius=500e-6)
-    logger.debug('trans: %s', trans)
+@pytest.mark.parametrize('energy_sample, radius, expected', [
+    pytest.param(8, 1.0e-3, 0.963284220753225),
+    pytest.param(8, 2.0e-3, 0.9983308279749568),
+    pytest.param(9, 3.0e-3, 0.9997571450363106),
+])
+def test_calc_trans_for_single_lens(energy_sample, radius, expected):
+    # old values (with old get_att_len and old get_delta):
+    # 0.9192789600686936
+    # 0.9700496829425548
+    # 0.9855626484449255
+    trans = be_lens_calcs.calc_trans_for_single_lens(energy=energy_sample,
+                                                     radius=radius)
+    logger.debug('Expected: %s, Received: %s', expected, trans)
     assert np.isclose(expected, trans)
 
 
-def test_calc_trans_lens_set():
-    expected = 0.4005461885189993
-    trans = be_lens_calcs.calc_trans_lens_set(9, [2, 200e-6, 4, 500e-6])
+@pytest.mark.parametrize('energy_sample, lens_set, expected', [
+    pytest.param(8, [2, 100e-6, 4, 200e-6], 0.2813523103002636),
+    pytest.param(8, [2, 200e-6, 4, 500e-6], 0.48349353636388775),
+    pytest.param(9, [2, 200e-6, 4, 500e-6], 0.48394792704346334),
+])
+def test_calc_trans_lens_set(energy_sample, lens_set, expected):
+    # old values (with old get_att_len and old get_delta):
+    # 0.20497965794420414
+    # 0.3675986395544651
+    # 0.4005461885189993
+    trans = be_lens_calcs.calc_trans_lens_set(energy_sample, lens_set)
     logger.debug('Expected: %s Received: %s', expected, trans)
     assert np.isclose(expected, trans)
 
 
 @pytest.mark.parametrize('lens_set, distance, expected', [
                          pytest.param([2, 200e-6, 4, 500e-6], 4,
-                                      7.007423400878906),
+                                      7.0100555419921875),
                          pytest.param([2, 200e-6, 4, 500e-6], 2,
-                                      4.958213806152344),
+                                      4.9597930908203125),
                          pytest.param([2, 200e-6, 4, 500e-6], 7,
-                                      9.267204284667969)
+                                      9.270801544189453)
                          ])
 def test_find_energy(lens_set, distance, expected):
     # NOTE: the logs from calc_beam_fwhm differ here from the
     # old ones... but the final results seem to be the same???
+    # old values (with old get_att_len and old get_delta):
+    # 7.007423400878906
+    # 4.958213806152344
+    # 9.267204284667969
     energy = be_lens_calcs.find_energy(lens_set, distance)
     logger.debug('Expected: %s Received: %s', expected, energy)
     assert np.isclose(expected, energy)
@@ -210,9 +261,11 @@ def test_find_energy(lens_set, distance, expected):
 
 @pytest.mark.parametrize('energy, lens_set, spot_size_fwhm, expected', [
                          pytest.param(8, [2, 200e-6, 4, 500e-6], 4.0e-3,
-                                      (-20.86023779837472, 31.290356777870826))
+                                      (-20.84451914485339, 31.26677879740743))
                          ])
 def test_find_z_pos(energy, lens_set, spot_size_fwhm, expected):
+    # old values (with old get_att_len and old get_delta):
+    # (-20.86023779837472, 31.290356777870826)
     z_position = be_lens_calcs.find_z_pos(energy, lens_set, spot_size_fwhm)
     logger.debug('Expected: %s, Received: %s', expected, z_position)
     assert np.isclose(expected, z_position).all()
