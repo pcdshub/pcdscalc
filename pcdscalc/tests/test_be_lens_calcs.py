@@ -190,3 +190,57 @@ def test_calc_trans_lens_set():
     trans = be_lens_calcs.calc_trans_lens_set(9, [2, 200e-6, 4, 500e-6])
     logger.debug('Expected: %s Received: %s', expected, trans)
     assert np.isclose(expected, trans)
+
+
+@pytest.mark.parametrize('lens_set, distance, expected', [
+                         pytest.param([2, 200e-6, 4, 500e-6], 4,
+                                      7.007423400878906),
+                         pytest.param([2, 200e-6, 4, 500e-6], 2,
+                                      4.958213806152344),
+                         pytest.param([2, 200e-6, 4, 500e-6], 7,
+                                      9.267204284667969)
+                         ])
+def test_find_energy(lens_set, distance, expected):
+    # NOTE: the logs from calc_beam_fwhm differ here from the
+    # old ones... but the final results seem to be the same???
+    energy = be_lens_calcs.find_energy(lens_set, distance)
+    logger.debug('Expected: %s Received: %s', expected, energy)
+    assert np.isclose(expected, energy)
+
+
+@pytest.mark.parametrize('energy, lens_set, spot_size_fwhm, expected', [
+                         pytest.param(8, [2, 200e-6, 4, 500e-6], 4.0e-3,
+                                      (-20.86023779837472, 31.290356777870826))
+                         ])
+def test_find_z_pos(energy, lens_set, spot_size_fwhm, expected):
+    z_position = be_lens_calcs.find_z_pos(energy, lens_set, spot_size_fwhm)
+    logger.debug('Expected: %s, Received: %s', expected, z_position)
+    assert np.isclose(expected, z_position).all()
+
+
+def test_calc_lens_set():
+    expected_sets = np.array([[0, 0, 0, 0, 1],
+                             [0, 0, 0, 1, 0],
+                             [0, 0, 1, 0, 0],
+                             [0, 1, 0, 0, 0],
+                             [1, 0, 0, 0, 0]])
+
+    expected_effrads = np.array([0.001, 0.0005, 0.0003, 0.0002, 0.0001])
+    expected_sizes = np.array([0.00047886, 0.00045743, 0.000429,
+                              0.00039348, 0.00028694])
+    expected_foclens = np.array([93.87107082, 46.93553541, 28.16132124,
+                                18.77421416,  9.38710708])
+
+    res = be_lens_calcs.calc_lens_set(energy=8, size_fwhm=2, distance=4,
+                                      n_max=1, max_each=2,
+                                      lens_radii=[100e-6, 200e-6, 300e-6,
+                                                  500e-6, 1000e-6],
+                                      fwhm_unfocused=0.0005, eff_rad0=None)
+    sets = res[0]
+    effrads = res[1]
+    sizes = res[2]
+    foclens = res[3]
+    assert sets.all() == expected_sets.all()
+    assert effrads.all() == expected_effrads.all()
+    assert sizes.all() == expected_sizes.all()
+    assert foclens.all() == expected_foclens.all()
