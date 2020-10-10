@@ -9,12 +9,73 @@ from itertools import product
 
 import numpy as np
 import xraydb as xdb
-from periodictable import xsf
+
 
 logger = logging.getLogger(__name__)
 
 # We have sets of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
+
+FWHM_SIGMA_CONVERSION = 2.35482004503
+WAVELENGTH_PHOTON = 1.2398
+
+
+def photon_to_wavelength(energy):
+    '''
+    Find the wavelength in micrometers, using the
+    photon energy in electronvolts.
+    The equation is approximately:
+    λ[µm] = 1.2398 / E[eV]
+    The photon energy at 1 μm wavelength,
+    the wavelength of near infrared radiation, is approximately 1.2398 eV.
+
+    Parameters
+    ----------
+    photon : `float`
+        Photon energy in electronvolts
+    Returns
+    -------
+    Wavelength in micrometers
+    '''
+    return WAVELENGTH_PHOTON / energy
+
+
+def gaussian_sigma_to_fwhm(sigma):
+    '''
+    Converting between FWHM and sigma of a Gaussian function
+    FWHM = 2.35482004503 * sigma
+
+    https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/
+
+    Parameters
+    ----------
+    sigma : `float`
+
+    Returns
+    -------
+    FWHM -  Full Width at the Half Maximum
+    '''
+    return FWHM_SIGMA_CONVERSION * sigma
+
+
+def gaussian_fwhm_to_sigma(fwhm):
+    '''
+    Converting between FWHM and sigma of a Gaussian function
+    sigma = FWHM / 2.35482004503
+
+    https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/
+
+    Parameters
+    ----------
+    fwhm : `float`
+        Full Witdh at the Half Maximum
+
+    Returns
+    -------
+    sigma
+    '''
+    return fwhm / FWHM_SIGMA_CONVERSION
+
 
 # TODO: this is a test file... take care of it
 LENS_SET_FILE = os.path.dirname(__file__) + '/tests/test_lens_sets/lens_set'
@@ -107,7 +168,7 @@ def get_att_len(energy, material="Be", density=None):
     Parameters
     ----------
     energy : number
-        Beam Energy given in keV
+        Beam Energy given in KeV
     material : `str`
         Default - Beryllium.
         The use of beryllium extends the range of operation
@@ -122,8 +183,11 @@ def get_att_len(energy, material="Be", density=None):
         Attenuation length
     '''
     try:
-        att_len = 1.0 / xdb.material_mu(material, energy * 1.0e3,
-                                        density=density)
+        # xdb.material_my returns absorption length in 1/cm
+        # and takes energy or array of energies in eV
+        att_len = 1.0 / (xdb.material_mu(material, energy * 1.0e3,
+                                         density=density)) * 1.0e-2
+
     except Exception as ex:
         logger.error('Get Attenuation Lenght error: %s', ex)
         return
@@ -140,7 +204,7 @@ def get_delta(energy, material="Be", density=None):
     Parameters
     ----------
     energy : number
-        x-ray energy in eV
+        x-ray energy in KeV
     material : `str`
         Chemical formula (‘Fe2O3’, ‘CaMg(CO3)2’, ‘La1.9Sr0.1CuO4’)
         Default - Beryllium.
@@ -154,10 +218,11 @@ def get_delta(energy, material="Be", density=None):
     '''
     # xray_delta_beta returns (delta, beta, atlen),
     # wehre delta : real part of index of refraction
+    # takes x-ray energy in eV
     try:
         delta = xdb.xray_delta_beta(material,
                                     density=xdb.atomic_density(material),
-                                    energy=energy * 1.0e3,)[0]
+                                    energy=energy * 1.0e3)[0]
     except Exception as ex:
         logger.error('Get Delta error: %s', ex)
         return
@@ -228,12 +293,11 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
     return 1.0 / f_tot_inverse
 
 
-# TODO: check what to do with fwhm_unfocused if None - for now
-# I added a "default" value but it will complain fi None
 def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
                    material="Be", density=None, fwhm_unfocused=500e-6,
                    printsummary=True):
     '''
+    FWHM -  Full Width at the Half Maximum
     Calculates beam parameters for certain lenses configuration
     and energy at a given distance.
     Optionally some other parameters can be set
@@ -270,23 +334,24 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     if source_distance is not None:
         focal_length = 1 / (1 / focal_length - 1 / source_distance)
 
-    # TODO: what is 1.2398
-    lam = 1.2398 / energy * 1e-9
-    # the w parameter used in the usual formula is 2*sigma
+    lam = photon_to_wavelength(energy) * 1e-9
 
-    # TODO: magical number: 2.35 - what is it
-    w_unfocused = fwhm_unfocused * 2 / 2.35
+    # the w parameter used in the usual formula is 2 * sigma
+    w_unfocused = gaussian_fwhm_to_sigma(fwhm_unfocused) * 2
+
     # assuming gaussian beam divergence = w_unfocused/f we can obtain
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
     size = waist * np.sqrt(1.0 + (distance - focal_length) ** 2.0 /
                            rayleigh_range ** 2)
-    size_fwhm = size * 2.35 / 2.0
+
+    size_fwhm = gaussian_sigma_to_fwhm(size) / 2.0
 
     if printsummary:
         logger.info("FWHM at lens   : %.3e" % (fwhm_unfocused))
         logger.info("waist          : %.3e" % (waist))
-        logger.info("waist FWHM     : %.3e" % (waist * 2.35 / 2.0))
+        logger.info("waist FWHM     : %.3e" % (waist *
+                                               FWHM_SIGMA_CONVERSION / 2.0))
         logger.info("rayleigh_range : %.3e" % (rayleigh_range))
         logger.info("focal length   : %.3e" % (focal_length))
         logger.info("size           : %.3e" % (size))
@@ -314,26 +379,21 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
     -------
     distance : `float`
     '''
-    size = size_fwhm * 2.0 / 2.35
+    size = gaussian_fwhm_to_sigma(size_fwhm) * 2.0
     focal_length = calc_focal_length(energy, lens_set, "Be", density=None)
-    # TODO: what is 12.398
-    lam = 12.398 / energy * 1e-10
-    # the w parameter used in the usual formula is 2*sigma
-    w_unfocused = fwhm_unfocused * 2 / 2.35
+
+    lam = photon_to_wavelength(energy) * 1e-9
+
+    # the w parameter used in the usual formula is 2 * sigma
+    w_unfocused = gaussian_fwhm_to_sigma(fwhm_unfocused) * 2.0
+
     # assuming gaussian beam divergence = w_unfocused/f we can obtain
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
-    # TODO: should i be handling this? it was commented out in the old code
-    # bs = (size/waist)**2-1
-    # if bs >= 0:
-    distance = (
-        np.sqrt((size / waist) ** 2 - 1) * np.asarray([-1.0, 1.0]) *
-        rayleigh_range) + focal_length
-    # TODO: the distance is in this format: [  4.         134.90095291]
-    # check to see if that's what we want
-    # else:
-    # distance = nan
-    #
+
+    distance = (np.sqrt((size / waist) ** 2 - 1) * np.asarray([-1.0, 1.0]) *
+                rayleigh_range) + focal_length
+
     return distance
 
 
@@ -365,7 +425,6 @@ def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
     return aperture_radius
 
 
-# TODO: should i be changing the defaults here??
 def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
                                fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
                                apex_distance=30e-6):
@@ -399,29 +458,21 @@ def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
     transmission : `float`
         Transmission for a single lens
     '''
-    delta = get_delta(energy, material, density)
-    # TODO: delta is not used, might have to remove it
-    # but for now printing it out here
-    logger.debug('delta: %d', delta)
-    # TODO: what is mu - is that mass attenuation coefficient?
+    # mu = mass attenuation coefficient?
     mu = 1.0 / get_att_len(energy, material=material, density=None)
 
-    # TODO: what is s
-    s = fwhm_unfocused / 2.35482  # TODO: where is this number comming from?
-    # TODO: what is S
-    S = (s ** (-2.0) + 2.0 * mu / radius) ** (-0.5)
+    sigma = gaussian_fwhm_to_sigma(fwhm_unfocused)
+    # TODO: what is S - Responsivity of a lens?
+    S = (sigma ** (-2.0) + 2.0 * mu / radius) ** (-0.5)
     aperture_radius = calc_lens_aperture_radius(radius=radius,
                                                 disk_thickness=disk_thickness,
                                                 apex_distance=apex_distance)
-    transmission = (
-        (S ** 2 / s ** 2)
-        * np.exp(-mu * apex_distance)
-        * (1 - np.exp(-(aperture_radius ** 2.0) / (2.0 * S ** 2)))
-    )
+
+    transmission = ((S ** 2 / sigma ** 2) * np.exp(-mu * apex_distance) *
+                    (1 - np.exp(-(aperture_radius ** 2.0) / (2.0 * S ** 2))))
     return transmission
 
 
-# TODO: should i be changing the defaults here??
 def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
                         fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
                         apex_distance=30e-6):
@@ -675,64 +726,21 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
     '''
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
-    lam = 1.2398 / energy * 1e-9
-    w_unfocused = fwhm_unfocused * 2 / 2.35
+    lam = photon_to_wavelength(energy) * 1e-9
+    # the w parameter used in the usual formula is 2 * sigma
+    w_unfocused = gaussian_fwhm_to_sigma(fwhm_unfocused) * 2
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
 
     logger.info("waist          : %.3e" % waist)
-    logger.info("waist FWHM     : %.3e" % (waist * 2.35 / 2.0))
+    logger.info("waist FWHM     : %.3e" % (waist *
+                                           FWHM_SIGMA_CONVERSION / 2.0))
     logger.info("rayleigh_range : %.3e" % rayleigh_range)
     logger.info("focal length   : %.3e" % focal_length)
 
-    w = spot_size_fwhm * 2 / 2.35
+    w = gaussian_fwhm_to_sigma(spot_size_fwhm) * 2
     delta_z = rayleigh_range * np.sqrt((w / waist) ** 2 - 1)
     z1 = focal_length - delta_z
     z2 = focal_length + delta_z
     z_position = (z1, z2)
     return z_position
-
-
-# leaving this here for now to compare with the new implementation
-# This function was part of our Frankenstein periodic table build.
-# It now lives here because it was never an official part of the module.
-# I copied it in and adjusted namespaces accordingly.
-def attenuation_length(
-    compound, density=None, natural_density=None, energy=None, wavelength=None
-):
-    """
-    Calculates the attenuation length for a compound
-    Transmisison if then exp(-thickness/attenuation_length)
-    :Parameters:
-        *compound* : Formula initializer
-            Chemical formula.
-        *density* : float | |g/cm^3|
-            Mass density of the compound, or None for default.
-        *natural_density* : float | |g/cm^3|
-            Mass density of the compound at naturally occurring isotope
-            abundance.
-        *wavelength* : float or vector | |Ang|
-            Wavelength of the X-ray.
-        *energy* : float or vector | keV
-            Energy of the X-ray, if *wavelength* is not specified.
-    :Returns:
-        *attenuation_length* : vector | |m|
-            as function of (energy)
-    :Notes:
-    against http://henke.lbl.gov/optical_constants/
-    """
-
-    if energy is not None:
-        wavelength = xsf.xray_wavelength(energy)
-    assert wavelength is not None, 'scattering calculation '
-    'needs energy or wavelength'
-    if np.isscalar(wavelength):
-        wavelength = np.array([wavelength])
-    n = xsf.index_of_refraction(
-        compound=compound,
-        density=density,
-        natural_density=natural_density,
-        wavelength=wavelength,
-    )
-    attenuation_length = (wavelength * 1e-10) / (4 * np.pi * np.imag(n))
-    return np.abs(attenuation_length)
