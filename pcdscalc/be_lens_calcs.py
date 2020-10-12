@@ -68,7 +68,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     Parameters
     ----------
     fwhm : `float`
-        Full Witdh at the Half Maximum
+        Full Width at the Half Maximum
 
     Returns
     -------
@@ -400,7 +400,7 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
 def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
                               apex_distance=30e-6):
     '''
-    Calculate the lens aperture raidus
+    Calculate the lens aperture radius
     It is of importance to optimize which lens radius
     to use at a specific photon energy
 
@@ -477,7 +477,7 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
                         fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
                         apex_distance=30e-6):
     '''
-    Calculte the transmission of a lens set.
+    Calculate  the transmission of a lens set.
     These would allow us to estimate the total transmission of the lenses
     usage : calc_trans_lens_set(energy,lens_set,material="Be",density=None,
             fwhm_unfocused=900e-6)
@@ -703,7 +703,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
 
     usage :
     .. code-block:: python
-        find_z_pos(energy, lens_set, spotsizefwhm, material="Be",
+        find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
                    density=None, fwhm_unfocussed=200e-6)
 
     Parameters
