@@ -111,7 +111,6 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
                          'please provide a number from 1 to %s ',
                          set_number_top_to_bot, len(sets))
             return
-        print(sets[set_number_top_to_bot - 1])
         return sets[set_number_top_to_bot - 1]
 
 
@@ -119,10 +118,10 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
     '''
     # The Be lens holders can take 3 different sets that we usually set before
     # few experiments so we only vent the relevant beamline section once.
-    # We then store these sets into a config file that we can call from the
-    #  methods you redefined. Later, we save this config file to the specific
+    # We then store these sets into a config file that we can call from some
+    # methods. Later, we save this config file to the specific
     # experiment so users can make sure that they know which stack was used
-    #  for there beamtime. Is that something we can get as well?
+    # for there beamtime.
 
     usage :
     .. code-block:: python
@@ -130,6 +129,16 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
                                (1, 0.0001, 1, 0.0003, 1, 0.0005),
                                (2, 0.0001, 1, 0.0005)]
         set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
+
+    Parameters
+    ----------
+    sets_list_of_tuples : `list`
+        List with tuples for lens sets
+    filename : 'str`
+        Path to the filename to set the lens sets list to
+    make_backup : `bool`
+        To indicate if a backup file should be created or not.
+        Default = True
     '''
     # Make a backup with today's date
     if make_backup:
@@ -218,7 +227,7 @@ def get_delta(energy, material="Be", density=None):
     '''
     # xray_delta_beta returns (delta, beta, atlen),
     # wehre delta : real part of index of refraction
-    # takes x-ray energy in eV
+    # xray_delta_beta takes x-ray energy in eV
     try:
         delta = xdb.xray_delta_beta(material,
                                     density=xdb.atomic_density(material),
@@ -482,7 +491,7 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
     usage : calc_trans_lens_set(energy,lens_set,material="Be",density=None,
             fwhm_unfocused=900e-6)
 
-    TODO: where is this document?
+    TODO: where is this document is this message below still relevant?
     There is latex document that explains the formula.
     Can be adapted to use different thicknesses for each lens,
     and different apex distances, but this would require changing
@@ -523,7 +532,7 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
     # this is an ugly hack: the radius will never be bigger than 1m,
     # so will always be overwritten
     radius_aperture = 1.0
-    if type(lens_set) is int:
+    if isinstance(lens_set, int):
         lens_set = get_lens_set(lens_set)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
     for num, radius in lens_set:
@@ -561,37 +570,38 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
     lens_radii : `list`
     fwhm_unfocused : `float`
         This is about 400 microns at XPP. Default = 0.0005
-    eff_rad0 : TODO: what is it?
+    eff_rad0 : `TODO: what is it?` radius, float?
 
     Returns
     -------
-    TODO: what returns
+    lens_sets : `tuple`
+        Lens sets
 
     '''
     nums = product(*([list(range(max_each + 1))] * len(lens_radii)))
     sets = []
     sizes = []
-    effrads = []
-    foclens = []
+    eff_rads = []
+    foc_lens = []
     for num in nums:
         lens_set = []
         if sum(num) <= n_max and sum(num) > 0:
             if eff_rad0 is None:
-                teffradinv = 0
+                teff_rad_inv = 0
             else:
-                teffradinv = 1 / eff_rad0
+                teff_rad_inv = 1 / eff_rad0
             for tn, tl in zip(num, lens_radii):
                 lens_set += [tn, tl]
-                teffradinv += tn / tl
-            teffrad = np.round(1 / teffradinv, 6)
-            if teffrad in effrads:
-                ind = effrads.index(teffrad)
+                teff_rad_inv += tn / tl
+            teff_rad = np.round(1 / teff_rad_inv, 6)
+            if teff_rad in eff_rads:
+                ind = eff_rads.index(teff_rad)
                 if sum(sets[ind]) > sum(num):
                     sets[ind] = num
                 else:
                     continue
-            elif teffrad is not None:
-                effrads.append(teffrad)
+            elif teff_rad is not None:
+                eff_rads.append(teff_rad)
                 sets.append(num)
                 size_fwhm = calc_beam_fwhm(energy, lens_set + [1, eff_rad0],
                                            distance=distance,
@@ -601,23 +611,21 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
                 sizes.append(size_fwhm)
                 focal_length = calc_focal_length(energy,
                                                  lens_set + [1, eff_rad0])
-                foclens.append(focal_length)
+                foc_lens.append(focal_length)
 
     sizes = np.asarray(sizes)
     sets = np.asarray(sets)
-    foclens = np.asarray(foclens)
+    foc_lens = np.asarray(foc_lens)
     indsort = (np.abs(sizes - size_fwhm)).argsort()
 
     lens_sets = (sets[indsort, :],
-                 np.asarray(effrads)[indsort],
+                 np.asarray(eff_rads)[indsort],
                  sizes[indsort],
-                 foclens[indsort])
-
+                 foc_lens[indsort])
     return lens_sets
 
 
 # TODO: ========== WE MIGHT NOT NEED THESE FUNCTIONS BELOW =================
-# TODO: distance default might need to be changed
 def find_radius(energy, distance=4.0, material="Be", density=None):
     '''
     Find the radius of curvature of the lens that would
@@ -686,12 +694,6 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
     logger.info("Energy that would focus at a distance of %.3f is %.3f"
                 % (distance, energy))
 
-    s = calc_beam_fwhm(energy, lens_set, distance=distance,
-                       source_distance=None, material=material,
-                       density=density)
-    # TODO: s is not used, might have to remove it
-    # but for now printing it out here
-    logger.debug('s: %s', s)
     return energy
 
 

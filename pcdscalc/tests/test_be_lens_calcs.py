@@ -20,7 +20,7 @@ SETS_SAMPLE = '''
 
 
 def test_set_lens_set_to_file():
-    be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, make_backup=True)
+    be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, make_backup=False)
     assert filecmp.cmp(PATH, ORIGINAL_FILE)
 
 
