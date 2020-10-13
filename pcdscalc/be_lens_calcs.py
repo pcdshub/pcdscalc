@@ -1,6 +1,4 @@
-'''
-Module for Beryllium Lens Calculations
-'''
+"""Module for Beryllium Lens Calculations."""
 import logging
 import os
 import shutil
@@ -10,24 +8,23 @@ from itertools import product
 import numpy as np
 import xraydb as xdb
 
-
 logger = logging.getLogger(__name__)
 
 # Set of Be lenses with thicknesses:
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
-
+# constant for converting between FWHM and sigma of a Gaussian function
 FWHM_SIGMA_CONVERSION = 2.35482004503
+# constant for converting between wavelength and photon energy
 WAVELENGTH_PHOTON = 1.2398
 
 
 def photon_to_wavelength(energy):
-    '''
-    Find the wavelength in micrometers, using the
-    photon energy in electronvolts.
-    The equation is approximately:
-    λ[µm] = 1.2398 / E[eV]
-    The photon energy at 1 μm wavelength,
-    the wavelength of near infrared radiation, is approximately 1.2398 eV.
+    """
+    Find the wavelength in micrometers.
+
+    Use photon energy in electronvolts. The equation is approximately: λ[µm] =
+    1.2398 / E[eV]. The photon energy at 1 μm wavelength, the wavelength of
+    near infrared radiation, is approximately 1.2398 eV.
 
     Usage:
 
@@ -43,15 +40,15 @@ def photon_to_wavelength(energy):
     Returns
     -------
     Wavelength in micrometers
-    '''
+    """
     return WAVELENGTH_PHOTON / energy
 
 
 def gaussian_sigma_to_fwhm(sigma):
-    '''
-    Converting between FWHM and sigma of a Gaussian function
-    FWHM = 2.35482004503 * sigma
+    """
+    Convert between FWHM and sigma of a Gaussian function.
 
+    FWHM = 2.35482004503 * sigma
     https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/
 
     Usage:
@@ -63,20 +60,20 @@ def gaussian_sigma_to_fwhm(sigma):
 
     Parameters
     ----------
-    sigma : `float`
+    sigma : float
 
     Returns
     -------
     FWHM -  Full Width at the Half Maximum
-    '''
+    """
     return FWHM_SIGMA_CONVERSION * sigma
 
 
 def gaussian_fwhm_to_sigma(fwhm):
-    '''
-    Converting between FWHM and sigma of a Gaussian function
-    sigma = FWHM / 2.35482004503
+    """
+    Convert between FWHM and sigma of a Gaussian function.
 
+    sigma = FWHM / 2.35482004503
     https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/
 
     Usage:
@@ -87,13 +84,13 @@ def gaussian_fwhm_to_sigma(fwhm):
 
     Parameters
     ----------
-    fwhm : `float`
+    fwhm : float
         Full Width at the Half Maximum
 
     Returns
     -------
     sigma
-    '''
+    """
     return fwhm / FWHM_SIGMA_CONVERSION
 
 
@@ -102,22 +99,22 @@ LENS_SET_FILE = os.path.dirname(__file__) + '/tests/test_lens_sets/lens_set'
 
 
 def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
-    '''
-    Get the lens set from the file provided
+    """
+    Get the lens set from the file provided.
 
     Parameters
     ----------
-    set_number_top_to_bot : `int`
+    set_number_top_to_bot : int
         The Be lens holders can take 3 different sets that we usually set
-        before experiments, this is to specify what number set
-    filename : `str`
+        before experiments, this is to specify what number set.
+    filename : str
         File path of the lens_set file
 
     Returns
     -------
-    lens_set : `list`
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2 ...]
-    '''
+    """
     if not os.path.exists(filename):
         logger.error('Provided invalid path for lens set file: %s', filename)
         return
@@ -135,13 +132,14 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
 
 
 def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
-    '''
-    # The Be lens holders can take 3 different sets that we usually set before
-    # few experiments so we only vent the relevant beamline section once.
-    # We then store these sets into a config file that we can call from some
-    # methods. Later, we save this config file to the specific
-    # experiment so users can make sure that they know which stack was used
-    # for there beamtime.
+    """
+    Write lens set to a file.
+
+    The Be lens holders can take 3 different sets that we usually set before
+    few experiments so we only vent the relevant beamline section once. We then
+    store these sets into a config file that we can call from some methods.
+    Later, we save this config file to the specific experiment so users can
+    make sure that they know which stack was used for there beamtime.
 
     Usage:
 
@@ -154,14 +152,13 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
 
     Parameters
     ----------
-    sets_list_of_tuples : `list`
+    sets_list_of_tuples : list
         List with tuples for lens sets
-    filename : `str`
+    filename : str
         Path to the filename to set the lens sets list to
-    make_backup : `bool`
-        To indicate if a backup file should be created or not.
-        Default = True
-    '''
+    make_backup : bool
+        To indicate if a backup file should be created or not. Default = True
+    """
     # Make a backup with today's date
     if make_backup:
         backup_path = filename + str(date.today()) + '.bak'
@@ -177,15 +174,14 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
 
 
 def get_att_len(energy, material="Be", density=None):
-    '''
-    Get the attenuation length (in meter) of a material
+    """
+    Get the attenuation length (in meter) of a material.
 
-    The X-ray beam intensity I(x) at depth x in a material is a function
-    of the attenuation coefficient mu, and can be calculated by the
-    Beer-Lambert law.
+    The X-ray beam intensity I(x) at depth x in a material is a function of the
+    attenuation coefficient mu, and can be calculated by the Beer-Lambert law.
     The Absorption Length (or Attenuation Length) is defined as the distance
-    into a material where the x-ray beam intensity has decreased to a value
-    of 1/e (~ 40%) of the incident beam intensity (Io)
+    into a material where the x-ray beam intensity has decreased to a value of
+    1/e (~ 40%) of the incident beam intensity (Io).
 
     (1/e) = e^(-mu * x)
     ln(1/e) = ln(e^(-mu * x))
@@ -202,19 +198,18 @@ def get_att_len(energy, material="Be", density=None):
     ----------
     energy : number
         Beam Energy given in KeV
-    material : `str`
-        Default - Beryllium.
-        The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : `float`
+    material : str
+        Default - Beryllium.  The use of beryllium extends the range of
+        operation of compound refractive lenses, improving transmission,
+        aperture size, and gain.
+    density : float
         Material density in g/cm^3
 
     Returns
     -------
-    att_len : `numpy.float64`
+    att_len : float
         Attenuation length
-    '''
+    """
     try:
         # xdb.material_my returns absorption length in 1/cm
         # and takes energy or array of energies in eV
@@ -232,10 +227,11 @@ def get_att_len(energy, material="Be", density=None):
 # using density=xdb.atomic_density(material)? or should I
 # use xdb.atomic_density only if density == None?
 def get_delta(energy, material="Be", density=None):
-    '''
+    """
     Calculate delta for a given material at a given energy.
-    Anomalous components of the index of refraction for a material,
-    using the tabulated scattering components from Chantler
+
+    Anomalous components of the index of refraction for a material, using the
+    tabulated scattering components from Chantler.
 
     Usage:
 
@@ -247,17 +243,17 @@ def get_delta(energy, material="Be", density=None):
     ----------
     energy : number
         x-ray energy in KeV
-    material : `str`
+    material : str
         Chemical formula (‘Fe2O3’, ‘CaMg(CO3)2’, ‘La1.9Sr0.1CuO4’)
         Default - Beryllium.
-    density : `float`
+    density : float
         Material density in g/cm^3
 
     Returns
     -------
-    delta : `numpy.float64`
+    delta : float
         Real part of index of refraction
-    '''
+    """
     # xray_delta_beta returns (delta, beta, atlen),
     # wehre delta : real part of index of refraction
     # xray_delta_beta takes x-ray energy in eV
@@ -277,7 +273,7 @@ def get_delta(energy, material="Be", density=None):
 # we change the get_delta to use the density we provide
 def calc_focal_length_for_single_lens(energy, radius, material="Be",
                                       density=None):
-    '''
+    """
     Calculate the Focal Length for a single lens.
 
     Usage:
@@ -290,27 +286,26 @@ def calc_focal_length_for_single_lens(energy, radius, material="Be",
     ----------
     energy : number
         Beam Energy
-    radius : `float`
-    material : `str`
-        Default - Beryllium.
-        The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
+    radius : float
+    material : str
+        Default - Beryllium.  The use of beryllium extends the range of
+        operation of compound refractive lenses, improving transmission,
         aperture size, and gain
-    density : `float`
+    density : float
         Material density in g/cm^3
 
     Returns
     -------
-    focal_length : `float`
+    focal_length : float
         The focal length for a single lens
-    '''
+    """
     delta = get_delta(energy, material, density)
     focal_length = radius / 2.0 / delta
     return focal_length
 
 
 def calc_focal_length(energy, lens_set, material="Be", density=None):
-    '''
+    """
     Calculate the Focal Length for certain lenses configuration and energy.
 
     Usage:
@@ -323,20 +318,19 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
     ----------
     energy : number
         Beam Energy
-    lens_set : `list`
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2 ...]
-    material : `str`
-        Default - Beryllium.
-        The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : `float`
+    material : str
+        Default - Beryllium.  The use of beryllium extends the range of
+        operation of compound refractive lenses, improving transmission,
+        aperture size, and gain.
+    density : float
         Material density in g/cm^3
 
     Returns
     -------
-    focal_length : `float`
-    '''
+    focal_length : float
+    """
     f_tot_inverse = 0
     if isinstance(lens_set, int):
         lens_set = get_lens_set(lens_set)
@@ -353,11 +347,12 @@ def calc_focal_length(energy, lens_set, material="Be", density=None):
 def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
                    material="Be", density=None, fwhm_unfocused=500e-6,
                    printsummary=True):
-    '''
-    FWHM -  Full Width at the Half Maximum
-    Calculates beam parameters for certain lenses configuration
-    and energy at a given distance.
-    Optionally some other parameters can be set
+    """
+    Calculate beam Full Width at the Half Maximum.
+
+    Calculate beam parameters for certain lenses configuration and energy at a
+    given distance. FWHM -  Full Width at the Half Maximum Optionally some
+    other parameters can be set.
 
     Usage:
 
@@ -370,27 +365,27 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     ----------
     energy : number
         Beam Energy
-    lens_set : `list`
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
-    distance : `float`
+    distance : float
         Distance from the lenses to the sample is 3.852 m at XPP.
-    source_distance : `float`
+    source_distance : float
         Distance from source to lenses. This is about 160 m at XPP.
-    material : `str`
+    material : str
         Beryllium. The use of beryllium extends the range of operation
         of compound refractive lenses, improving transmission,
-        aperture size, and gain
-    density : `float`
+        aperture size, and gain.
+    density : float
         Material density in g/cm^3
-    fwhm_unfocused : `float`
+    fwhm_unfocused : float
         This is about 400 microns at XPP.
-    printsummary : `bool`
-        Prints summary of parameters/calculations if True
+    printsummary : bool
+        Prints summary of parameters/calculations if True.
 
     Returns
     -------
-    size_fwhm : `float`
-    '''
+    size_fwhm : float
+    """
     # Focal length for certain lenses configuration and energy
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
@@ -425,9 +420,9 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
 
 
 def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
-                           fwhm_unfocused=None):
-    '''
-    Calculate the distance for size
+                           fwhm_unfocused=500e-6):
+    """
+    Calculate the distance for size.
 
     Usage:
 
@@ -437,18 +432,18 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
 
     Parameters
     ----------
-    size_fwhm : `float`
-    lens_set : `list`
+    size_fwhm : float
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     energy : number
         Beam Energy
-    fwhm_unfocused : `float`
+    fwhm_unfocused : float
         This is about 400 microns at XPP
 
     Returns
     -------
-    distance : `float`
-    '''
+    distance : float
+    """
     size = gaussian_fwhm_to_sigma(size_fwhm) * 2.0
     focal_length = calc_focal_length(energy, lens_set, "Be", density=None)
 
@@ -469,10 +464,11 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
 
 def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
                               apex_distance=30e-6):
-    '''
-    Calculate the lens aperture radius
-    It is of importance to optimize which lens radius
-    to use at a specific photon energy
+    """
+    Calculate the lens aperture radius.
+
+    It is of importance to optimize which lens radius to use at a specific
+    photon energy.
 
     Usage:
 
@@ -483,24 +479,24 @@ def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
 
     Parameters
     ----------
-    radius : `float`
-    disk_thickness : `float`
+    radius : float
+    disk_thickness : float
         Default = 1.0e-3
-    apex_distance : `float`
+    apex_distance : float
         Default = 30e-6
 
     Returns
     -------
-    aperture_radius : `numpy.float64`
-    '''
+    aperture_radius : float
+    """
     aperture_radius = np.sqrt(radius * (disk_thickness - apex_distance))
     return aperture_radius
 
 
 def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
-                               fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
+                               fwhm_unfocused=500e-6, disk_thickness=1.0e-3,
                                apex_distance=30e-6):
-    '''
+    """
     Calculate the transmission for a single lens.
 
     Usage:
@@ -515,23 +511,23 @@ def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
     ----------
     energy : number
         Beam Energy
-    radius : `float`
-    material : `str`
+    radius : float
+    material : str
         Chemical formula. Default = 'Be'
-    density : `float`
+    density : float
         Material density in g/cm^3
-    fwhm_unfocused : `float`
+    fwhm_unfocused : float
         This is about 400 microns at XPP.
-    disk_thickness : `float`
+    disk_thickness : float
         Default = 1.0e-3
-    apex_distance : `float`
+    apex_distance : float
         Default = 30e-6
 
     Returns
     -------
-    transmission : `float`
+    transmission : float
         Transmission for a single lens
-    '''
+    """
     # mu = mass attenuation coefficient?
     mu = 1.0 / get_att_len(energy, material=material, density=None)
 
@@ -548,18 +544,17 @@ def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
 
 
 def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
-                        fwhm_unfocused=900e-6, disk_thickness=1.0e-3,
+                        fwhm_unfocused=500e-6, disk_thickness=1.0e-3,
                         apex_distance=30e-6):
-    '''
+    """
     Calculate  the transmission of a lens set.
-    These would allow us to estimate the total transmission of the lenses
 
-    TODO: where is this document is this message below still relevant?
-    There is latex document that explains the formula.
-    Can be adapted to use different thicknesses for each lens,
-    and different apex distances, but this would require changing
-    the format of lens_set, which would mean changing
-    a whole bunch of other programs too.
+    These would allow us to estimate the total transmission of the lenses TODO:
+    where is this document is this message below still relevant?  There is
+    latex document that explains the formula.  Can be adapted to use different
+    thicknesses for each lens, and different apex distances, but this would
+    require changing the format of lens_set, which would mean changing a whole
+    bunch of other programs too.
 
     Usage:
 
@@ -572,25 +567,24 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
     ----------
     energy : number
         Beam Energy
-    lens_set : `list`
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
-    material : `str`
+    material : str
         Chemical formula. Default = 'Be'
-    density : `float`
+    density : float
         Material density in g/cm^3
-    fwhm_unfocused : `float`
+    fwhm_unfocused : float
         This is about 400 microns at XPP. Default = 900e-6
-    disk_thickness : `float`
+    disk_thickness : float
         Default = 1.0e-3
-    apex_distance : `float`
+    apex_distance : float
         Default = 30e-6
 
     Returns
     -------
-    transmission : `float`
+    transmission : float
         Transmission for a set of lens
-    '''
-
+    """
     apex_distance_tot = 0
     radius_total_inv = 0
     # TODO: how can i fix this hack here:
@@ -621,8 +615,8 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
 def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
                   lens_radii=[100e-6, 200e-6, 300e-6, 500e-6, 1000e-6],
                   fwhm_unfocused=0.0005, eff_rad0=None):
-    '''
-    Calculate lens set
+    """
+    Calculate lens set.
 
     Usage:
 
@@ -634,21 +628,21 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
     ----------
     energy : number
         Beam Energy
-    size_fwhm : `float`
-    distance : `float`
-    n_max : `int`
-    max_each : `int`
-    lens_radii : `list`
-    fwhm_unfocused : `float`
+    size_fwhm : float
+    distance : float
+    n_max : int
+    max_each : int
+    lens_radii : list
+    fwhm_unfocused : float
         This is about 400 microns at XPP. Default = 0.0005
     eff_rad0 : `TODO: what is it?` radius, float?
 
     Returns
     -------
-    lens_sets : `tuple`
+    lens_sets : tuple
         Lens sets
 
-    '''
+    """
     nums = product(*([list(range(max_each + 1))] * len(lens_radii)))
     sets = []
     sizes = []
@@ -698,9 +692,12 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=12, max_each=5,
 
 # TODO: ========== WE MIGHT NOT NEED THESE FUNCTIONS BELOW =================
 def find_radius(energy, distance=4.0, material="Be", density=None):
-    '''
-    Find the radius of curvature of the lens that would
-    focus the energy at the distance
+    """
+    Find the radius of curvature.
+
+    Find the radius of curvature of the lens that would focus the energy at the
+    distance.
+
     Usage:
 
     .. code-block:: python
@@ -711,23 +708,23 @@ def find_radius(energy, distance=4.0, material="Be", density=None):
     ----------
     energy : number
         Beam Energy
-    distance : `float`
-    material : `str`
+    distance : float
+    material : str
         Chemical formula. Default = 'Be'
-    density : `float`
+    density : float
         Material density in g/cm^3
 
     Returns
     -------
-    radius : `float`
-    '''
+    radius : float
+    """
     delta = get_delta(energy, material, density)
     radius = distance * 2 * delta
     return radius
 
 
 def find_energy(lens_set, distance=3.952, material="Be", density=None):
-    '''
+    """
     Find the energy that would focus at a given distance.
 
     Usage:
@@ -738,19 +735,19 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
 
     Parameters
     ----------
-    lens_set : `list`
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
-    distance : `float`
-    material : `str`
+    distance : float
+    material : str
         Chemical formula. Default = 'Be'
-    density : `float`
+    density : float
         Material density in g/cm^3
 
     Returns
     -------
     energy : float
         Energy
-    '''
+    """
     energy_min = 1.0
     energy_max = 24.0
     energy = (energy_max + energy_min) / 2.0
@@ -778,9 +775,11 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
 
 def find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
                density=None, fwhm_unfocused=800e-6):
-    '''
-    Find the two distances the Be lens needs to be at
-    to get the spotsize in the chamber center
+    """
+    Find the Be Lens distances.
+
+    Find the two distances the Be lens needs to be at to get the spotsize in
+    the chamber center.
 
     Usage:
 
@@ -793,21 +792,21 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
     ----------
     energy : number
         Beam Energy
-    lens_set : `list`
+    lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     spot_size_fwhm :
-    material : `str`
+    material : str
         Chemical formula. Default = 'Be'
-    density : `float`
+    density : float
         Material density in g/cm^3
-    fwhm_unfocused : `float`
+    fwhm_unfocused : float
         This is about 400 microns at XPP. Default = 800e-6
 
     Returns
     -------
-    z_position : `tuple`
+    z_position : tuple
         (z1, z2)
-    '''
+    """
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
     lam = photon_to_wavelength(energy) * 1e-9
