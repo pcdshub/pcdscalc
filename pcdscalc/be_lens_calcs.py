@@ -10,11 +10,11 @@ import xraydb as xdb
 
 logger = logging.getLogger(__name__)
 
-# Set of Be lenses with thicknesses:
+# Set of Be lenses with thicknesses.
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
-# constant for converting between FWHM and sigma of a Gaussian function
+# Constant for converting between FWHM and sigma of a Gaussian function.
 FWHM_SIGMA_CONVERSION = 2.35482004503
-# constant for converting between wavelength and photon energy
+# Constant for converting between wavelength and photon energy.
 WAVELENGTH_PHOTON = 1.2398
 
 
@@ -49,6 +49,7 @@ def gaussian_sigma_to_fwhm(sigma):
     Convert between FWHM and sigma of a Gaussian function.
 
     FWHM = 2.35482004503 * sigma
+
     https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/
 
     Usage:
@@ -74,6 +75,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     Convert between FWHM and sigma of a Gaussian function.
 
     sigma = FWHM / 2.35482004503
+
     https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/
 
     Usage:
@@ -157,9 +159,9 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
     filename : str
         Path to the filename to set the lens sets list to
     make_backup : bool
-        To indicate if a backup file should be created or not. Default = True
+        To indicate if a backup file should be created or not. Default = `True`
     """
-    # Make a backup with today's date
+    # Make a backup with today's date.
     if make_backup:
         backup_path = filename + str(date.today()) + '.bak'
         try:
@@ -211,8 +213,8 @@ def get_att_len(energy, material="Be", density=None):
         Attenuation length
     """
     try:
-        # xdb.material_my returns absorption length in 1/cm
-        # and takes energy or array of energies in eV
+        # xdb.material_my returns absorption length in 1/cm and takes energy
+        # or array of energies in eV.
         att_len = 1.0 / (xdb.material_mu(material, energy * 1.0e3,
                                          density=density)) * 1.0e-2
 
@@ -254,9 +256,8 @@ def get_delta(energy, material="Be", density=None):
     delta : float
         Real part of index of refraction
     """
-    # xray_delta_beta returns (delta, beta, atlen),
-    # wehre delta : real part of index of refraction
-    # xray_delta_beta takes x-ray energy in eV
+    # xray_delta_beta returns (delta, beta, atlen), wehre delta : real part of
+    # index of refraction, and takes x-ray energy in eV.
     try:
         delta = xdb.xray_delta_beta(material,
                                     density=xdb.atomic_density(material),
@@ -372,45 +373,45 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     source_distance : float
         Distance from source to lenses. This is about 160 m at XPP.
     material : str
-        Beryllium. The use of beryllium extends the range of operation
-        of compound refractive lenses, improving transmission,
+        Default - Beryllium. The use of beryllium extends the range of
+        operation of compound refractive lenses, improving transmission,
         aperture size, and gain.
     density : float
         Material density in g/cm^3
     fwhm_unfocused : float
         This is about 400 microns at XPP.
     printsummary : bool
-        Prints summary of parameters/calculations if True.
+        Prints summary of parameters/calculations if `True`.
 
     Returns
     -------
     size_fwhm : float
     """
-    # Focal length for certain lenses configuration and energy
+    # Focal length for certain lenses configuration and energy.
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
-    # use lens makers equation to find distance to image of source
+    # Use lens makers equation to find distance to image of source.
     if source_distance is not None:
         focal_length = 1 / (1 / focal_length - 1 / source_distance)
 
     lam = photon_to_wavelength(energy) * 1e-9
 
-    # the w parameter used in the usual formula is 2 * sigma
+    # The w parameter used in the usual formula is 2 * sigma.
     w_unfocused = gaussian_fwhm_to_sigma(fwhm_unfocused) * 2
 
-    # assuming gaussian beam divergence = w_unfocused/f we can obtain
+    # Assuming gaussian beam divergence = w_unfocused/f we can obtain.
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
-    size = waist * np.sqrt(1.0 + (distance - focal_length) ** 2.0 /
-                           rayleigh_range ** 2)
+    size = waist * np.sqrt(1.0 + (distance - focal_length) ** 2.0
+                           / rayleigh_range ** 2)
 
     size_fwhm = gaussian_sigma_to_fwhm(size) / 2.0
 
     if printsummary:
         logger.info("FWHM at lens   : %.3e" % (fwhm_unfocused))
         logger.info("waist          : %.3e" % (waist))
-        logger.info("waist FWHM     : %.3e" % (waist *
-                                               FWHM_SIGMA_CONVERSION / 2.0))
+        logger.info("waist FWHM     : %.3e" % (waist
+                                               * FWHM_SIGMA_CONVERSION / 2.0))
         logger.info("rayleigh_range : %.3e" % (rayleigh_range))
         logger.info("focal length   : %.3e" % (focal_length))
         logger.info("size           : %.3e" % (size))
@@ -449,15 +450,15 @@ def calc_distance_for_size(size_fwhm, lens_set=None, energy=None,
 
     lam = photon_to_wavelength(energy) * 1e-9
 
-    # the w parameter used in the usual formula is 2 * sigma
+    # The w parameter used in the usual formula is 2 * sigma.
     w_unfocused = gaussian_fwhm_to_sigma(fwhm_unfocused) * 2.0
 
-    # assuming gaussian beam divergence = w_unfocused/f we can obtain
+    # Assuming gaussian beam divergence = w_unfocused/f we can obtain.
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
 
-    distance = (np.sqrt((size / waist) ** 2 - 1) * np.asarray([-1.0, 1.0]) *
-                rayleigh_range) + focal_length
+    distance = (np.sqrt((size / waist) ** 2 - 1) * np.asarray([-1.0, 1.0])
+                * rayleigh_range) + focal_length
 
     return distance
 
@@ -538,8 +539,8 @@ def calc_trans_for_single_lens(energy, radius, material="Be", density=None,
                                                 disk_thickness=disk_thickness,
                                                 apex_distance=apex_distance)
 
-    transmission = ((S ** 2 / sigma ** 2) * np.exp(-mu * apex_distance) *
-                    (1 - np.exp(-(aperture_radius ** 2.0) / (2.0 * S ** 2))))
+    transmission = ((S ** 2 / sigma ** 2) * np.exp(-mu * apex_distance)
+                    * (1 - np.exp(-(aperture_radius ** 2.0) / (2.0 * S ** 2))))
     return transmission
 
 
@@ -601,8 +602,8 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
         apex_distance_tot += num * apex_distance
 
     radius_total = 1.0 / radius_total_inv
-    equivalent_disk_thickness = (radius_aperture ** 2 / radius_total +
-                                 apex_distance_tot)
+    equivalent_disk_thickness = (radius_aperture ** 2 / radius_total
+                                 + apex_distance_tot)
 
     transmission_total = calc_trans_for_single_lens(energy, radius_total,
                                                     material, density,
@@ -810,14 +811,14 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material="Be",
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
     lam = photon_to_wavelength(energy) * 1e-9
-    # the w parameter used in the usual formula is 2 * sigma
+    # The w parameter used in the usual formula is 2 * sigma.
     w_unfocused = gaussian_fwhm_to_sigma(fwhm_unfocused) * 2
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
 
     logger.info("waist          : %.3e" % waist)
-    logger.info("waist FWHM     : %.3e" % (waist *
-                                           FWHM_SIGMA_CONVERSION / 2.0))
+    logger.info("waist FWHM     : %.3e" % (waist
+                                           * FWHM_SIGMA_CONVERSION / 2.0))
     logger.info("rayleigh_range : %.3e" % rayleigh_range)
     logger.info("focal length   : %.3e" % focal_length)
 
