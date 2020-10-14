@@ -8,7 +8,6 @@ from pcdscalc import be_lens_calcs
 logger = logging.getLogger(__name__)
 
 PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set.npy'
-ORIGINAL_FILE = os.path.dirname(__file__) + '/test_lens_sets/original.npy'
 BAD_PATH = '../lens_set'
 
 SETS_SAMPLE = [(3, 0.0001, 1, 0.0002),

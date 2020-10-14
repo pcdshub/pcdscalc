@@ -219,9 +219,6 @@ def get_att_len(energy, material='Be', density=None):
     return att_len
 
 
-# TODO: do we still need the density here? we are now
-# using density=xdb.atomic_density(material)? or should I
-# use xdb.atomic_density only if density == None?
 def get_delta(energy, material='Be', density=None):
     """
     Calculate delta for a given material at a given energy.
@@ -257,9 +254,11 @@ def get_delta(energy, material='Be', density=None):
     """
     # xray_delta_beta returns (delta, beta, atlen), wehre delta : real part of
     # index of refraction, and takes x-ray energy in eV.
+    if density is None:
+        density = xdb.atomic_density(material)
     try:
         delta = xdb.xray_delta_beta(material,
-                                    density=xdb.atomic_density(material),
+                                    density=density,
                                     energy=energy * 1.0e3)[0]
     except Exception as ex:
         logger.error('Get Delta error: %s', ex)
@@ -267,9 +266,6 @@ def get_delta(energy, material='Be', density=None):
     return delta
 
 
-# TODO: same thing here (and most likely in multiple places),
-# we might not need the density here, unless
-# we change the get_delta to use the density we provide
 def calc_focal_length_for_single_lens(energy, radius, material='Be',
                                       density=None):
     """
