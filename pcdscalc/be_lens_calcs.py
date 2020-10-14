@@ -118,7 +118,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     return fwhm / FWHM_SIGMA_CONVERSION
 
 
-def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
+def get_lens_set(set_number_top_to_bot, filename=None):
     """
     Get the lens set from the file provided.
 
@@ -127,7 +127,7 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     set_number_top_to_bot : int
         The Be lens holders can take 3 different sets that we usually set
         before experiments, this is to specify what number set.
-    filename : str
+    filename : str, optional
         File path of the lens_set file
 
     Returns
@@ -135,10 +135,12 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     lens_set : list
         [numer1, lensthick1, number2, lensthick2 ...]
     """
-    if filename is None:
+    if filename is None and LENS_SET_FILE is None:
         logger.error('You must provide the path to the lens_set file or you '
                      'must configure it via :meth: `configure_lens_set_file`')
         return
+    elif filename is None:
+        filename = LENS_SET_FILE
     if not os.path.exists(filename):
         logger.error('Provided invalid path for lens set file: %s', filename)
         return
@@ -155,7 +157,7 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     return sets[set_number_top_to_bot - 1]
 
 
-def set_lens_set_to_file(sets_list_of_tuples, filename=LENS_SET_FILE,
+def set_lens_set_to_file(sets_list_of_tuples, filename,
                          make_backup=True):
     """
     Write lens set to a file.
@@ -170,8 +172,8 @@ def set_lens_set_to_file(sets_list_of_tuples, filename=LENS_SET_FILE,
     ----------
     sets_list_of_tuples : list
         List with tuples for lens sets
-    filename : str
-        Path to the filename to set the lens sets list to
+    filename : str, optional
+        Path to the filename to set the lens sets list to.
     make_backup : bool, optional
         To indicate if a backup file should be created or not. Default = `True`
 
@@ -182,10 +184,12 @@ def set_lens_set_to_file(sets_list_of_tuples, filename=LENS_SET_FILE,
                                (2, 0.0001, 1, 0.0005)]
     set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
     """
-    if filename is None:
+    if filename is None and LENS_SET_FILE is None:
         logger.error('You must provide the path to the lens_set file or you '
                      'must configure it via :meth: `configure_lens_set_file`')
         return
+    elif filename is None:
+        filename = LENS_SET_FILE
     # Make a backup with today's date.
     if make_backup:
         backup_path = filename + str(date.today()) + '.bak'
