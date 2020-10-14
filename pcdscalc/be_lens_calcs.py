@@ -28,7 +28,9 @@ def configure_lens_set_file(lens_file_path):
     Parameters
     ----------
     lens_file_path : str
-        Path to the lens_set file in NumPy .npy format
+        Path to the lens_set file in NumPy .npy format.
+        This is a binary file generated with `numpy.save` which saves an array
+        to a binary file in NumPy .npy format.
     """
     global LENS_SET_FILE
     if not os.path.exists(lens_file_path):
@@ -128,7 +130,9 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         The Be lens holders can take 3 different sets that we usually set
         before experiments, this is to specify what number set.
     filename : str, optional
-        File path of the lens_set file
+        File path of the lens_set file.
+        This is a binary file generated with `numpy.save` which saves an array
+        to a binary file in NumPy .npy format.
 
     Returns
     -------
@@ -174,6 +178,7 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
         List with tuples for lens sets
     filename : str, optional
         Path to the filename to set the lens sets list to.
+        This should be a .npy format file.
     make_backup : bool, optional
         To indicate if a backup file should be created or not. Default = `True`
 

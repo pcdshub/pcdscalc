@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set.npy'
 BAD_PATH = '../lens_set'
-BAD_FILE = os.path.dirname(__file__) + '/test_lens_sets/lens_set.np'
 
 SETS_SAMPLE = [(3, 0.0001, 1, 0.0002),
                (1, 0.0001, 1, 0.0003, 1, 0.0005),
