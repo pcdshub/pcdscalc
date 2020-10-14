@@ -97,7 +97,8 @@ def gaussian_fwhm_to_sigma(fwhm):
 
 
 # TODO: this is a test file... take care of it
-LENS_SET_FILE = os.path.dirname(__file__) + '/tests/test_lens_sets/lens_set'
+LENS_SET_FILE = os.path.dirname(
+    __file__) + '/tests/test_lens_sets/lens_set.npy'
 
 
 def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
@@ -123,14 +124,14 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     if os.stat(filename).st_size == 0:
         logger.error('The file is empyt: %s', filename)
         return
-    with open(filename) as f:
-        sets = eval(f.read())
-        if set_number_top_to_bot not in range(1, len(sets)):
+    with open(filename, 'rb') as lens_file:
+        sets = np.load(lens_file, allow_pickle=True)
+        if set_number_top_to_bot not in range(1, sets.shape[0]):
             logger.error('Provided and invalid set_number_top_to_bottom %s, '
                          'please provide a number from 1 to %s ',
-                         set_number_top_to_bot, len(sets))
+                         set_number_top_to_bot, sets.shape[0])
             return
-        return sets[set_number_top_to_bot - 1]
+    return sets[set_number_top_to_bot - 1]
 
 
 def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
@@ -169,10 +170,9 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
         except Exception as ex:
             logger.error('Something went wrong with copying the file %s', ex)
             pass
-    with open(filename, 'w') as lens_file:
-        # TODO: do we want to pprint.pformat() like in the old code?
-        # lens_file.write(pprint.pformat(sets_list_of_tuples))
-        lens_file.write(sets_list_of_tuples)
+    with open(filename, 'wb') as lens_file:
+        np.save(lens_file, np.array(sets_list_of_tuples, dtype=object),
+                allow_pickle=True)
 
 
 def get_att_len(energy, material="Be", density=None):
@@ -219,7 +219,7 @@ def get_att_len(energy, material="Be", density=None):
                                          density=density)) * 1.0e-2
 
     except Exception as ex:
-        logger.error('Get Attenuation Lenght error: %s', ex)
+        logger.error('Get Attenuation Length error: %s', ex)
         return
     # TODO: if we return we'll get att_len == None, is this what we want?
     return att_len
@@ -592,6 +592,7 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
     # this is an ugly hack: the radius will never be bigger than 1m,
     # so will always be overwritten
     radius_aperture = 1.0
+
     if isinstance(lens_set, int):
         lens_set = get_lens_set(lens_set)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
@@ -768,8 +769,8 @@ def find_energy(lens_set, distance=3.952, material="Be", density=None):
             logger.error("somehow failed ...")
             break
         abs_diff = abs(distance - focal_length)
-    logger.info("Energy that would focus at a distance of %.3f is %.3f"
-                % (distance, energy))
+    logger.info("Energy that would focus at a distance of %.3f is %.3f",
+                distance, energy)
 
     return energy
 

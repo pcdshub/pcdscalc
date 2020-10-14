@@ -1,4 +1,3 @@
-import filecmp
 import logging
 import os
 
@@ -8,20 +7,19 @@ from pcdscalc import be_lens_calcs
 
 logger = logging.getLogger(__name__)
 
-PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set'
-ORIGINAL_FILE = os.path.dirname(__file__) + '/test_lens_sets/original'
+PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set.npy'
+ORIGINAL_FILE = os.path.dirname(__file__) + '/test_lens_sets/original.npy'
 BAD_PATH = '../lens_set'
 
-SETS_SAMPLE = '''
-[(3, 0.0001, 1, 0.0002),
- (1, 0.0001, 1, 0.0003, 1, 0.0005),
- (2, 0.0001, 1, 0.0005)]
-'''
+SETS_SAMPLE = [(3, 0.0001, 1, 0.0002),
+               (1, 0.0001, 1, 0.0003, 1, 0.0005),
+               (2, 0.0001, 1, 0.0005)]
 
 
 def test_set_lens_set_to_file():
     be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, make_backup=False)
-    assert filecmp.cmp(PATH, ORIGINAL_FILE)
+    assert np.load(PATH, allow_pickle=True).all(
+    ) == np.array(SETS_SAMPLE, dtype=object).all()
 
 
 def test_get_lens_set():
@@ -227,7 +225,8 @@ def test_calc_trans_for_single_lens(energy_sample, radius, expected):
     # 0.9700496829425548
     # 0.9855626484449255
     trans = be_lens_calcs.calc_trans_for_single_lens(energy=energy_sample,
-                                                     radius=radius)
+                                                     radius=radius,
+                                                     fwhm_unfocused=900e-6)
     logger.debug('Expected: %s, Received: %s', expected, trans)
     assert np.isclose(expected, trans)
 
@@ -242,7 +241,8 @@ def test_calc_trans_lens_set(energy_sample, lens_set, expected):
     # 0.20497965794420414
     # 0.3675986395544651
     # 0.4005461885189993
-    trans = be_lens_calcs.calc_trans_lens_set(energy_sample, lens_set)
+    trans = be_lens_calcs.calc_trans_lens_set(
+        energy_sample, lens_set, fwhm_unfocused=900e-6)
     logger.debug('Expected: %s Received: %s', expected, trans)
     assert np.isclose(expected, trans)
 
