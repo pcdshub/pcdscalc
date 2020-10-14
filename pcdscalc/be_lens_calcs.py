@@ -588,19 +588,14 @@ def calc_trans_lens_set(energy, lens_set, material="Be", density=None,
     """
     apex_distance_tot = 0
     radius_total_inv = 0
-    # TODO: how can i fix this hack here:
-    # this is an ugly hack: the radius will never be bigger than 1m,
-    # so will always be overwritten
-    radius_aperture = 1.0
-
     if isinstance(lens_set, int):
         lens_set = get_lens_set(lens_set)
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
-    for num, radius in lens_set:
-        new_rad_ap = np.sqrt(radius * (disk_thickness - apex_distance))
-        radius_aperture = min(radius_aperture, new_rad_ap)
-        radius_total_inv += num / radius
-        apex_distance_tot += num * apex_distance
+
+    radius_total_inv = sum(num / radius for num, radius in lens_set)
+    apex_distance_tot = sum(num * apex_distance for num, _ in lens_set)
+    radius_aperture = min(np.sqrt(radius * (disk_thickness - apex_distance))
+                          for _, radius in lens_set)
 
     radius_total = 1.0 / radius_total_inv
     equivalent_disk_thickness = (radius_aperture ** 2 / radius_total
