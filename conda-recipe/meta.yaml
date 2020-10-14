@@ -19,7 +19,7 @@ requirements:
     run:
       - python >=3.6
       - numpy
-      - periodictable
+      - xraydb
       - scipy
 
 test:
