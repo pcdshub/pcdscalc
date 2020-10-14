@@ -51,6 +51,12 @@ def test_get_att_length(energy_sample, expected):
     assert np.isclose(expected, att_len)
 
 
+def test_get_att_len_with_bad_material():
+    # should raise an exception, provided unknown element string
+    with pytest.raises(ValueError):
+        be_lens_calcs.get_att_len(8, 'BEES', 32)
+
+
 # TODO: these expected values are the actuall ones I got
 # from running the test - NOT A TRUE TEST!!!
 @pytest.mark.parametrize('energy_sample, expected', [
@@ -75,8 +81,8 @@ def test_get_delta(energy_sample, expected):
 
 def test_get_delta_with_0_energy():
     # should give an exception since can't devide by 0
-    delta = be_lens_calcs.get_delta(0)
-    assert delta is None
+    with pytest.raises(ZeroDivisionError):
+        be_lens_calcs.get_delta(0)
 
 
 @pytest.mark.parametrize('energy_sample, radius, expected', [
