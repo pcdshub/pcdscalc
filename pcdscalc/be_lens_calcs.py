@@ -30,12 +30,13 @@ def configure_lens_set_file(lens_file_path):
     lens_file_path : str
         Path to the lens_set file in NumPy .npy format
     """
+    global LENS_SET_FILE
     if not os.path.exists(lens_file_path):
         logger.error('Provided invalid path for lens set file: %s',
                      lens_file_path)
         return
-    LENS_SET_FILE = os.path.abspath(lens_file_path)
-    file_name = os.path.basename(LENS_SET_FILE)
+    abs_path = os.path.abspath(lens_file_path)
+    file_name = os.path.basename(abs_path)
     if not file_name.lower().endswith('.npy'):
         logger.error('Must provide a NumPy .npy format file')
         return
