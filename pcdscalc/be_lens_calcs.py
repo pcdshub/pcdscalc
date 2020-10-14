@@ -16,6 +16,31 @@ LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6]
 FWHM_SIGMA_CONVERSION = 2.35482004503
 # Constant for converting between wavelength and photon energy.
 WAVELENGTH_PHOTON = 1.2398
+# Path the the lens_set file. Users shuld use :meth:`configure_lens_set_file`
+# to configure it to the correct path
+LENS_SET_FILE = None
+
+
+def configure_lens_set_file(lens_file_path):
+    """
+    Configure the path to the lens set file.
+
+    Parameters
+    ----------
+    lens_file_path : str
+        Path to the lens_set file in NumPy .npy format
+    """
+    if not os.path.exists(lens_file_path):
+        logger.error('Provided invalid path for lens set file: %s',
+                     lens_file_path)
+        return
+    LENS_SET_FILE = os.path.abspath(lens_file_path)
+    file_name = os.path.basename(LENS_SET_FILE)
+    if not file_name.lower().endswith('.npy'):
+        logger.error('Must provide a NumPy .npy format file')
+        return
+    LENS_SET_FILE = os.path.abspath(lens_file_path)
+    return LENS_SET_FILE
 
 
 def photon_to_wavelength(energy):
@@ -92,11 +117,6 @@ def gaussian_fwhm_to_sigma(fwhm):
     return fwhm / FWHM_SIGMA_CONVERSION
 
 
-# TODO: this is a test file... take care of it
-LENS_SET_FILE = os.path.dirname(
-    __file__) + '/tests/test_lens_sets/lens_set.npy'
-
-
 def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     """
     Get the lens set from the file provided.
@@ -114,6 +134,10 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     lens_set : list
         [numer1, lensthick1, number2, lensthick2 ...]
     """
+    if filename is None:
+        logger.error('You must provide the path to the lens_set file or you '
+                     'must configure it via :meth: `configure_lens_set_file`')
+        return
     if not os.path.exists(filename):
         logger.error('Provided invalid path for lens set file: %s', filename)
         return
@@ -130,7 +154,8 @@ def get_lens_set(set_number_top_to_bot, filename=LENS_SET_FILE):
     return sets[set_number_top_to_bot - 1]
 
 
-def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
+def set_lens_set_to_file(sets_list_of_tuples, filename=LENS_SET_FILE,
+                         make_backup=True):
     """
     Write lens set to a file.
 
@@ -156,6 +181,10 @@ def set_lens_set_to_file(sets_list_of_tuples, filename, make_backup=True):
                                (2, 0.0001, 1, 0.0005)]
     set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
     """
+    if filename is None:
+        logger.error('You must provide the path to the lens_set file or you '
+                     'must configure it via :meth: `configure_lens_set_file`')
+        return
     # Make a backup with today's date.
     if make_backup:
         backup_path = filename + str(date.today()) + '.bak'
@@ -322,7 +351,11 @@ def calc_focal_length(energy, lens_set, material='Be', density=None):
     """
     f_tot_inverse = 0
     if isinstance(lens_set, int):
-        lens_set = get_lens_set(lens_set)
+        try:
+            lens_set = get_lens_set(lens_set)
+        except Exception as ex:
+            logger.error('When calling get_lens_set error occurred: %s', ex)
+            raise ex
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
     for num, radius in lens_set:
         if radius is not None:
@@ -571,7 +604,11 @@ def calc_trans_lens_set(energy, lens_set, material='Be', density=None,
     apex_distance_tot = 0
     radius_total_inv = 0
     if isinstance(lens_set, int):
-        lens_set = get_lens_set(lens_set)
+        try:
+            lens_set = get_lens_set(lens_set)
+        except Exception as ex:
+            logger.error('When calling get_lens_set error occurred: %s', ex)
+            raise ex
     lens_set = (list(zip(lens_set[::2], lens_set[1::2])))
 
     radius_total_inv = sum(num / radius for num, radius in lens_set)

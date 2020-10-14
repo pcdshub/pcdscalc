@@ -1,5 +1,6 @@
 import logging
 import os
+from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -9,10 +10,22 @@ logger = logging.getLogger(__name__)
 
 PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set.npy'
 BAD_PATH = '../lens_set'
+BAD_FILE = os.path.dirname(__file__) + '/test_lens_sets/lens_set.np'
 
 SETS_SAMPLE = [(3, 0.0001, 1, 0.0002),
                (1, 0.0001, 1, 0.0003, 1, 0.0005),
                (2, 0.0001, 1, 0.0005)]
+
+
+def test_configure_lens_set_bad_path():
+    res = be_lens_calcs.configure_lens_set_file(BAD_PATH)
+    assert res is None
+    assert be_lens_calcs.LENS_SET_FILE is None
+
+
+def test_configure_lens_set_file():
+    res = be_lens_calcs.configure_lens_set_file(PATH)
+    assert res == os.path.abspath(PATH)
 
 
 def test_set_lens_set_to_file():
@@ -121,10 +134,12 @@ def test_calc_focal_length(energy_sample, lens_set, expected):
 
 def test_calc_focal_length_with_file_lens_set():
     # expected_used_set = (3, 0.0001, 1, 0.0002)
-    expected = be_lens_calcs.calc_focal_length(8, [3, 0.0001, 1, 0.0002])
-    received = be_lens_calcs.calc_focal_length(8, 1)
-    logger.debug('Expected: %s, Received: %s', expected, received)
-    assert received == expected
+    with patch('pcdscalc.be_lens_calcs.get_lens_set',
+               return_value=[3, 0.0001, 1, 0.0002]):
+        expected = be_lens_calcs.calc_focal_length(8, [3, 0.0001, 1, 0.0002])
+        received = be_lens_calcs.calc_focal_length(8, 1)
+        logger.debug('Expected: %s, Received: %s', expected, received)
+        assert received == expected
 
 
 @pytest.mark.parametrize('energy_sample, lens_set, dist, fwhm_unf, expect', [
@@ -254,11 +269,13 @@ def test_calc_trans_lens_set(energy_sample, lens_set, expected):
 
 def test_calc_trans_lens_set_with_file_len_set():
     # expected_used_set = (3, 0.0001, 1, 0.0002)
-    expected = be_lens_calcs.calc_trans_lens_set(8, [3, 0.0001, 1, 0.0002])
+    with patch('pcdscalc.be_lens_calcs.get_lens_set',
+               return_value=[3, 0.0001, 1, 0.0002]):
+        expected = be_lens_calcs.calc_trans_lens_set(8, [3, 0.0001, 1, 0.0002])
 
-    received = be_lens_calcs.calc_trans_lens_set(8, 1)
-    logger.debug('Expected: %s, Received: %s', expected, received)
-    assert received == expected
+        received = be_lens_calcs.calc_trans_lens_set(8, 1)
+        logger.debug('Expected: %s, Received: %s', expected, received)
+        assert received == expected
 
 
 @pytest.mark.parametrize('lens_set, distance, expected', [
