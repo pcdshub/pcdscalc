@@ -215,7 +215,7 @@ def get_att_len(energy, material='Be', density=None):
                                          density=density)) * 1.0e-2
     except Exception as ex:
         logger.error('Get Attenuation Length error: %s', ex)
-        raise
+        raise ex
     return att_len
 
 
@@ -262,7 +262,7 @@ def get_delta(energy, material='Be', density=None):
                                     energy=energy * 1.0e3)[0]
     except Exception as ex:
         logger.error('Get Delta error: %s', ex)
-        raise
+        raise ex
     return delta
 
 
