@@ -335,7 +335,8 @@ def test_find_energy(lens_set, distance, expected):
 def test_find_z_pos(energy, lens_set, spot_size_fwhm, expected):
     # old values (with old get_att_len and old get_delta):
     # (-20.86023779837472, 31.290356777870826)
-    z_position = be_lens_calcs.find_z_pos(energy, lens_set, spot_size_fwhm)
+    z_position = be_lens_calcs.find_z_pos(energy, lens_set, spot_size_fwhm,
+                                          fwhm_unfocused=800e-6)
     logger.debug('Expected: %s, Received: %s', expected, z_position)
     assert np.isclose(expected, z_position).all()
 
