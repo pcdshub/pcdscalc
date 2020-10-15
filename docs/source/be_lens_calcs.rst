@@ -6,6 +6,38 @@ Here is a quick example of how you would get started with this module.
 
 >>> from pcdscalc import be_lens_calcs as be
 
+Configure the defaults used for calculations: 
+
+>>> be.configure_defaults(distance=3.852, fwhm_unfocused=800e-6)
+>>> be.DISTANCE
+3.852
+>>> be.FWHM_UNFOCUSED
+0.0008
+
+.. note:: 
+
+   The following defaults will be used if not configured with :meth:`pcdscalc.be_lens_calcs.configure_defaults` function:
+
+   .. code:: 
+
+      # full width at half maximum unfocused
+      FWHM_UNFOCUSED = 500e-6
+
+      # Disk Thickness
+      DISK_THICKNESS = 1.0e-3
+
+      # Apex of the lens
+      APEX_DISTANCE = 30e-6
+
+      # Distance from the lenses to the sample
+      DISTANCE = 4.0
+
+      # Atomic symbol for element
+      MATERIAL = 'Be'
+
+      # Set of Be lenses with thicknesses:
+      LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6, 500e-6, 1000e-6, 1500e-6, 2000e-6, 3000e-6]
+
 Configure the path to the lens_set file that will be used in multiple calculations:
 
 >>> be.configure_lens_set_file('/path/for/current/be_lens_file.npy')
