@@ -10,9 +10,6 @@ import xraydb as xdb
 
 logger = logging.getLogger(__name__)
 
-# Set of Be lenses with thicknesses.
-LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6,
-              500e-6, 1000e-6, 1500e-6, 2000e-6, 3000e-6]
 # Constant for converting between FWHM and sigma of a Gaussian function.
 FWHM_SIGMA_CONVERSION = 2.35482004503
 # Constant for converting between wavelength and photon energy.
@@ -20,6 +17,55 @@ WAVELENGTH_PHOTON = 1.2398
 # Path the the lens_set file. Users shuld use :meth:`configure_lens_set_file`
 # to configure it to the correct path
 LENS_SET_FILE = None
+
+# full width at half maximum unfocused
+FWHM_UNFOCUSED = 500e-6
+# Disk Thickness
+DISK_THICKNESS = 1.0e-3
+# Apex of the lens
+APEX_DISTANCE = 30e-6
+# Distance from the lenses to the sample
+DISTANCE = 4.0
+# Atomic symbol for element, defaults to 'Be'
+MATERIAL = 'Be'
+# Set of Be lenses with thicknesses.
+LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6,
+              500e-6, 1000e-6, 1500e-6, 2000e-6, 3000e-6]
+
+
+def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
+                       apex_distance=None, distance=None,
+                       material=None, lens_radii=None):
+    """
+    Configure defaults.
+
+    Parameters
+    -----------
+    fwhm_unfocused : float, optional
+        Full width at half maximum unfocused
+    disk_thickness : float, optional
+    apex_distance : float, optional
+    distance : float, optional
+        Distance from the lenses to the sample
+    material : str, optional
+        Atomic symbol for element, defaults to 'Be'
+
+    Examples
+    --------
+    >>> configure_defaults(distance=3.852)
+    """
+    global FWHM_UNFOCUSED
+    global DISK_THICKNESS
+    global APEX_DISTANCE
+    global DISTANCE
+    global MATERIAL
+    global LENS_RADII
+
+    FWHM_UNFOCUSED = fwhm_unfocused or FWHM_UNFOCUSED
+    DISK_THICKNESS = disk_thickness or DISK_THICKNESS
+    APEX_DISTANCE = apex_distance or APEX_DISTANCE
+    MATERIAL = material or MATERIAL
+    LENS_RADII = lens_radii or LENS_RADII
 
 
 def configure_lens_set_file(lens_file_path):
@@ -181,7 +227,8 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
         Path to the filename to set the lens sets list to.
         This should be a .npy format file.
     make_backup : bool, optional
-        To indicate if a backup file should be created or not. Default = `True`
+        To indicate if a backup file should be created or not.
+        Defaults to `True`.
 
     Examples
     --------
@@ -209,7 +256,7 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
                 allow_pickle=True)
 
 
-def get_att_len(energy, material='Be', density=None):
+def get_att_len(energy, material=None, density=None):
     """
     Get the attenuation length (in meter) of a material.
 
@@ -248,6 +295,7 @@ def get_att_len(energy, material='Be', density=None):
     >>> get_att_len(energy=8, material='Be')
     0.004810113254120656
     """
+    material = material or MATERIAL
     try:
         # xdb.material_my returns absorption length in 1/cm and takes energy
         # or array of energies in eV.
@@ -259,7 +307,7 @@ def get_att_len(energy, material='Be', density=None):
     return att_len
 
 
-def get_delta(energy, material='Be', density=None):
+def get_delta(energy, material=None, density=None):
     """
     Calculate delta for a given material at a given energy.
 
@@ -292,6 +340,7 @@ def get_delta(energy, material='Be', density=None):
     >>> get_delta(energy=8, material='Au')
     4.728879989419882e-05
     """
+    material = material or MATERIAL
     # xray_delta_beta returns (delta, beta, atlen), wehre delta : real part of
     # index of refraction, and takes x-ray energy in eV.
     if density is None:
@@ -306,7 +355,7 @@ def get_delta(energy, material='Be', density=None):
     return delta
 
 
-def calc_focal_length_for_single_lens(energy, radius, material='Be',
+def calc_focal_length_for_single_lens(energy, radius, material=None,
                                       density=None):
     """
     Calculate the Focal Length for a single lens.
@@ -331,12 +380,14 @@ def calc_focal_length_for_single_lens(energy, radius, material='Be',
     >>> calc_focal_length_for_single_lens(8, 0.03, 'Be')
     2814.0101061895903
     """
+    material = material or MATERIAL
+
     delta = get_delta(energy, material, density)
     focal_length = radius / 2.0 / delta
     return focal_length
 
 
-def calc_focal_length(energy, lens_set, material='Be', density=None):
+def calc_focal_length(energy, lens_set, material=None, density=None):
     """
     Calculate the Focal Length for certain lenses configuration and energy.
 
@@ -360,6 +411,8 @@ def calc_focal_length(energy, lens_set, material='Be', density=None):
     >>> calc_focal_length(8, [1, 0.3, 2, 0.4], 'Be')
     11256.040424758363
     """
+    material = material or MATERIAL
+
     f_tot_inverse = 0
     if isinstance(lens_set, int):
         try:
@@ -377,9 +430,9 @@ def calc_focal_length(energy, lens_set, material='Be', density=None):
     return 1.0 / f_tot_inverse
 
 
-def calc_beam_fwhm(energy, lens_set, distance, source_distance=None,
-                   material='Be', density=None, fwhm_unfocused=500e-6,
-                   printsummary=True):
+def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
+                   material=None, density=None,
+                   fwhm_unfocused=None, printsummary=True):
     """
     Calculate beam Full Width at the Half Maximum.
 
@@ -417,6 +470,9 @@ def calc_beam_fwhm(energy, lens_set, distance, source_distance=None,
                        material='Be', fwhm_unfocused=800e-6)
     0.0008373516816325981
     """
+    fwhm_unfocused = fwhm_unfocused or FWHM_UNFOCUSED
+    distance = distance or DISTANCE
+    material = material or MATERIAL
     # Focal length for certain lenses configuration and energy.
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
@@ -451,7 +507,7 @@ def calc_beam_fwhm(energy, lens_set, distance, source_distance=None,
 
 
 def calc_distance_for_size(size_fwhm, lens_set, energy,
-                           fwhm_unfocused=500e-6):
+                           fwhm_unfocused=None):
     """
     Calculate the distance for size.
 
@@ -474,6 +530,8 @@ def calc_distance_for_size(size_fwhm, lens_set, energy,
     >>> calc_distance_for_size(0.023, [2, 0.03, 4, 0.002], 8, 0.078)
     array([32.00383702, 58.77068253])
     """
+    fwhm_unfocused = fwhm_unfocused or FWHM_UNFOCUSED
+
     size = gaussian_fwhm_to_sigma(size_fwhm) * 2.0
     focal_length = calc_focal_length(energy, lens_set, 'Be', density=None)
 
@@ -492,8 +550,8 @@ def calc_distance_for_size(size_fwhm, lens_set, energy,
     return distance
 
 
-def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
-                              apex_distance=30e-6):
+def calc_lens_aperture_radius(radius, disk_thickness=None,
+                              apex_distance=None):
     """
     Calculate the lens aperture radius.
 
@@ -504,9 +562,9 @@ def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
     ----------
     radius : float
     disk_thickness : float, optional
-        Default = 1.0e-3
+        Defaults to 1.0e-3
     apex_distance : float, optional
-        Default = 30e-6
+        Defaults to 30e-6
 
     Returns
     -------
@@ -518,13 +576,17 @@ def calc_lens_aperture_radius(radius, disk_thickness=1.0e-3,
                                   apex_distance=30e-6)
     0.06228964600958975
     """
+    disk_thickness = disk_thickness or DISK_THICKNESS
+    apex_distance = apex_distance or APEX_DISTANCE
+
     aperture_radius = np.sqrt(radius * (disk_thickness - apex_distance))
     return aperture_radius
 
 
-def calc_trans_for_single_lens(energy, radius, material='Be', density=None,
-                               fwhm_unfocused=500e-6, disk_thickness=1.0e-3,
-                               apex_distance=30e-6):
+def calc_trans_for_single_lens(energy, radius, material=None, density=None,
+                               fwhm_unfocused=None,
+                               disk_thickness=None,
+                               apex_distance=None):
     """
     Calculate the transmission for a single lens.
 
@@ -540,9 +602,9 @@ def calc_trans_for_single_lens(energy, radius, material='Be', density=None,
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP.
     disk_thickness : float, optional
-        Default = 1.0e-3
+        Defaults to 1.0e-3
     apex_distance : float, optional
-        Default = 30e-6
+        Defaults to 30e-6
 
     Returns
     -------
@@ -556,6 +618,11 @@ def calc_trans_for_single_lens(energy, radius, material='Be', density=None,
                                    disk_thickness=1.0e-3, apex_distance=30e-6)
     0.9921954096643786
     """
+    material = material or MATERIAL
+    fwhm_unfocused = fwhm_unfocused or FWHM_UNFOCUSED
+    disk_thickness = disk_thickness or DISK_THICKNESS
+    apex_distance = apex_distance or APEX_DISTANCE
+
     # mu = mass attenuation coefficient?
     mu = 1.0 / get_att_len(energy, material=material, density=None)
 
@@ -571,9 +638,10 @@ def calc_trans_for_single_lens(energy, radius, material='Be', density=None,
     return transmission
 
 
-def calc_trans_lens_set(energy, lens_set, material='Be', density=None,
-                        fwhm_unfocused=500e-6, disk_thickness=1.0e-3,
-                        apex_distance=30e-6):
+def calc_trans_lens_set(energy, lens_set, material=None, density=None,
+                        fwhm_unfocused=None,
+                        disk_thickness=None,
+                        apex_distance=None):
     """
     Calculate  the transmission of a lens set.
 
@@ -597,9 +665,9 @@ def calc_trans_lens_set(energy, lens_set, material='Be', density=None,
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP. Default = 900e-6
     disk_thickness : float, optional
-        Default = 1.0e-3
+        Defaults to 1.0e-3
     apex_distance : float, optional
-        Default = 30e-6
+        Defaults to 30e-6
 
     Returns
     -------
@@ -613,6 +681,11 @@ def calc_trans_lens_set(energy, lens_set, material='Be', density=None,
                             fwhm_unfocused=400e-6)
     0.955752311215339
     """
+    material = material or MATERIAL
+    fwhm_unfocused = fwhm_unfocused or FWHM_UNFOCUSED
+    disk_thickness = disk_thickness or DISK_THICKNESS
+    apex_distance = apex_distance or APEX_DISTANCE
+
     apex_distance_tot = 0
     radius_total_inv = 0
     if isinstance(lens_set, int):
@@ -641,8 +714,8 @@ def calc_trans_lens_set(energy, lens_set, material='Be', density=None,
 
 
 def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
-                  lens_radii=LENS_RADII,
-                  fwhm_unfocused=500e-6, eff_rad0=None):
+                  lens_radii=None,
+                  fwhm_unfocused=None, eff_rad0=None):
     """
     Calculate lens set.
 
@@ -656,7 +729,7 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
     max_each : int, optional
     lens_radii : list, optional
     fwhm_unfocused : float, optional
-        This is about 400 microns at XPP. Default = 0.0005
+        This is about 400 microns at XPP. Defaults to 500e-6.
     eff_rad0 : float, optional
 
     Returns
@@ -668,6 +741,9 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
     --------
     >>> calc_lens_set(energy=7, size_fwhm=0.54, distance=3)
     """
+    lens_radii = lens_radii or LENS_RADII
+    fwhm_unfocused = fwhm_unfocused or FWHM_UNFOCUSED
+
     nums = product(*([list(range(max_each + 1))] * len(lens_radii)))
     sets = []
     sizes = []
@@ -715,7 +791,7 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
     return lens_sets
 
 
-def find_radius(energy, distance=4.0, material='Be', density=None):
+def find_radius(energy, distance=None, material=None, density=None):
     """
     Find the radius of curvature.
 
@@ -741,12 +817,15 @@ def find_radius(energy, distance=4.0, material='Be', density=None):
     >>> find_radius(energy=8, distance=4.0, material='Be', density=None)
     4.2643770090253954e-05
     """
+    distance = distance or DISTANCE
+    material = material or MATERIAL
+
     delta = get_delta(energy, material, density)
     radius = distance * 2 * delta
     return radius
 
 
-def find_energy(lens_set, distance=3.952, material='Be', density=None):
+def find_energy(lens_set, distance=None, material=None, density=None):
     """
     Find the energy that would focus at a given distance.
 
@@ -770,6 +849,9 @@ def find_energy(lens_set, distance=3.952, material='Be', density=None):
     >>> find_energy([2, 200e-6, 4, 500e-6], distance=4)
     7.0100555419921875
     """
+    distance = distance or DISTANCE
+    material = material or MATERIAL
+
     energy_min = 1.0
     energy_max = 24.0
     energy = (energy_max + energy_min) / 2.0
@@ -795,8 +877,8 @@ def find_energy(lens_set, distance=3.952, material='Be', density=None):
     return energy
 
 
-def find_z_pos(energy, lens_set, spot_size_fwhm, material='Be',
-               density=None, fwhm_unfocused=500e-6):
+def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
+               density=None, fwhm_unfocused=None):
     """
     Find the Be Lens distances.
 
@@ -815,7 +897,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material='Be',
     density : float, optional
         Material density in g/cm^3
     fwhm_unfocused : float, optional
-        This is about 400 microns at XPP. Default = 800e-6
+        This is about 400 microns at XPP. Defaults to 500e-6
 
     Returns
     -------
@@ -829,6 +911,9 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material='Be',
                    material='Be', density=None, fwhm_unfocused=800e-6)
     (-2339.797291538794, 2350.2195511913483)
     """
+    material = material or MATERIAL
+    fwhm_unfocused = fwhm_unfocused or FWHM_UNFOCUSED
+
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
     lam = photon_to_wavelength(energy) * 1e-9

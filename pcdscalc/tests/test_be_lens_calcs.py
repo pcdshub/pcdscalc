@@ -16,6 +16,13 @@ SETS_SAMPLE = [(3, 0.0001, 1, 0.0002),
                (2, 0.0001, 1, 0.0005)]
 
 
+def test_configure_defaults():
+    # make sure is not the value we want to test
+    be_lens_calcs.FWHM_UNFOCUSED = 500e-6
+    be_lens_calcs.configure_defaults(fwhm_unfocused=800e-6)
+    assert be_lens_calcs.FWHM_UNFOCUSED == 800e-6
+
+
 def test_configure_lens_set_bad_path():
     res = be_lens_calcs.configure_lens_set_file(BAD_PATH)
     assert res is None
