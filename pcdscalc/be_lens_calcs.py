@@ -66,6 +66,7 @@ def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
     FWHM_UNFOCUSED = fwhm_unfocused or FWHM_UNFOCUSED
     DISK_THICKNESS = disk_thickness or DISK_THICKNESS
     APEX_DISTANCE = apex_distance or APEX_DISTANCE
+    DISTANCE = distance or DISTANCE
     MATERIAL = material or MATERIAL
     LENS_RADII = lens_radii or LENS_RADII
 
