@@ -187,7 +187,7 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
     >>> sets_list_of_tuples = [(3, 0.0001, 1, 0.0002),
                                (1, 0.0001, 1, 0.0003, 1, 0.0005),
                                (2, 0.0001, 1, 0.0005)]
-    set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
+    >>> set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
     """
     if filename is None and LENS_SET_FILE is None:
         logger.error('You must provide the path to the lens_set file or you '
