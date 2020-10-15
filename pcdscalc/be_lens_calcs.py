@@ -49,6 +49,8 @@ def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
         Distance from the lenses to the sample
     material : str, optional
         Atomic symbol for element, defaults to 'Be'
+    lens_radii : list
+         Set of Be lenses with thicknesses.
 
     Examples
     --------
