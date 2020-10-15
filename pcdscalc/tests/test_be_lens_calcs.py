@@ -25,6 +25,7 @@ def test_configure_lens_set_bad_path():
 def test_configure_lens_set_file():
     res = be_lens_calcs.configure_lens_set_file(PATH)
     assert res == os.path.abspath(PATH)
+    assert be_lens_calcs.LENS_SET_FILE == res
 
 
 def test_set_lens_set_to_file():
@@ -40,8 +41,14 @@ def test_get_lens_set():
     assert lens_set == first_set
 
 
-# TODO: these expected values are the actuall ones I got
-# from running the test - NOT A TRUE TEST!!!
+def test_get_lens_set_no_file():
+    # should just return because no file provided the LENS_SET_FILE is not
+    # configured
+    be_lens_calcs.LENS_SET_FILE = None
+    res = be_lens_calcs.get_lens_set(1)
+    assert res is None
+
+
 @pytest.mark.parametrize('energy_sample, expected', [
     pytest.param(8, 0.004810113254120656),
     pytest.param(9, 0.006507409652366966),
@@ -68,8 +75,6 @@ def test_get_att_len_with_bad_material():
         be_lens_calcs.get_att_len(8, 'BEES', 32)
 
 
-# TODO: these expected values are the actuall ones I got
-# from running the test - NOT A TRUE TEST!!!
 @pytest.mark.parametrize('energy_sample, expected', [
     pytest.param(8, 5.330471261281744e-06),
     pytest.param(9, 4.21084077002856e-06),
@@ -141,6 +146,14 @@ def test_calc_focal_length_with_file_lens_set():
         assert received == expected
 
 
+def test_calc_focal_length_with_no_file():
+    # make sure the LENS_SET_FILE is none
+    # should get an Exception
+    be_lens_calcs.LENS_SET_FILE = None
+    with pytest.raises(Exception):
+        be_lens_calcs.calc_focal_length(8, 1)
+
+
 @pytest.mark.parametrize('energy_sample, lens_set, dist, fwhm_unf, expect', [
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
                  4, 800e-6, 0.0007539125970041841),
@@ -168,8 +181,6 @@ def test_calc_beam_fwhm(energy_sample, lens_set, dist, fwhm_unf, expect):
     assert np.isclose(fwhm, expect)
 
 
-# TODO: this was tested by adding the souce_distance implementation in
-# the old code..... so it is kind of cheating....
 @pytest.mark.parametrize('energy_sample, lens_set, dist ,'
                          'fwhm_unf, source_dist, expected', [
                              pytest.param(8, [2, 200e-6, 4, 500e-6],
@@ -215,10 +226,21 @@ def test_calc_distance_for_size(energy, lens_set, fwhm_unf, size_fwhm, expect):
     assert np.isclose(dis, expect).all()
 
 
-def test_find_radius():
-    radius = be_lens_calcs.find_radius(energy=8)
-    print(f'radius: {radius}')
-    # TODO: needs testing here?? if we end up keeping this
+@pytest.mark.parametrize('energy_sample, distance, expected', [
+    pytest.param(8, 4, 4.2643770090253954e-05),
+    pytest.param(8, 3, 3.198282756769046e-05),
+    pytest.param(9, 4, 3.368672616022848e-05),
+    pytest.param(10, 2.5, 1.7051278100008672e-05),
+])
+def test_find_radius(energy_sample, distance, expected):
+    # Old values, with old get_delta
+    # 4.261163705976401e-05
+    # 3.1958727794823005e-05
+    # 3.366056083997648e-05
+    # 1.7037713265222187e-05
+    radius = be_lens_calcs.find_radius(energy=energy_sample, distance=distance)
+    logger.debug('Expected: %s, Received: %s', expected, radius)
+    assert np.isclose(expected, radius)
 
 
 @pytest.mark.parametrize('radius, expected', [
@@ -275,6 +297,14 @@ def test_calc_trans_lens_set_with_file_len_set():
         received = be_lens_calcs.calc_trans_lens_set(8, 1)
         logger.debug('Expected: %s, Received: %s', expected, received)
         assert received == expected
+
+
+def test_calc_trans_lens_set_with_no_file():
+    # make sure the LENS_SET_FILE is none
+    # should get an Exception
+    be_lens_calcs.LENS_SET_FILE = None
+    with pytest.raises(Exception):
+        be_lens_calcs.calc_trans_lens_set(8, 1)
 
 
 @pytest.mark.parametrize('lens_set, distance, expected', [
