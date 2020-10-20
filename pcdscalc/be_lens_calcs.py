@@ -4,9 +4,11 @@ import os
 import shutil
 from datetime import date
 from itertools import product
+import json
 
 import numpy as np
 import xraydb as xdb
+
 
 logger = logging.getLogger(__name__)
 
@@ -78,19 +80,12 @@ def configure_lens_set_file(lens_file_path):
     Parameters
     ----------
     lens_file_path : str
-        Path to the lens_set file in NumPy .npy format.
-        This is a binary file generated with `numpy.save` which saves an array
-        to a binary file in NumPy .npy format.
+        Path to the lens_set file.
     """
     global LENS_SET_FILE
     if not os.path.exists(lens_file_path):
         logger.error('Provided invalid path for lens set file: %s',
                      lens_file_path)
-        return
-    abs_path = os.path.abspath(lens_file_path)
-    file_name = os.path.basename(abs_path)
-    if not file_name.lower().endswith('.npy'):
-        logger.error('Must provide a NumPy .npy format file')
         return
     LENS_SET_FILE = os.path.abspath(lens_file_path)
     return LENS_SET_FILE
@@ -181,8 +176,6 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         before experiments, this is to specify what number set.
     filename : str, optional
         File path of the lens_set file.
-        This is a binary file generated with `numpy.save` which saves an array
-        to a binary file in NumPy .npy format.
 
     Returns
     -------
@@ -201,17 +194,17 @@ def get_lens_set(set_number_top_to_bot, filename=None):
     if os.stat(filename).st_size == 0:
         logger.error('The file is empyt: %s', filename)
         return
-    with open(filename, 'rb') as lens_file:
-        sets = np.load(lens_file, allow_pickle=True)
-        if set_number_top_to_bot not in range(1, sets.shape[0]):
+    with open(filename) as lens_file:
+        sets = json.loads(lens_file.read())
+        if set_number_top_to_bot not in range(1, len(sets)):
             logger.error('Provided and invalid set_number_top_to_bottom %s, '
                          'please provide a number from 1 to %s ',
-                         set_number_top_to_bot, sets.shape[0])
+                         set_number_top_to_bot, len(sets))
             return
     return sets[set_number_top_to_bot - 1]
 
 
-def set_lens_set_to_file(sets_list_of_tuples, filename,
+def set_lens_set_to_file(list_of_sets, filename,
                          make_backup=True):
     """
     Write lens set to a file.
@@ -224,8 +217,8 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
 
     Parameters
     ----------
-    sets_list_of_tuples : list
-        List with tuples for lens sets
+    list_of_sets : list
+        List of lists with lens sets
     filename : str, optional
         Path to the filename to set the lens sets list to.
         This should be a .npy format file.
@@ -235,10 +228,10 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
 
     Examples
     --------
-    >>> sets_list_of_tuples = [(3, 0.0001, 1, 0.0002),
-                               (1, 0.0001, 1, 0.0003, 1, 0.0005),
-                               (2, 0.0001, 1, 0.0005)]
-    >>> set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
+    >>> list_of_sets = [[3, 0.0001, 1, 0.0002],
+                        [1, 0.0001, 1, 0.0003, 1, 0.0005],
+                        [2, 0.0001, 1, 0.0005]]
+    >>> set_lens_set_to_file(list_of_sets, ../path/to/lens_set)
     """
     if filename is None and LENS_SET_FILE is None:
         logger.error('You must provide the path to the lens_set file or you '
@@ -254,9 +247,8 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
         except Exception as ex:
             logger.error('Something went wrong with copying the file %s', ex)
             pass
-    with open(filename, 'wb') as lens_file:
-        np.save(lens_file, np.array(sets_list_of_tuples, dtype=object),
-                allow_pickle=True)
+    with open(filename, 'w') as lens_file:
+        lens_file.write(json.dumps(list_of_sets))
 
 
 def get_att_len(energy, material=None, density=None):
