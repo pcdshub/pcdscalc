@@ -10,6 +10,8 @@ Welcome to pcdscalc's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   be_lens_calcs.rst
+
 .. toctree::
    :maxdepth: 1
    :caption: Links
