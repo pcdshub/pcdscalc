@@ -370,8 +370,21 @@ def test_calc_lens_set():
     assert np.allclose(foclens, expected_foclens)
 
 
-# def test_plan_set():
-#     be_lens_calcs.plan_set(energy=10, z_offset=0.003, z_range=[2, 1],
-#                  beam_size_unfocused=0.003, size_horizontal=2,
-#                  size_vertical=None, exclude=[], max_tot_number_of_lenses=1,
-#                  max_each=5, focus_before_sample=False)
+@pytest.mark.parametrize('radius, fwhm, energy, expected', [
+                         pytest.param(2, 200e-6, 8, 0.9937771825941067),
+                         pytest.param(4, 500e-6, 9, 0.9953931501494162),
+                         pytest.param(6, 300e-6, 10, 0.9964134300156009)
+                         ])
+def test_lens_transmission(radius, fwhm, energy, expected):
+    res = be_lens_calcs.lens_transmission(r=radius, fwhm=fwhm, energy=energy)
+    logger.debug('Expected: %s Received: %s', expected, res)
+    assert np.isclose(expected, res)
+
+
+# with good_sets = [False, True, True, False, False, True, False, False, False]
+def test_plan_set():
+    be_lens_calcs.plan_set(energy=1, z_offset=30, z_range=[-10, 4],
+                           beam_size_unfocused=3, size_horizontal=9,
+                           size_vertical=None, exclude=[],
+                           max_tot_number_of_lenses=1,
+                           max_each=5, focus_before_sample=False)

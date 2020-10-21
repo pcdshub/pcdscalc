@@ -983,7 +983,6 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
         distances > np.min(z_offset + np.asarray(z_range)),
         distances < np.max(z_offset + np.asarray(z_range)))
 
-    good_sets = [False, True, True, False, False, True, False, False, False]
     sets = sets[good_sets]
     size_range_min = np.asarray([
             calc_beam_fwhm(
@@ -1008,7 +1007,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     distances = distances[good_sets]
     foclens = foc_lens[good_sets]
     transms = np.asarray(
-        [lens_transmission(r=ter, fwhm=beam_size_unfocused, e=energy)
+        [lens_transmission(r=ter, fwhm=beam_size_unfocused, energy=energy)
             for ter in effrads])
     Nlenses_s = np.sum(sets, 1)
 
@@ -1036,7 +1035,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     logger.info('\n %s', resstring)
 
 
-def lens_transmission(r, fwhm, N=1, e=None, ID="Be", lens_thicknes=None):
+def lens_transmission(r, fwhm, n=1, energy=None, id="Be", lens_thicknes=None):
     """
     Find the CRL (Compound Refractive Lens) transmission.
 
@@ -1056,28 +1055,27 @@ def lens_transmission(r, fwhm, N=1, e=None, ID="Be", lens_thicknes=None):
     Returns
     -------
     """
-    lthick = lens_thicknes or APEX_DISTANCE
+    lens_thicknes = lens_thicknes or APEX_DISTANCE
     # TODO: check_id? not sure here
     # ID = check_id(ID)
-    # E = 10  # getE(energy=E, correctEv=True)
+    # E = getE(energy=E, correctEv=True)
 
-    Waist = 2 * gaussian_fwhm_to_sigma(fwhm)
-    e = 10
-    X = np.linspace(-2 * fwhm, 2 * fwhm, 101)
-    Y = X
-    Intensity = np.zeros((len(X), len(Y)))
-    Thickness = np.zeros((len(X), len(Y)))
-    for i in range(len(X)):
-        for j in range(len(Y)):
-            Intensity[i, j] = (
-                np.abs(np.exp(-2 * (X[i] ** 2 + Y[j] ** 2) / Waist ** 2))
+    waist = 2 * gaussian_fwhm_to_sigma(fwhm)
+    x = np.linspace(-2 * fwhm, 2 * fwhm, 101)
+    y = x
+    intensity = np.zeros((len(x), len(y)))
+    thickness = np.zeros((len(x), len(y)))
+    for i in range(len(x)):
+        for j in range(len(y)):
+            intensity[i, j] = (
+                np.abs(np.exp(-2 * (x[i] ** 2 + y[j] ** 2) / waist ** 2))
                 * 2
-                / Waist ** 2
+                / waist ** 2
                 / np.pi
-                * (X[2] - X[1]) ** 2
+                * (x[2] - x[1]) ** 2
             )
-            Thickness[i, j] = (X[i] ** 2 + Y[j] ** 2) / r + N * lthick
-    attLength = get_att_len(e, ID)
-    TransIntensity = Intensity * np.exp(-Thickness / attLength)
-    trans = np.sum(TransIntensity)
+            thickness[i, j] = (x[i] ** 2 + y[j] ** 2) / r + n * lens_thicknes
+    att_length = get_att_len(energy, id)
+    trans_intensity = intensity * np.exp(-thickness / att_length)
+    trans = np.sum(trans_intensity)
     return trans
