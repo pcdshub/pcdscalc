@@ -225,7 +225,7 @@ def test_calc_distance_for_size(energy, lens_set, fwhm_unf, size_fwhm, expect):
                                                energy=energy,
                                                fwhm_unfocused=fwhm_unf)
     logger.debug('Expected: %s, Received: %s', expect, dis)
-    assert np.isclose(dis, expect).all()
+    assert np.allclose(dis, expect)
 
 
 @pytest.mark.parametrize('energy_sample, distance, expected', [
@@ -340,7 +340,7 @@ def test_find_z_pos(energy, lens_set, spot_size_fwhm, expected):
     z_position = be_lens_calcs.find_z_pos(energy, lens_set, spot_size_fwhm,
                                           fwhm_unfocused=800e-6)
     logger.debug('Expected: %s, Received: %s', expected, z_position)
-    assert np.isclose(expected, z_position).all()
+    assert np.allclose(expected, z_position)
 
 
 def test_calc_lens_set():
@@ -351,21 +351,27 @@ def test_calc_lens_set():
                              [1, 0, 0, 0, 0]])
 
     expected_effrads = np.array([0.001, 0.0005, 0.0003, 0.0002, 0.0001])
-    expected_sizes = np.array([0.00047886, 0.00045743, 0.000429,
-                              0.00039348, 0.00028694])
-    expected_foclens = np.array([93.87107082, 46.93553541, 28.16132124,
-                                18.77421416,  9.38710708])
+    expected_sizes = np.array([0.00047885, 0.0004574, 0.00042894,
+                              0.0003934, 0.00028678])
+    expected_foclens = np.array([93.80033687, 46.90016844, 28.14010106,
+                                 18.76006737, 9.38003369])
 
     res = be_lens_calcs.calc_lens_set(energy=8, size_fwhm=2, distance=4,
                                       n_max=1, max_each=2,
                                       lens_radii=[100e-6, 200e-6, 300e-6,
                                                   500e-6, 1000e-6],
                                       fwhm_unfocused=0.0005, eff_rad0=None)
-    sets = res[0]
-    effrads = res[1]
-    sizes = res[2]
-    foclens = res[3]
-    assert sets.all() == expected_sets.all()
-    assert effrads.all() == expected_effrads.all()
-    assert sizes.all() == expected_sizes.all()
-    assert foclens.all() == expected_foclens.all()
+
+    sets, effrads, sizes, foclens = res
+
+    assert np.allclose(sets, expected_sets)
+    assert np.allclose(effrads, expected_effrads)
+    assert np.allclose(sizes, expected_sizes)
+    assert np.allclose(foclens, expected_foclens)
+
+
+# def test_plan_set():
+#     be_lens_calcs.plan_set(energy=10, z_offset=0.003, z_range=[2, 1],
+#                  beam_size_unfocused=0.003, size_horizontal=2,
+#                  size_vertical=None, exclude=[], max_tot_number_of_lenses=1,
+#                  max_each=5, focus_before_sample=False)

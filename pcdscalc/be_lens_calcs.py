@@ -3,7 +3,7 @@ import logging
 import os
 import shutil
 from datetime import date
-from itertools import product
+from itertools import product, chain
 import json
 
 import numpy as np
@@ -761,18 +761,16 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
                     sets[ind] = num
                 else:
                     continue
-            elif teff_rad is not None:
+            else:
                 eff_rads.append(teff_rad)
                 sets.append(num)
-                size_fwhm = calc_beam_fwhm(energy, lens_set + [1, eff_rad0],
-                                           distance=distance,
-                                           source_distance=None,
-                                           fwhm_unfocused=fwhm_unfocused,
-                                           printsummary=False)
-                sizes.append(size_fwhm)
-                focal_length = calc_focal_length(energy,
-                                                 lens_set + [1, eff_rad0])
-                foc_lens.append(focal_length)
+                sizes.append(calc_beam_fwhm(energy, lens_set + [1, eff_rad0],
+                                            distance=distance,
+                                            source_distance=None,
+                                            fwhm_unfocused=fwhm_unfocused,
+                                            printsummary=False))
+                foc_lens.append(calc_focal_length(energy,
+                                                  lens_set + [1, eff_rad0]))
 
     sizes = np.asarray(sizes)
     sets = np.asarray(sets)
@@ -929,3 +927,157 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     z2 = focal_length + delta_z
     z_position = (z1, z2)
     return z_position
+
+
+def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
+             size_vertical=None, exclude=[], max_tot_number_of_lenses=25,
+             max_each=5, focus_before_sample=False):
+    """
+    Macro to help plan for what lens set to use.
+
+    Parameters
+    ----------
+    energy : number
+    z_offset : float
+    z_range : list
+    beam_size_unfocused :
+    size_horiz : list
+    size_vert :
+    excluede : list
+    max_tot_number_of_lenses : int
+    max_each : int
+    focus_before_sample : bool
+    """
+    if None in (z_offset, z_range, beam_size_unfocused):
+        logger.error('Cannot plan_set. At least one of z_offset,'
+                     ' z_range, beam_size_unfocused not defined.')
+        return
+    focus_before_sample = int(focus_before_sample)
+    if size_vertical is not None:
+        size_calc_1 = np.max(size_horizontal, size_vertical)
+    else:
+        size_calc_1 = size_horizontal
+
+    t_lens_radii = LENS_RADII
+    for rad in exclude:
+        t_lens_radii.remove(rad)
+
+    sets, effrads, sizes, foc_lens = calc_lens_set(
+        energy=energy,
+        size_fwhm=size_calc_1,
+        distance=z_offset,
+        n_max=max_tot_number_of_lenses,
+        max_each=max_each,
+        lens_radii=LENS_RADII,
+    )
+
+    distances = np.asarray([
+            calc_distance_for_size(
+                size_calc_1,
+                list(chain(*list(zip(set, t_lens_radii)))),
+                energy=energy,
+                fwhm_unfocused=beam_size_unfocused,
+            )[focus_before_sample] for set in sets])
+
+    good_sets = np.logical_and(
+        distances > np.min(z_offset + np.asarray(z_range)),
+        distances < np.max(z_offset + np.asarray(z_range)))
+
+    good_sets = [False, True, True, False, False, True, False, False, False]
+    sets = sets[good_sets]
+    size_range_min = np.asarray([
+            calc_beam_fwhm(
+                energy,
+                list(chain(*list(zip(set, t_lens_radii)))),
+                distance=z_offset - min(z_range),
+                fwhm_unfocused=beam_size_unfocused,
+                printsummary=False,
+            ) for set in sets])
+
+    size_range_max = np.asarray([
+        calc_beam_fwhm(
+            energy,
+            list(chain(*list(zip(set, t_lens_radii)))),
+            distance=z_offset - max(z_range),
+            fwhm_unfocused=beam_size_unfocused,
+            printsummary=False,
+        ) for set in sets])
+
+    sizes = sizes[good_sets]
+    effrads = effrads[good_sets]
+    distances = distances[good_sets]
+    foclens = foc_lens[good_sets]
+    transms = np.asarray(
+        [lens_transmission(r=ter, fwhm=beam_size_unfocused, e=energy)
+            for ter in effrads])
+    Nlenses_s = np.sum(sets, 1)
+
+    resstring = " N   f/m   Min/um   Max/um   T/%  Set  \n"
+    zips = list(
+        zip(sets, size_range_min, size_range_max,
+            effrads, transms, Nlenses_s, foclens)
+    )
+
+    t = "{:2d} {:5.2f} {:8.1f} {:8.1f} {:5.1f}  "
+    for n, z in enumerate(zips):
+        the_set, sizemin, sizemax, eff_rad, transm, n_lenses, foclen = z
+        logger.debug('eff_rad: %s', eff_rad)
+        logger.debug('n_lenses: %s', n_lenses)
+        resstring += t.format(n, foclen, sizemin * 1e6,
+                              sizemax * 1e6, transm * 100)
+        resstring += ", ".join(
+            [
+                "%d x %dum" % (setLensno, t_lens_radii[m] * 1e6)
+                for m, setLensno in enumerate(the_set)
+                if setLensno > 0
+            ]
+        )
+        resstring += "\n"
+    logger.info('\n %s', resstring)
+
+
+def lens_transmission(r, fwhm, N=1, e=None, ID="Be", lens_thicknes=None):
+    """
+    Find the CRL (Compound Refractive Lens) transmission.
+
+    Parameters
+    ----------
+    radius : float
+        Effective radius of curvature
+    fwhm : float
+        Incident beam size on the lens in meters
+    num : int
+        Number of lenses in the stack
+    energy : number
+        Photon energy
+    id : str
+        Lens material
+
+    Returns
+    -------
+    """
+    lthick = lens_thicknes or APEX_DISTANCE
+    # TODO: check_id? not sure here
+    # ID = check_id(ID)
+    # E = 10  # getE(energy=E, correctEv=True)
+
+    Waist = 2 * gaussian_fwhm_to_sigma(fwhm)
+    e = 10
+    X = np.linspace(-2 * fwhm, 2 * fwhm, 101)
+    Y = X
+    Intensity = np.zeros((len(X), len(Y)))
+    Thickness = np.zeros((len(X), len(Y)))
+    for i in range(len(X)):
+        for j in range(len(Y)):
+            Intensity[i, j] = (
+                np.abs(np.exp(-2 * (X[i] ** 2 + Y[j] ** 2) / Waist ** 2))
+                * 2
+                / Waist ** 2
+                / np.pi
+                * (X[2] - X[1]) ** 2
+            )
+            Thickness[i, j] = (X[i] ** 2 + Y[j] ** 2) / r + N * lthick
+    attLength = get_att_len(e, ID)
+    TransIntensity = Intensity * np.exp(-Thickness / attLength)
+    trans = np.sum(TransIntensity)
+    return trans
