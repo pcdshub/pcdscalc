@@ -1,14 +1,13 @@
 """Module for Beryllium Lens Calculations."""
+import json
 import logging
 import os
 import shutil
 from datetime import date
-from itertools import product, chain
-import json
+from itertools import chain, product
 
 import numpy as np
 import xraydb as xdb
-
 
 logger = logging.getLogger(__name__)
 
@@ -1011,6 +1010,13 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
             for ter in effrads])
     Nlenses_s = np.sum(sets, 1)
 
+    # used for testing
+    num = []
+    f_m = []
+    min_um = []
+    max_um = []
+    t_percent = []
+
     resstring = " N   f/m   Min/um   Max/um   T/%  Set  \n"
     zips = list(
         zip(sets, size_range_min, size_range_max,
@@ -1022,6 +1028,13 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
         the_set, sizemin, sizemax, eff_rad, transm, n_lenses, foclen = z
         logger.debug('eff_rad: %s', eff_rad)
         logger.debug('n_lenses: %s', n_lenses)
+
+        num.append(n)
+        f_m.append(foclen)
+        min_um.append(sizemin * 1e6)
+        max_um.append(sizemax * 1e6)
+        t_percent.append(transm * 100)
+
         resstring += t.format(n, foclen, sizemin * 1e6,
                               sizemax * 1e6, transm * 100)
         resstring += ", ".join(
@@ -1033,6 +1046,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
         )
         resstring += "\n"
     logger.info('\n %s', resstring)
+    return num, f_m, min_um, max_um, t_percent
 
 
 def lens_transmission(r, fwhm, n=1, energy=None, id="Be", lens_thicknes=None):
@@ -1057,9 +1071,6 @@ def lens_transmission(r, fwhm, n=1, energy=None, id="Be", lens_thicknes=None):
     trans : float
     """
     lens_thicknes = lens_thicknes or APEX_DISTANCE
-    # TODO: check_id? not sure here
-    # ID = check_id(ID)
-    # E = getE(energy=E, correctEv=True)
 
     waist = 2 * gaussian_fwhm_to_sigma(fwhm)
     x = np.linspace(-2 * fwhm, 2 * fwhm, 101)

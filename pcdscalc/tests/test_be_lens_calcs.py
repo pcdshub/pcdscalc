@@ -381,10 +381,55 @@ def test_lens_transmission(radius, fwhm, energy, expected):
     assert np.isclose(expected, res)
 
 
-# with good_sets = [False, True, True, False, False, True, False, False, False]
 def test_plan_set():
-    be_lens_calcs.plan_set(energy=1, z_offset=30, z_range=[-10, 4],
-                           beam_size_unfocused=3, size_horizontal=9,
-                           size_vertical=None, exclude=[],
-                           max_tot_number_of_lenses=1,
-                           max_each=5, focus_before_sample=False)
+    res = be_lens_calcs.plan_set(energy=1, z_offset=-10, z_range=[1, 40],
+                                 beam_size_unfocused=3, size_horizontal=9,
+                                 size_vertical=None, exclude=[],
+                                 max_tot_number_of_lenses=1,
+                                 max_each=5, focus_before_sample=False)
+    num, f_m, min_um, max_um, t_percent = res
+    f_m = [round(num, 2) for num in f_m]
+    min_um = [round(num, 1) for num in min_um]
+    max_um = [round(num, 1) for num in max_um]
+    t_percent = [round(num, 1) for num in t_percent]
+
+    expected_num = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    expected_f_m = [0.07, 0.14, 0.28, 0.43, 0.71, 1.42, 2.13, 2.84, 4.27]
+    expected_min_um = [466994229.0, 234997114.5, 118998557.3, 80332371.5,
+                       49399422.9, 26199711.5, 18466474.3, 14599855.7,
+                       10733237.2]
+    expected_max_um = [2112064677.4, 1057532338.7,
+                       530266169.4, 354510779.6, 213906467.7, 108453233.9,
+                       73302155.9, 55726616.9, 38151078.0]
+
+    expected_t_percent = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    assert num == expected_num
+    assert np.allclose(f_m, expected_f_m)
+    assert np.allclose(min_um, expected_min_um)
+    assert np.allclose(max_um, expected_max_um)
+    assert np.allclose(t_percent, expected_t_percent)
+
+# Expected based on old code
+#  N   f/m   Min/um   Max/um   T/%  Set
+#  0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+#  1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+#  2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+#  3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+#  4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+#  5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+#  6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+#  7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+#  8  4.27 10733237.2 38151078.0   0.0  1 x 3000um
+
+# Got
+# N   f/m   Min/um   Max/um   T/% Set
+# 0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+# 1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+# 2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+# 3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+# 4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+# 5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+# 6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+# 7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+#  8  4.27 10733237.2 38151078.0   0.0  1 x 3000um
