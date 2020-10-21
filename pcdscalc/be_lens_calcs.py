@@ -940,9 +940,9 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     energy : number
     z_offset : float
     z_range : list
-    beam_size_unfocused :
-    size_horiz : list
-    size_vert :
+    beam_size_unfocused : float
+    size_horiz
+    size_vert
     excluede : list
     max_tot_number_of_lenses : int
     max_each : int
@@ -1054,6 +1054,7 @@ def lens_transmission(r, fwhm, n=1, energy=None, id="Be", lens_thicknes=None):
 
     Returns
     -------
+    trans : float
     """
     lens_thicknes = lens_thicknes or APEX_DISTANCE
     # TODO: check_id? not sure here
