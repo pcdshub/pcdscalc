@@ -29,6 +29,14 @@ def test_configure_lens_set_bad_path():
         assert res is None
         assert be_lens_calcs.LENS_SET_FILE is None
 
+# leaving here for testing, but don't want to create this set in the lens_set
+# def test_get_lens_set_file_one_set():
+#     first_set = [3, 0.0001, 1, 0.0002]
+#     be_lens_calcs.set_lens_set_to_file(first_set, PATH)
+#     lens_set = be_lens_calcs.get_lens_set(1, PATH)
+#     logger.debug(f'result: {lens_set}')
+#     assert lens_set == first_set
+
 
 def test_configure_lens_set_file():
     res = be_lens_calcs.configure_lens_set_file(PATH)

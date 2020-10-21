@@ -200,7 +200,11 @@ def get_lens_set(set_number_top_to_bot, filename=None):
                          'please provide a number from 1 to %s ',
                          set_number_top_to_bot, len(sets))
             return
-    return sets[set_number_top_to_bot - 1]
+    # if only one set in the list, return the list
+    if not isinstance(sets[0], list):
+        return sets
+    else:
+        return sets[set_number_top_to_bot - 1]
 
 
 def set_lens_set_to_file(list_of_sets, filename,
