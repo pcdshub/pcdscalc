@@ -384,7 +384,8 @@ def test_calc_lens_set():
                          pytest.param(6, 300e-6, 10, 0.9964134300156009)
                          ])
 def test_lens_transmission(radius, fwhm, energy, expected):
-    res = be_lens_calcs.lens_transmission(r=radius, fwhm=fwhm, energy=energy)
+    res = be_lens_calcs.lens_transmission(r=radius, fwhm=fwhm,
+                                          id_material='Be', energy=energy)
     logger.debug('Expected: %s Received: %s', expected, res)
     assert np.isclose(expected, res)
 
