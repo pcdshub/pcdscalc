@@ -165,7 +165,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     return fwhm / FWHM_SIGMA_CONVERSION
 
 
-def get_lens_set(set_number_top_to_bot, filename=None):
+def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
     """
     Get the lens set from the file provided.
 
@@ -176,6 +176,8 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         before experiments, this is to specify what number set.
     filename : str, optional
         File path of the lens_set file.
+    get_all : bool
+        Indicates if it should return the entire stack of lens.
 
     Returns
     -------
@@ -204,6 +206,9 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         except json.decoder.JSONDecodeError as err:
             logger.error('When getting the lens set: %s', err)
             raise err
+
+        if get_all:
+            return sets
 
         if set_number_top_to_bot not in range(1, len(sets)):
             err_msg = ('Provided an invalid set_number_top_to_bottom %s,'
