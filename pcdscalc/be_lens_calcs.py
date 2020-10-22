@@ -10,6 +10,8 @@ import numpy as np
 import xraydb as xdb
 
 logger = logging.getLogger(__name__)
+# global variable to be help with testing the plan_set function
+_plan_set_test_res = None
 
 # Constant for converting between FWHM and sigma of a Gaussian function.
 FWHM_SIGMA_CONVERSION = 2.35482004503
@@ -223,7 +225,7 @@ def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
         return sets[set_number_top_to_bot - 1]
 
 
-def set_lens_set_to_file(list_of_sets, filename,
+def set_lens_set_to_file(list_of_sets, filename=None,
                          make_backup=True):
     """
     Write lens set to a file.
@@ -514,14 +516,13 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     size_fwhm = gaussian_sigma_to_fwhm(size) / 2.0
 
     if printsummary:
-        logger.info("FWHM at lens   : %.3e" % (fwhm_unfocused))
-        logger.info("waist          : %.3e" % (waist))
-        logger.info("waist FWHM     : %.3e" % (waist
-                                               * FWHM_SIGMA_CONVERSION / 2.0))
-        logger.info("rayleigh_range : %.3e" % (rayleigh_range))
-        logger.info("focal length   : %.3e" % (focal_length))
-        logger.info("size           : %.3e" % (size))
-        logger.info("size FWHM      : %.3e" % (size_fwhm))
+        print("FWHM at lens   : %.3e" % (fwhm_unfocused))
+        print("waist          : %.3e" % (waist))
+        print("waist FWHM     : %.3e" % (waist * FWHM_SIGMA_CONVERSION / 2.0))
+        print("rayleigh_range : %.3e" % (rayleigh_range))
+        print("focal length   : %.3e" % (focal_length))
+        print("size           : %.3e" % (size))
+        print("size FWHM      : %.3e" % (size_fwhm))
 
     return size_fwhm
 
@@ -940,11 +941,10 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
 
-    logger.info("waist          : %.3e" % waist)
-    logger.info("waist FWHM     : %.3e" % (waist
-                                           * FWHM_SIGMA_CONVERSION / 2.0))
-    logger.info("rayleigh_range : %.3e" % rayleigh_range)
-    logger.info("focal length   : %.3e" % focal_length)
+    print("waist          : %.3e" % waist)
+    print("waist FWHM     : %.3e" % (waist * FWHM_SIGMA_CONVERSION / 2.0))
+    print("rayleigh_range : %.3e" % rayleigh_range)
+    print("focal length   : %.3e" % focal_length)
 
     w = gaussian_fwhm_to_sigma(spot_size_fwhm) * 2
     delta_z = rayleigh_range * np.sqrt((w / waist) ** 2 - 1)
@@ -973,6 +973,8 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     max_each : int
     focus_before_sample : bool
     """
+    global _plan_set_test_res
+
     if None in (z_offset, z_range, beam_size_unfocused):
         logger.error('Cannot plan_set. At least one of z_offset,'
                      ' z_range, beam_size_unfocused not defined.')
@@ -1071,8 +1073,8 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
             ]
         )
         resstring += "\n"
-    logger.info('\n %s', resstring)
-    return num, f_m, min_um, max_um, t_percent
+    print('\n %s', resstring)
+    _plan_set_test_res = num, f_m, min_um, max_um, t_percent
 
 
 def lens_transmission(r, fwhm, n=1, energy=None, id_material="IF1",
