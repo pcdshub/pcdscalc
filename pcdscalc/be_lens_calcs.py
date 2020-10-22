@@ -83,9 +83,10 @@ def configure_lens_set_file(lens_file_path):
     """
     global LENS_SET_FILE
     if not os.path.exists(lens_file_path):
-        logger.error('Provided invalid path for lens set file: %s',
-                     lens_file_path)
-        return
+        err_msg = ('Provided invalid path for lens set file: %s',
+                   lens_file_path)
+        logger.error(err_msg)
+        raise FileNotFoundError(err_msg)
     LENS_SET_FILE = os.path.abspath(lens_file_path)
     return LENS_SET_FILE
 
@@ -182,24 +183,34 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         [numer1, lensthick1, number2, lensthick2 ...]
     """
     if filename is None and LENS_SET_FILE is None:
-        logger.error('You must provide the path to the lens_set file or you '
-                     'must configure it via :meth: `configure_lens_set_file`')
-        return
+        err_msg = ('You must provide the path to the lens_set file or you '
+                   'must configure it via configure_lens_set_file function')
+        logger.error(err_msg)
+        raise ValueError(err_msg)
     elif filename is None:
         filename = LENS_SET_FILE
     if not os.path.exists(filename):
-        logger.error('Provided invalid path for lens set file: %s', filename)
-        return
+        err_msg = ('Provided invalid path for lens set file: %s', filename)
+        logger.error(err_msg)
+        raise FileNotFoundError(err_msg)
     if os.stat(filename).st_size == 0:
-        logger.error('The file is empyt: %s', filename)
-        return
+        err_msg = ('The file is empyt: %s, use set_lens_set_to_file to write '
+                   'set lenses to the file.', filename)
+        logger.error(err_msg)
+        raise ValueError(err_msg)
     with open(filename) as lens_file:
-        sets = json.loads(lens_file.read())
+        try:
+            sets = json.loads(lens_file.read())
+        except json.decoder.JSONDecodeError as err:
+            logger.error('When getting the lens set: %s', err)
+            raise err
+
         if set_number_top_to_bot not in range(1, len(sets)):
-            logger.error('Provided and invalid set_number_top_to_bottom %s, '
-                         'please provide a number from 1 to %s ',
-                         set_number_top_to_bot, len(sets))
-            return
+            err_msg = ('Provided an invalid set_number_top_to_bottom %s,'
+                       'please provide a number from 1 to %s ',
+                       set_number_top_to_bot, len(sets))
+            logger.error(err_msg)
+            raise ValueError(err_msg)
     # if only one set in the list, return the list
     if not isinstance(sets[0], list):
         return sets
@@ -234,7 +245,7 @@ def set_lens_set_to_file(list_of_sets, filename,
     >>> list_of_sets = [[3, 0.0001, 1, 0.0002],
                         [1, 0.0001, 1, 0.0003, 1, 0.0005],
                         [2, 0.0001, 1, 0.0005]]
-    >>> set_lens_set_to_file(list_of_sets, ../path/to/lens_set)
+    >>> set_lens_set_to_file(list_of_sets, '../path/to/lens_set')
     """
     if filename is None and LENS_SET_FILE is None:
         logger.error('You must provide the path to the lens_set file or you '
@@ -251,7 +262,12 @@ def set_lens_set_to_file(list_of_sets, filename,
             logger.error('Something went wrong with copying the file %s', ex)
             pass
     with open(filename, 'w') as lens_file:
-        lens_file.write(json.dumps(list_of_sets))
+        try:
+            lens_file.write(json.dumps(list_of_sets))
+        except json.decoder.JSONDecodeError as err:
+            logger.error('Something went wrong when writing lens set to the '
+                         'file %s', err)
+            raise err
 
 
 def get_att_len(energy, material=None, density=None):

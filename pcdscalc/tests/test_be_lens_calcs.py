@@ -9,7 +9,7 @@ from pcdscalc import be_lens_calcs
 logger = logging.getLogger(__name__)
 
 PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set'
-BAD_PATH = '../lens_set'
+BAD_PATH = 'bad/path/to/lens_set'
 
 SETS_SAMPLE = [[3, 0.0001, 1, 0.0002],
                [1, 0.0001, 1, 0.0003, 1, 0.0005],
@@ -24,18 +24,35 @@ def test_configure_defaults():
 
 
 def test_configure_lens_set_bad_path():
-    with patch('os.path.exists', return_value=False):
-        res = be_lens_calcs.configure_lens_set_file(BAD_PATH)
-        assert res is None
-        assert be_lens_calcs.LENS_SET_FILE is None
+    with pytest.raises(FileNotFoundError):
+        be_lens_calcs.configure_lens_set_file(BAD_PATH)
 
-# leaving here for testing, but don't want to create this set in the lens_set
-# def test_get_lens_set_file_one_set():
-#     first_set = [3, 0.0001, 1, 0.0002]
-#     be_lens_calcs.set_lens_set_to_file(first_set, PATH)
-#     lens_set = be_lens_calcs.get_lens_set(1, PATH)
-#     logger.debug(f'result: {lens_set}')
-#     assert lens_set == first_set
+
+def test_get_lens_set_with_bad_path():
+    with pytest.raises(FileNotFoundError):
+        be_lens_calcs.get_lens_set(1, BAD_PATH)
+
+
+def test_get_lens_set_with_empty_file():
+    be_lens_calcs.set_lens_set_to_file("", PATH, False)
+    # file should be empty
+    with pytest.raises(ValueError):
+        be_lens_calcs.get_lens_set(1, PATH)
+
+
+def test_get_lens_set_file_one_set():
+    first_set = [3, 0.0001, 1, 0.0002]
+    be_lens_calcs.set_lens_set_to_file(first_set, PATH, False)
+    lens_set = be_lens_calcs.get_lens_set(1, PATH)
+    logger.debug(f'result: {lens_set}')
+    assert lens_set == first_set
+
+
+def test_lens_file_with_multiple_sets():
+    be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, False)
+    lens_set = be_lens_calcs.get_lens_set(2, PATH)
+    expected = [1, 0.0001, 1, 0.0003, 1, 0.0005]
+    assert expected == lens_set
 
 
 def test_configure_lens_set_file():
@@ -52,11 +69,9 @@ def test_get_lens_set():
 
 
 def test_get_lens_set_no_file():
-    # should just return because no file provided the LENS_SET_FILE is not
-    # configured
     be_lens_calcs.LENS_SET_FILE = None
-    res = be_lens_calcs.get_lens_set(1)
-    assert res is None
+    with pytest.raises(ValueError):
+        be_lens_calcs.get_lens_set(1)
 
 
 @pytest.mark.parametrize('energy_sample, expected', [
@@ -160,7 +175,7 @@ def test_calc_focal_length_with_no_file():
     # make sure the LENS_SET_FILE is none
     # should get an Exception
     be_lens_calcs.LENS_SET_FILE = None
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         be_lens_calcs.calc_focal_length(8, 1)
 
 
