@@ -310,6 +310,7 @@ def get_att_len(energy, material=None, density=None):
     0.004810113254120656
     """
     material = material or MATERIAL
+    density = density or xdb.atomic_density(material)
     try:
         # xdb.material_my returns absorption length in 1/cm and takes energy
         # or array of energies in eV.
@@ -1092,9 +1093,7 @@ def lens_transmission(r, fwhm, n=1, energy=None, id_material="IF1",
     trans : float
     """
     lens_thicknes = lens_thicknes or APEX_DISTANCE
-    id_material = check_id(id_material)
-    # TODO: what should I do with the energy here
-    # energy = getE(energy=energy, correctEv=True)
+    id_material = alias.get(id_material, id_material)
     waist = 2 * gaussian_fwhm_to_sigma(fwhm)
     x = np.linspace(-2 * fwhm, 2 * fwhm, 101)
     y = x
@@ -1110,35 +1109,15 @@ def lens_transmission(r, fwhm, n=1, energy=None, id_material="IF1",
                 * (x[2] - x[1]) ** 2
             )
             thickness[i, j] = (x[i] ** 2 + y[j] ** 2) / r + n * lens_thicknes
-    d = Density[id_material]
+    d = density.get(id_material)
     att_length = get_att_len(energy, id_material, d)
     trans_intensity = intensity * np.exp(-thickness / att_length)
     trans = np.sum(trans_intensity)
     return trans
 
 
-def check_id(id_material):
-    """
-    Check to see if you are using an alias.
-
-    Parameters
-    ----------
-    id : str
-        Chemical formula ID
-
-    Returns
-    -------
-    id : str
-        Chemical formula
-    """
-    try:
-        return alias[id_material]
-    except Exception:
-        return id_material
-
-
 # Material density in g/cm^3
-Density = {
+density = {
     "H": 0.00008988,
     "He": 0.0001785,
     "Li": 0.543,
