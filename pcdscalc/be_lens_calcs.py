@@ -972,6 +972,29 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     max_tot_number_of_lenses : int
     max_each : int
     focus_before_sample : bool
+
+    Examples
+    --------
+    >>> plan_set(energy=1, z_offset=-10, z_range=[1, 40],
+                           beam_size_unfocused=3, size_horizontal=9,
+                           size_vertical=None, exclude=[],
+                           max_tot_number_of_lenses=1,
+                           max_each=5, focus_before_sample=False)
+    0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+    1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+    2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+    3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+    4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+    5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+    6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+    7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+    8  4.27 10733237.2 38151078.0   0.0  1 x 3000um
+
+    Notes
+    -----
+    When providing a large number to `max_tot_number_of_lenses`,
+    it will take some time to run the calculations, for example:
+    `max_tot_number_of_lenses=25` will take ~ 2 min
     """
     global _plan_set_test_res
 
