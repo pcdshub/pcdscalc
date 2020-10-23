@@ -516,13 +516,14 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     size_fwhm = gaussian_sigma_to_fwhm(size) / 2.0
 
     if printsummary:
-        print("FWHM at lens   : %.3e" % (fwhm_unfocused))
-        print("waist          : %.3e" % (waist))
-        print("waist FWHM     : %.3e" % (waist * FWHM_SIGMA_CONVERSION / 2.0))
-        print("rayleigh_range : %.3e" % (rayleigh_range))
-        print("focal length   : %.3e" % (focal_length))
-        print("size           : %.3e" % (size))
-        print("size FWHM      : %.3e" % (size_fwhm))
+        logger.info("FWHM at lens   : %.3e" % (fwhm_unfocused))
+        logger.info("waist          : %.3e" % (waist))
+        logger.info("waist FWHM     : %.3e" %
+                    (waist * FWHM_SIGMA_CONVERSION / 2.0))
+        logger.info("rayleigh_range : %.3e" % (rayleigh_range))
+        logger.info("focal length   : %.3e" % (focal_length))
+        logger.info("size           : %.3e" % (size))
+        logger.info("size FWHM      : %.3e" % (size_fwhm))
 
     return size_fwhm
 
@@ -941,10 +942,11 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
 
-    print("waist          : %.3e" % waist)
-    print("waist FWHM     : %.3e" % (waist * FWHM_SIGMA_CONVERSION / 2.0))
-    print("rayleigh_range : %.3e" % rayleigh_range)
-    print("focal length   : %.3e" % focal_length)
+    logger.info("waist          : %.3e" % waist)
+    logger.info("waist FWHM     : %.3e" %
+                (waist * FWHM_SIGMA_CONVERSION / 2.0))
+    logger.info("rayleigh_range : %.3e" % rayleigh_range)
+    logger.info("focal length   : %.3e" % focal_length)
 
     w = gaussian_fwhm_to_sigma(spot_size_fwhm) * 2
     delta_z = rayleigh_range * np.sqrt((w / waist) ** 2 - 1)
@@ -1096,7 +1098,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
             ]
         )
         resstring += "\n"
-    print('\n %s', resstring)
+    logger.info('\n %s', resstring)
     _plan_set_test_res = num, f_m, min_um, max_um, t_percent
 
 
