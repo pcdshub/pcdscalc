@@ -45,7 +45,7 @@ def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
     Parameters
     -----------
     fwhm_unfocused : float, optional
-        Full width at half maximum unfocused
+        Full width at half maximum unfocused.
     disk_thickness : float, optional
     apex_distance : float, optional
     distance : float, optional
@@ -304,7 +304,7 @@ def get_att_len(energy, material=None, density=None):
     Returns
     -------
     att_len : float
-        Attenuation length
+        Attenuation length in meters
 
     Raises
     ------
@@ -385,7 +385,7 @@ def calc_focal_length_for_single_lens(energy, radius, material=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in in KeV
     radius : float
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
@@ -416,7 +416,7 @@ def calc_focal_length(energy, lens_set, material=None, density=None):
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2 ...]
     material : str, optional
@@ -465,7 +465,7 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     distance : float
@@ -479,12 +479,14 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP.
         This is about 900 microns at MEC.
+        Radial size of x-ray beam before focusing in meters.
     printsummary : bool, optional
         Prints summary of parameters/calculations if `True`.
 
     Returns
     -------
     size_fwhm : float
+        Beam Full Width at the Half Maximum in meters.
 
     Examples
     --------
@@ -539,9 +541,10 @@ def calc_distance_for_size(size_fwhm, lens_set, energy,
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     fwhm_unfocused : float, optional
-        This is about 400 microns at XPP
+        This is about 400 microns at XPP.
+        Radial size of x-ray beam before focusing in meters.
 
     Returns
     -------
@@ -615,7 +618,7 @@ def calc_trans_for_single_lens(energy, radius, material=None, density=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     radius : float
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
@@ -623,6 +626,7 @@ def calc_trans_for_single_lens(energy, radius, material=None, density=None,
         Material density in g/cm^3
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP.
+        Radial size of x-ray beam before focusing in meters.
     disk_thickness : float, optional
         Defaults to 1.0e-3
     apex_distance : float, optional
@@ -667,17 +671,12 @@ def calc_trans_lens_set(energy, lens_set, material=None, density=None,
     """
     Calculate  the transmission of a lens set.
 
-    These would allow us to estimate the total transmission of the lenses TODO:
-    where is this document is this message below still relevant?  There is
-    latex document that explains the formula.  Can be adapted to use different
-    thicknesses for each lens, and different apex distances, but this would
-    require changing the format of lens_set, which would mean changing a whole
-    bunch of other programs too.
+    These would allow us to estimate the total transmission of the lenses.
 
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     material : str, optional
@@ -744,14 +743,14 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     size_fwhm : float
     distance : float
     n_max : int, optional
     max_each : int, optional
     lens_radii : list, optional
     fwhm_unfocused : float, optional
-        This is about 400 microns at XPP. Defaults to 500e-6.
+        This is about 400 microns at XPP. Defaults to 500e-6. (in meters)
     eff_rad0 : float, optional
 
     Returns
@@ -908,7 +907,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     spot_size_fwhm :
@@ -964,9 +963,13 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     Parameters
     ----------
     energy : number
+        Beam energy in KeV
     z_offset : float
+        Distance from sample to lens_z=0 in meters
     z_range : list
+        array or tuple of 2 values: minimum and maximum z pos in meters
     beam_size_unfocused : float
+        Radial size of x-ray beam before focusing in meters
     size_horiz
     size_vert
     excluede : list
@@ -981,6 +984,8 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
                            size_vertical=None, exclude=[],
                            max_tot_number_of_lenses=1,
                            max_each=5, focus_before_sample=False)
+
+    N   foc_len/m   Min/um   Max/um   Trans/%  Set
     0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
     1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
     2  0.28 118998557.3 530266169.4   0.0  1 x 200um
@@ -991,7 +996,13 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
     8  4.27 10733237.2 38151078.0   0.0  1 x 3000um
 
-    Notes
+    Where:
+    `foc_len` - is the focal length in um
+    `Min` - Beam full width at half maximum for minimum z position
+    `Max` - Beam full width at half maximum for maximum z position
+    `Trans` - is the lens transmission in %.
+
+   Notes
     -----
     When providing a large number to `max_tot_number_of_lenses`,
     it will take some time to run the calculations, for example:
@@ -1058,7 +1069,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     distances = distances[good_sets]
     foclens = foc_lens[good_sets]
     transms = np.asarray(
-        [lens_transmission(r=ter, fwhm=beam_size_unfocused, energy=energy)
+        [lens_transmission(radius=ter, fwhm=beam_size_unfocused, energy=energy)
             for ter in effrads])
     Nlenses_s = np.sum(sets, 1)
 
@@ -1069,7 +1080,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     max_um = []
     t_percent = []
 
-    resstring = " N   f/m   Min/um   Max/um   T/%  Set  \n"
+    resstring = " N   foc_len/m   Min/um   Max/um   Trans/%  Set\n"
     zips = list(
         zip(sets, size_range_min, size_range_max,
             effrads, transms, Nlenses_s, foclens)
@@ -1101,7 +1112,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     _plan_set_test_res = num, f_m, min_um, max_um, t_percent
 
 
-def lens_transmission(r, fwhm, n=1, energy=None, id_material="IF1",
+def lens_transmission(radius, fwhm, num=1, energy=None, id_material="IF1",
                       lens_thicknes=None):
     """
     Find the CRL (Compound Refractive Lens) transmission.
@@ -1109,15 +1120,15 @@ def lens_transmission(r, fwhm, n=1, energy=None, id_material="IF1",
     Parameters
     ----------
     radius : float
-        Effective radius of curvature
+        Effective radius of curvature in meters
     fwhm : float
         Incident beam size on the lens in meters
     num : int
         Number of lenses in the stack
     energy : number
-        Photon energy
+        Photon energy in KeV
     id_material : str
-        Lens material
+        Lens material, Defaults to `IF1`
 
     Returns
     -------
@@ -1139,7 +1150,8 @@ def lens_transmission(r, fwhm, n=1, energy=None, id_material="IF1",
                 / np.pi
                 * (x[2] - x[1]) ** 2
             )
-            thickness[i, j] = (x[i] ** 2 + y[j] ** 2) / r + n * lens_thicknes
+            thickness[i, j] = ((x[i] ** 2 + y[j] ** 2) / radius + num *
+                               lens_thicknes)
     d = density.get(id_material)
     att_length = get_att_len(energy, id_material, d)
     trans_intensity = intensity * np.exp(-thickness / att_length)
