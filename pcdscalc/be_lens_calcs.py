@@ -23,9 +23,9 @@ LENS_SET_FILE = None
 
 # full width at half maximum unfocused (in meters)
 FWHM_UNFOCUSED = 500e-6
-# Disk Thickness
+# Disk Thickness in meters
 DISK_THICKNESS = 1.0e-3
-# Apex of the lens
+# Apex of the lens in meters
 APEX_DISTANCE = 30e-6
 # Distance from the lenses to the sample (in meters)
 DISTANCE = 4.0
@@ -47,7 +47,9 @@ def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
     fwhm_unfocused : float, optional
         Full width at half maximum unfocused in meters.
     disk_thickness : float, optional
+        Disk thickness in meters.
     apex_distance : float, optional
+        Apex Distance in meters.
     distance : float, optional
         Distance from the lenses to the sample in meters.
     material : str, optional
@@ -590,9 +592,9 @@ def calc_lens_aperture_radius(radius, disk_thickness=None,
     ----------
     radius : float
     disk_thickness : float, optional
-        Defaults to 1.0e-3
+        Disk Thickness in meters. Defaults to 1.0e-3.
     apex_distance : float, optional
-        Defaults to 30e-6
+        Apex Distance in meters. Defaults to 30e-6
 
     Returns
     -------
@@ -631,9 +633,9 @@ def calc_trans_for_single_lens(energy, radius, material=None, density=None,
         This is about 400 microns at XPP.
         Radial size of x-ray beam before focusing in meters.
     disk_thickness : float, optional
-        Defaults to 1.0e-3
+        Disk Thickness in meters. Defaults to 1.0e-3.
     apex_distance : float, optional
-        Defaults to 30e-6
+        Apex Distance in meters. Defaults to 30e-6.
 
     Returns
     -------
@@ -690,9 +692,9 @@ def calc_trans_lens_set(energy, lens_set, material=None, density=None,
         This is about 400 microns at XPP. Default = 900e-6
         Radial size of x-ray beam before focusing in meters.
     disk_thickness : float, optional
-        Defaults to 1.0e-3
+        Disk Thickness in meters. Defaults to 1.0e-3.
     apex_distance : float, optional
-        Defaults to 30e-6
+        Apex Distance in meters. Defaults to 30e-6.
 
     Returns
     -------
