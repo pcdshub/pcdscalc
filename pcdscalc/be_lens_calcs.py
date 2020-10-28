@@ -21,17 +21,17 @@ WAVELENGTH_PHOTON = 1.2398
 # to configure it to the correct path
 LENS_SET_FILE = None
 
-# full width at half maximum unfocused
+# full width at half maximum unfocused (in meters)
 FWHM_UNFOCUSED = 500e-6
 # Disk Thickness
 DISK_THICKNESS = 1.0e-3
 # Apex of the lens
 APEX_DISTANCE = 30e-6
-# Distance from the lenses to the sample
+# Distance from the lenses to the sample (in meters)
 DISTANCE = 4.0
 # Atomic symbol for element, defaults to 'Be'
 MATERIAL = 'Be'
-# Set of Be lenses with thicknesses.
+# Set of Be lenses with thicknesses (thicknesses in meters)
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6,
               500e-6, 1000e-6, 1500e-6, 2000e-6, 3000e-6]
 
@@ -45,15 +45,15 @@ def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
     Parameters
     -----------
     fwhm_unfocused : float, optional
-        Full width at half maximum unfocused.
+        Full width at half maximum unfocused in meters.
     disk_thickness : float, optional
     apex_distance : float, optional
     distance : float, optional
-        Distance from the lenses to the sample
+        Distance from the lenses to the sample in meters.
     material : str, optional
-        Atomic symbol for element, defaults to 'Be'
+        Atomic symbol for element, defaults to 'Be'.
     lens_radii : list
-         Set of Be lenses with thicknesses.
+         Set of Be lenses with thicknesses in meters.
 
     Examples
     --------
@@ -304,7 +304,7 @@ def get_att_len(energy, material=None, density=None):
     Returns
     -------
     att_len : float
-        Attenuation length in meters
+        Attenuation length (in meters)
 
     Raises
     ------
@@ -387,6 +387,7 @@ def calc_focal_length_for_single_lens(energy, radius, material=None,
     energy : number
         Beam Energy in in KeV
     radius : float
+        Radius of curvature (in meters)
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
     density : float, optional
@@ -469,9 +470,9 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     distance : float
-        Distance from the lenses to the sample is 3.852 m at XPP.
+        Distance from the lenses to the sample is 3.852 m at XPP. (in meters)
     source_distance : float, optional
-        Distance from source to lenses. This is about 160 m at XPP.
+        Distance from source to lenses. This is about 160 m at XPP. (in meters)
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
     density : float, optional
@@ -538,6 +539,7 @@ def calc_distance_for_size(size_fwhm, lens_set, energy,
     Parameters
     ----------
     size_fwhm : float
+        Beam Full Width at the Half Maximum in meters.
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     energy : number
@@ -549,6 +551,7 @@ def calc_distance_for_size(size_fwhm, lens_set, energy,
     Returns
     -------
     distance : float
+        Distance in meters
 
     Examples
     --------
@@ -685,6 +688,7 @@ def calc_trans_lens_set(energy, lens_set, material=None, density=None,
         Material density in g/cm^3
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP. Default = 900e-6
+        Radial size of x-ray beam before focusing in meters.
     disk_thickness : float, optional
         Defaults to 1.0e-3
     apex_distance : float, optional
@@ -745,12 +749,17 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
     energy : number
         Beam Energy in KeV
     size_fwhm : float
+        Beam Full Width at the Half Maximum. (in meters)
     distance : float
+        Distance from the lenses to the sample. (in meters)
     n_max : int, optional
+        Number of lenses.
     max_each : int, optional
     lens_radii : list, optional
+          [numer1, lensthick1, number2, lensthick2...]
     fwhm_unfocused : float, optional
-        This is about 400 microns at XPP. Defaults to 500e-6. (in meters)
+        This is about 400 microns at XPP. Defaults to 500e-6.
+        Radial size of x-ray beam before focusing in meters.
     eff_rad0 : float, optional
 
     Returns
@@ -830,6 +839,7 @@ def find_radius(energy, distance=None, material=None, density=None):
     Returns
     -------
     radius : float
+        Radius of curvature in meters.
 
     Examples
     --------
@@ -917,6 +927,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
         Material density in g/cm^3
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP. Defaults to 500e-6
+        Radial size of x-ray beam before focusing in meters.
 
     Returns
     -------
@@ -967,13 +978,14 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     z_offset : float
         Distance from sample to lens_z=0 in meters
     z_range : list
-        array or tuple of 2 values: minimum and maximum z pos in meters
+        Array or tuple of 2 values: minimum and maximum z pos in meters
     beam_size_unfocused : float
         Radial size of x-ray beam before focusing in meters
     size_horiz
     size_vert
-    excluede : list
+    exclude : list
     max_tot_number_of_lenses : int
+        Number of lenses.
     max_each : int
     focus_before_sample : bool
 
@@ -1002,7 +1014,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     `Max` - Beam full width at half maximum for maximum z position
     `Trans` - is the lens transmission in %.
 
-   Notes
+    Notes
     -----
     When providing a large number to `max_tot_number_of_lenses`,
     it will take some time to run the calculations, for example:
@@ -1129,10 +1141,13 @@ def lens_transmission(radius, fwhm, num=1, energy=None, id_material="IF1",
         Photon energy in KeV
     id_material : str
         Lens material, Defaults to `IF1`
+    lens_thickness : float
+        Lens thickness in meters
 
     Returns
     -------
     trans : float
+        Lens Transmission
     """
     lens_thicknes = lens_thicknes or APEX_DISTANCE
     id_material = alias.get(id_material, id_material)
