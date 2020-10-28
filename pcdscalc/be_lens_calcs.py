@@ -153,7 +153,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     Parameters
     ----------
     fwhm : float
-        Full Width at the Half Maximum
+        Full Width at the Half Maximum.
 
     Returns
     -------
@@ -239,7 +239,7 @@ def set_lens_set_to_file(list_of_sets, filename=None,
     Parameters
     ----------
     list_of_sets : list
-        List of lists with lens sets
+        List of lists with lens sets.
     filename : str, optional
         Path to the filename to set the lens sets list to.
         This should be a .npy format file.
@@ -966,7 +966,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
 
 
 def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
-             size_vertical=None, exclude=[], max_tot_number_of_lenses=25,
+             size_vertical=None, exclude=None, max_tot_number_of_lenses=25,
              max_each=5, focus_before_sample=False):
     """
     Macro to help plan for what lens set to use.
@@ -984,6 +984,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     size_horiz
     size_vert
     exclude : list
+        List with excluded sets of lenses
     max_tot_number_of_lenses : int
         Number of lenses.
     max_each : int
@@ -1021,6 +1022,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     `max_tot_number_of_lenses=25` will take ~ 2 min
     """
     global _plan_set_test_res
+    exclude = exclude or []
 
     if None in (z_offset, z_range, beam_size_unfocused):
         logger.error('Cannot plan_set. At least one of z_offset,'
