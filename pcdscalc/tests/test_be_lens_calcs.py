@@ -8,12 +8,12 @@ from pcdscalc import be_lens_calcs
 
 logger = logging.getLogger(__name__)
 
-PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set.npy'
-BAD_PATH = '../lens_set'
+PATH = os.path.dirname(__file__) + '/test_lens_sets/lens_set'
+BAD_PATH = 'bad/path/to/lens_set'
 
-SETS_SAMPLE = [(3, 0.0001, 1, 0.0002),
-               (1, 0.0001, 1, 0.0003, 1, 0.0005),
-               (2, 0.0001, 1, 0.0005)]
+SETS_SAMPLE = [[3, 0.0001, 1, 0.0002],
+               [1, 0.0001, 1, 0.0003, 1, 0.0005],
+               [2, 0.0001, 1, 0.0005]]
 
 
 def test_configure_defaults():
@@ -24,9 +24,35 @@ def test_configure_defaults():
 
 
 def test_configure_lens_set_bad_path():
-    res = be_lens_calcs.configure_lens_set_file(BAD_PATH)
-    assert res is None
-    assert be_lens_calcs.LENS_SET_FILE is None
+    with pytest.raises(FileNotFoundError):
+        be_lens_calcs.configure_lens_set_file(BAD_PATH)
+
+
+def test_get_lens_set_with_bad_path():
+    with pytest.raises(FileNotFoundError):
+        be_lens_calcs.get_lens_set(1, BAD_PATH)
+
+
+def test_get_lens_set_with_empty_file():
+    be_lens_calcs.set_lens_set_to_file("", PATH, False)
+    # file should be empty
+    with pytest.raises(ValueError):
+        be_lens_calcs.get_lens_set(1, PATH)
+
+
+def test_get_lens_set_file_one_set():
+    first_set = [3, 0.0001, 1, 0.0002]
+    be_lens_calcs.set_lens_set_to_file(first_set, PATH, False)
+    lens_set = be_lens_calcs.get_lens_set(1, PATH)
+    logger.debug(f'result: {lens_set}')
+    assert lens_set == first_set
+
+
+def test_lens_file_with_multiple_sets():
+    be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, False)
+    lens_set = be_lens_calcs.get_lens_set(2, PATH)
+    expected = [1, 0.0001, 1, 0.0003, 1, 0.0005]
+    assert expected == lens_set
 
 
 def test_configure_lens_set_file():
@@ -35,25 +61,17 @@ def test_configure_lens_set_file():
     assert be_lens_calcs.LENS_SET_FILE == res
 
 
-def test_set_lens_set_to_file():
-    be_lens_calcs.set_lens_set_to_file(SETS_SAMPLE, PATH, make_backup=False)
-    assert np.load(PATH, allow_pickle=True).all(
-    ) == np.array(SETS_SAMPLE, dtype=object).all()
-
-
 def test_get_lens_set():
-    first_set = (3, 0.0001, 1, 0.0002)
+    first_set = [3, 0.0001, 1, 0.0002]
     lens_set = be_lens_calcs.get_lens_set(1, PATH)
     logger.debug(f'result: {lens_set}')
     assert lens_set == first_set
 
 
 def test_get_lens_set_no_file():
-    # should just return because no file provided the LENS_SET_FILE is not
-    # configured
     be_lens_calcs.LENS_SET_FILE = None
-    res = be_lens_calcs.get_lens_set(1)
-    assert res is None
+    with pytest.raises(ValueError):
+        be_lens_calcs.get_lens_set(1)
 
 
 @pytest.mark.parametrize('energy_sample, expected', [
@@ -144,7 +162,7 @@ def test_calc_focal_length(energy_sample, lens_set, expected):
 
 
 def test_calc_focal_length_with_file_lens_set():
-    # expected_used_set = (3, 0.0001, 1, 0.0002)
+    # expected_used_set = [3, 0.0001, 1, 0.0002]
     with patch('pcdscalc.be_lens_calcs.get_lens_set',
                return_value=[3, 0.0001, 1, 0.0002]):
         expected = be_lens_calcs.calc_focal_length(8, [3, 0.0001, 1, 0.0002])
@@ -157,7 +175,7 @@ def test_calc_focal_length_with_no_file():
     # make sure the LENS_SET_FILE is none
     # should get an Exception
     be_lens_calcs.LENS_SET_FILE = None
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         be_lens_calcs.calc_focal_length(8, 1)
 
 
@@ -230,7 +248,7 @@ def test_calc_distance_for_size(energy, lens_set, fwhm_unf, size_fwhm, expect):
                                                energy=energy,
                                                fwhm_unfocused=fwhm_unf)
     logger.debug('Expected: %s, Received: %s', expect, dis)
-    assert np.isclose(dis, expect).all()
+    assert np.allclose(dis, expect)
 
 
 @pytest.mark.parametrize('energy_sample, distance, expected', [
@@ -345,7 +363,7 @@ def test_find_z_pos(energy, lens_set, spot_size_fwhm, expected):
     z_position = be_lens_calcs.find_z_pos(energy, lens_set, spot_size_fwhm,
                                           fwhm_unfocused=800e-6)
     logger.debug('Expected: %s, Received: %s', expected, z_position)
-    assert np.isclose(expected, z_position).all()
+    assert np.allclose(expected, z_position)
 
 
 def test_calc_lens_set():
@@ -356,21 +374,98 @@ def test_calc_lens_set():
                              [1, 0, 0, 0, 0]])
 
     expected_effrads = np.array([0.001, 0.0005, 0.0003, 0.0002, 0.0001])
-    expected_sizes = np.array([0.00047886, 0.00045743, 0.000429,
-                              0.00039348, 0.00028694])
-    expected_foclens = np.array([93.87107082, 46.93553541, 28.16132124,
-                                18.77421416,  9.38710708])
+    expected_sizes = np.array([0.00047885, 0.0004574, 0.00042894,
+                              0.0003934, 0.00028678])
+    expected_foclens = np.array([93.80033687, 46.90016844, 28.14010106,
+                                 18.76006737, 9.38003369])
 
     res = be_lens_calcs.calc_lens_set(energy=8, size_fwhm=2, distance=4,
                                       n_max=1, max_each=2,
                                       lens_radii=[100e-6, 200e-6, 300e-6,
                                                   500e-6, 1000e-6],
                                       fwhm_unfocused=0.0005, eff_rad0=None)
-    sets = res[0]
-    effrads = res[1]
-    sizes = res[2]
-    foclens = res[3]
-    assert sets.all() == expected_sets.all()
-    assert effrads.all() == expected_effrads.all()
-    assert sizes.all() == expected_sizes.all()
-    assert foclens.all() == expected_foclens.all()
+
+    sets, effrads, sizes, foclens = res
+
+    assert np.allclose(sets, expected_sets)
+    assert np.allclose(effrads, expected_effrads)
+    assert np.allclose(sizes, expected_sizes)
+    assert np.allclose(foclens, expected_foclens)
+
+
+@pytest.mark.parametrize('radius, fwhm, energy, expected', [
+                         pytest.param(2, 200e-6, 8, 0.9937771825941067),
+                         pytest.param(4, 500e-6, 9, 0.9953931501494162),
+                         pytest.param(6, 300e-6, 10, 0.9964134300156009)
+                         ])
+def test_lens_transmission(radius, fwhm, energy, expected):
+    res = be_lens_calcs.lens_transmission(radius=radius, fwhm=fwhm,
+                                          id_material='Be', energy=energy)
+    logger.debug('Expected: %s Received: %s', expected, res)
+    assert np.isclose(expected, res)
+
+
+def test_plan_set():
+    be_lens_calcs.plan_set(energy=1, z_offset=-10, z_range=[1, 40],
+                           beam_size_unfocused=3, size_horizontal=9,
+                           size_vertical=None, exclude=[],
+                           max_tot_number_of_lenses=1,
+                           max_each=5, focus_before_sample=False)
+
+    num, f_m, min_um, max_um, t_percent = be_lens_calcs._plan_set_test_res
+    f_m = [round(num, 2) for num in f_m]
+    min_um = [round(num, 1) for num in min_um]
+    max_um = [round(num, 1) for num in max_um]
+    t_percent = [round(num, 1) for num in t_percent]
+
+    expected_num = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    expected_f_m = [0.07, 0.14, 0.28, 0.43, 0.71, 1.42, 2.13, 2.84, 4.27]
+    expected_min_um = [466994229.0, 234997114.5, 118998557.3, 80332371.5,
+                       49399422.9, 26199711.5, 18466474.3, 14599855.7,
+                       10733237.2]
+    expected_max_um = [2112064677.4, 1057532338.7,
+                       530266169.4, 354510779.6, 213906467.7, 108453233.9,
+                       73302155.9, 55726616.9, 38151078.0]
+
+    expected_t_percent = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    assert num == expected_num
+    assert np.allclose(f_m, expected_f_m)
+    assert np.allclose(min_um, expected_min_um)
+    assert np.allclose(max_um, expected_max_um)
+    assert np.allclose(t_percent, expected_t_percent)
+
+# Expected based on old code but new get_att_len and get_delta
+#  N   f/m   Min/um   Max/um   T/%  Set
+#  0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+#  1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+#  2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+#  3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+#  4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+#  5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+#  6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+#  7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+#  8  4.27 10733237.2 38151078.0   0.0  1 x 3000um
+
+# Expected with the old get_att_len and old get_delta
+#  N   f/m   Min/um   Max/um   T/%  Set
+#  0  0.07 468209535.3 2117588796.8   0.0  1 x 50um
+#  1  0.14 235604767.7 1060294398.4   0.0  1 x 100um
+#  2  0.28 119302383.8 531647199.2   0.0  1 x 200um
+#  3  0.43 80534922.6 355431466.1   0.0  1 x 300um
+#  4  0.71 49520953.5 214458879.7   0.0  1 x 500um
+#  5  1.42 26260476.8 108729439.8   0.0  1 x 1000um
+#  6  2.13 18506984.5 73486293.2   0.0  1 x 1500um
+#  7  2.84 14630238.4 55864719.9   0.0  1 x 2000um
+#  8  4.26 10753492.3 38243146.6   0.0  1 x 3000um
+# Got
+# N   f/m   Min/um   Max/um   T/% Set
+# 0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+# 1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+# 2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+# 3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+# 4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+# 5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+# 6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+# 7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+#  8  4.27 10733237.2 38151078.0   0.0  1 x 3000um

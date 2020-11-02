@@ -40,23 +40,31 @@ Configure the defaults used for calculations:
 
 Configure the path to the lens_set file that will be used in multiple calculations:
 
->>> be.configure_lens_set_file('/path/for/current/be_lens_file.npy')
+>>> be.configure_lens_set_file('/path/for/current/be_lens_file')
 
-Store sets in the `be_lens_file.npy`:
+Store sets in the `be_lens_file`:
 
->>> sets_list_of_tuples = [(3, 0.0001, 1, 0.0002),
-                           (1, 0.0001, 1, 0.0003),
-                           (2, 0.0001, 1, 0.0005)]
->>> set_lens_set_to_file(sets_list_of_tuples)
+>>> sets_list = [[3, 0.0001, 1, 0.0002],
+                 [1, 0.0001, 1, 0.0003],
+                 [2, 0.0001, 1, 0.0005]]
+>>> set_lens_set_to_file(sets_list)
 
-Get the first set that was stored in the `be_lens_file.npy`:
+Get the first set that was stored in the `be_lens_file`:
 
 >>> be.get_lens_set(1)
-(3, 0.0001, 1, 0.0002)
+[3, 0.0001, 1, 0.0002]
+
+Get the whole stack of lens sets from the `be_lens_file`:
+
+>>> be.get_lens_set(None, get_all=True)
+[[3, 0.0001, 1, 0.0002],
+ [1, 0.0001, 1, 0.0003, 1, 0.0005],
+ [2, 0.0001, 1, 0.0005]]
 
 .. note::
 
-   The Be lens holders can take 3 different sets that could be set before experiments so that only the relevant beamline section is vented once. These sets can be stored in a `.npy` file with the :meth:`pcdscalc.be_lens_cals.set_lens_set_to_file` function, and they can be accessed in other calculations with :func:`pcsdcalc.be_lens_cals.get_lens_set`. The `.npy` file containing the lens sets could be then saved to a specific experiment so users know which stack was used for the beamtime.
+   The Be lens holders can take 3 different sets that could be set before experiments so that only the relevant beamline section is vented once. These sets can be stored in a file with the :meth:`pcdscalc.be_lens_cals.set_lens_set_to_file` function, and they can be accessed in other calculations with :func:`pcsdcalc.be_lens_cals.get_lens_set`. The file containing the lens sets could be then saved to a specific experiment so users know which stack was used for the beamtime.
+
 
 For more examples please look at each individual function's `Example` section. 
 

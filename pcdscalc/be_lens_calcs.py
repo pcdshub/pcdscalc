@@ -1,14 +1,17 @@
 """Module for Beryllium Lens Calculations."""
+import json
 import logging
 import os
 import shutil
 from datetime import date
-from itertools import product
+from itertools import chain, product
 
 import numpy as np
 import xraydb as xdb
 
 logger = logging.getLogger(__name__)
+# global variable to help with testing the plan_set function
+_plan_set_test_res = None
 
 # Constant for converting between FWHM and sigma of a Gaussian function.
 FWHM_SIGMA_CONVERSION = 2.35482004503
@@ -18,17 +21,17 @@ WAVELENGTH_PHOTON = 1.2398
 # to configure it to the correct path
 LENS_SET_FILE = None
 
-# full width at half maximum unfocused
+# full width at half maximum unfocused (in meters)
 FWHM_UNFOCUSED = 500e-6
-# Disk Thickness
+# Disk Thickness in meters
 DISK_THICKNESS = 1.0e-3
-# Apex of the lens
+# Apex of the lens in meters
 APEX_DISTANCE = 30e-6
-# Distance from the lenses to the sample
+# Distance from the lenses to the sample (in meters)
 DISTANCE = 4.0
 # Atomic symbol for element, defaults to 'Be'
 MATERIAL = 'Be'
-# Set of Be lenses with thicknesses.
+# Set of Be lenses with thicknesses (thicknesses in meters)
 LENS_RADII = [50e-6, 100e-6, 200e-6, 300e-6,
               500e-6, 1000e-6, 1500e-6, 2000e-6, 3000e-6]
 
@@ -42,15 +45,17 @@ def configure_defaults(fwhm_unfocused=None, disk_thickness=None,
     Parameters
     -----------
     fwhm_unfocused : float, optional
-        Full width at half maximum unfocused
+        Full width at half maximum unfocused in meters.
     disk_thickness : float, optional
+        Disk thickness in meters.
     apex_distance : float, optional
+        Apex Distance in meters.
     distance : float, optional
-        Distance from the lenses to the sample
+        Distance from the lenses to the sample in meters.
     material : str, optional
-        Atomic symbol for element, defaults to 'Be'
+        Atomic symbol for element, defaults to 'Be'.
     lens_radii : list
-         Set of Be lenses with thicknesses.
+         Set of Be lenses with thicknesses in meters.
 
     Examples
     --------
@@ -78,20 +83,13 @@ def configure_lens_set_file(lens_file_path):
     Parameters
     ----------
     lens_file_path : str
-        Path to the lens_set file in NumPy .npy format.
-        This is a binary file generated with `numpy.save` which saves an array
-        to a binary file in NumPy .npy format.
+        Path to the lens_set file.
     """
     global LENS_SET_FILE
     if not os.path.exists(lens_file_path):
-        logger.error('Provided invalid path for lens set file: %s',
-                     lens_file_path)
-        return
-    abs_path = os.path.abspath(lens_file_path)
-    file_name = os.path.basename(abs_path)
-    if not file_name.lower().endswith('.npy'):
-        logger.error('Must provide a NumPy .npy format file')
-        return
+        err_msg = f'Provided invalid path for lens set file: {lens_file_path}'
+        logger.error(err_msg)
+        raise FileNotFoundError(err_msg)
     LENS_SET_FILE = os.path.abspath(lens_file_path)
     return LENS_SET_FILE
 
@@ -156,7 +154,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     Parameters
     ----------
     fwhm : float
-        Full Width at the Half Maximum
+        Full Width at the Half Maximum.
 
     Returns
     -------
@@ -170,7 +168,7 @@ def gaussian_fwhm_to_sigma(fwhm):
     return fwhm / FWHM_SIGMA_CONVERSION
 
 
-def get_lens_set(set_number_top_to_bot, filename=None):
+def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
     """
     Get the lens set from the file provided.
 
@@ -181,8 +179,8 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         before experiments, this is to specify what number set.
     filename : str, optional
         File path of the lens_set file.
-        This is a binary file generated with `numpy.save` which saves an array
-        to a binary file in NumPy .npy format.
+    get_all : bool
+        Indicates if it should return the entire stack of lens.
 
     Returns
     -------
@@ -190,28 +188,45 @@ def get_lens_set(set_number_top_to_bot, filename=None):
         [numer1, lensthick1, number2, lensthick2 ...]
     """
     if filename is None and LENS_SET_FILE is None:
-        logger.error('You must provide the path to the lens_set file or you '
-                     'must configure it via :meth: `configure_lens_set_file`')
-        return
+        err_msg = ('You must provide the path to the lens_set file or you '
+                   'must configure it via configure_lens_set_file function')
+        logger.error(err_msg)
+        raise ValueError(err_msg)
     elif filename is None:
         filename = LENS_SET_FILE
     if not os.path.exists(filename):
-        logger.error('Provided invalid path for lens set file: %s', filename)
-        return
+        err_msg = f'Provided invalid path for lens set file: {filename}'
+        logger.error(err_msg)
+        raise FileNotFoundError(err_msg)
     if os.stat(filename).st_size == 0:
-        logger.error('The file is empyt: %s', filename)
-        return
-    with open(filename, 'rb') as lens_file:
-        sets = np.load(lens_file, allow_pickle=True)
-        if set_number_top_to_bot not in range(1, sets.shape[0]):
-            logger.error('Provided and invalid set_number_top_to_bottom %s, '
-                         'please provide a number from 1 to %s ',
-                         set_number_top_to_bot, sets.shape[0])
-            return
-    return sets[set_number_top_to_bot - 1]
+        err_msg = (f'The file is empty: {filename}, use set_lens_set_to_file '
+                   'to write set lenses to the file.')
+        logger.error(err_msg)
+        raise ValueError(err_msg)
+    with open(filename) as lens_file:
+        try:
+            sets = json.loads(lens_file.read())
+        except json.decoder.JSONDecodeError as err:
+            logger.error('When getting the lens set: %s', err)
+            raise err
+
+        if get_all:
+            return sets
+
+        if set_number_top_to_bot not in range(1, len(sets)):
+            err_msg = ('Provided an invalid set_number_top_to_bottom: '
+                       f'{set_number_top_to_bot}, please provide a number '
+                       f'from 1 to {len(sets)}')
+            logger.error(err_msg)
+            raise ValueError(err_msg)
+    # if only one set in the list, return the list
+    if not isinstance(sets[0], list):
+        return sets
+    else:
+        return sets[set_number_top_to_bot - 1]
 
 
-def set_lens_set_to_file(sets_list_of_tuples, filename,
+def set_lens_set_to_file(list_of_sets, filename=None,
                          make_backup=True):
     """
     Write lens set to a file.
@@ -224,8 +239,8 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
 
     Parameters
     ----------
-    sets_list_of_tuples : list
-        List with tuples for lens sets
+    list_of_sets : list
+        List of lists with lens sets.
     filename : str, optional
         Path to the filename to set the lens sets list to.
         This should be a .npy format file.
@@ -235,10 +250,10 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
 
     Examples
     --------
-    >>> sets_list_of_tuples = [(3, 0.0001, 1, 0.0002),
-                               (1, 0.0001, 1, 0.0003, 1, 0.0005),
-                               (2, 0.0001, 1, 0.0005)]
-    >>> set_lens_set_to_file(sets_list_of_tuples, ../path/to/lens_set)
+    >>> list_of_sets = [[3, 0.0001, 1, 0.0002],
+                        [1, 0.0001, 1, 0.0003, 1, 0.0005],
+                        [2, 0.0001, 1, 0.0005]]
+    >>> set_lens_set_to_file(list_of_sets, '../path/to/lens_set')
     """
     if filename is None and LENS_SET_FILE is None:
         logger.error('You must provide the path to the lens_set file or you '
@@ -254,9 +269,13 @@ def set_lens_set_to_file(sets_list_of_tuples, filename,
         except Exception as ex:
             logger.error('Something went wrong with copying the file %s', ex)
             pass
-    with open(filename, 'wb') as lens_file:
-        np.save(lens_file, np.array(sets_list_of_tuples, dtype=object),
-                allow_pickle=True)
+    with open(filename, 'w') as lens_file:
+        try:
+            lens_file.write(json.dumps(list_of_sets))
+        except json.decoder.JSONDecodeError as err:
+            logger.error('Something went wrong when writing lens set to the '
+                         'file %s', err)
+            raise err
 
 
 def get_att_len(energy, material=None, density=None):
@@ -286,7 +305,7 @@ def get_att_len(energy, material=None, density=None):
     Returns
     -------
     att_len : float
-        Attenuation length
+        Attenuation length (in meters)
 
     Raises
     ------
@@ -299,6 +318,7 @@ def get_att_len(energy, material=None, density=None):
     0.004810113254120656
     """
     material = material or MATERIAL
+    density = density or xdb.atomic_density(material)
     try:
         # xdb.material_my returns absorption length in 1/cm and takes energy
         # or array of energies in eV.
@@ -366,8 +386,9 @@ def calc_focal_length_for_single_lens(energy, radius, material=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in in KeV
     radius : float
+        Radius of curvature (in meters)
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
     density : float, optional
@@ -397,7 +418,7 @@ def calc_focal_length(energy, lens_set, material=None, density=None):
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2 ...]
     material : str, optional
@@ -446,13 +467,13 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     distance : float
-        Distance from the lenses to the sample is 3.852 m at XPP.
+        Distance from the lenses to the sample is 3.852 m at XPP. (in meters)
     source_distance : float, optional
-        Distance from source to lenses. This is about 160 m at XPP.
+        Distance from source to lenses. This is about 160 m at XPP. (in meters)
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
     density : float, optional
@@ -460,12 +481,14 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP.
         This is about 900 microns at MEC.
+        Radial size of x-ray beam before focusing in meters.
     printsummary : bool, optional
         Prints summary of parameters/calculations if `True`.
 
     Returns
     -------
     size_fwhm : float
+        Beam Full Width at the Half Maximum in meters.
 
     Examples
     --------
@@ -497,14 +520,14 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     size_fwhm = gaussian_sigma_to_fwhm(size) / 2.0
 
     if printsummary:
-        logger.info("FWHM at lens   : %.3e" % (fwhm_unfocused))
-        logger.info("waist          : %.3e" % (waist))
-        logger.info("waist FWHM     : %.3e" % (waist
-                                               * FWHM_SIGMA_CONVERSION / 2.0))
-        logger.info("rayleigh_range : %.3e" % (rayleigh_range))
-        logger.info("focal length   : %.3e" % (focal_length))
-        logger.info("size           : %.3e" % (size))
-        logger.info("size FWHM      : %.3e" % (size_fwhm))
+        logger.info("FWHM at lens   : %.3e", fwhm_unfocused)
+        logger.info("waist          : %.3e", waist)
+        logger.info("waist FWHM     : %.3e",
+                    waist * FWHM_SIGMA_CONVERSION / 2.0)
+        logger.info("rayleigh_range : %.3e", rayleigh_range)
+        logger.info("focal length   : %.3e", focal_length)
+        logger.info("size           : %.3e", size)
+        logger.info("size FWHM      : %.3e", size_fwhm)
 
     return size_fwhm
 
@@ -517,16 +540,19 @@ def calc_distance_for_size(size_fwhm, lens_set, energy,
     Parameters
     ----------
     size_fwhm : float
+        Beam Full Width at the Half Maximum in meters.
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     fwhm_unfocused : float, optional
-        This is about 400 microns at XPP
+        This is about 400 microns at XPP.
+        Radial size of x-ray beam before focusing in meters.
 
     Returns
     -------
     distance : float
+        Distance in meters
 
     Examples
     --------
@@ -565,9 +591,9 @@ def calc_lens_aperture_radius(radius, disk_thickness=None,
     ----------
     radius : float
     disk_thickness : float, optional
-        Defaults to 1.0e-3
+        Disk Thickness in meters. Defaults to 1.0e-3.
     apex_distance : float, optional
-        Defaults to 30e-6
+        Apex Distance in meters. Defaults to 30e-6
 
     Returns
     -------
@@ -596,7 +622,7 @@ def calc_trans_for_single_lens(energy, radius, material=None, density=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     radius : float
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
@@ -604,10 +630,11 @@ def calc_trans_for_single_lens(energy, radius, material=None, density=None,
         Material density in g/cm^3
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP.
+        Radial size of x-ray beam before focusing in meters.
     disk_thickness : float, optional
-        Defaults to 1.0e-3
+        Disk Thickness in meters. Defaults to 1.0e-3.
     apex_distance : float, optional
-        Defaults to 30e-6
+        Apex Distance in meters. Defaults to 30e-6.
 
     Returns
     -------
@@ -648,17 +675,12 @@ def calc_trans_lens_set(energy, lens_set, material=None, density=None,
     """
     Calculate  the transmission of a lens set.
 
-    These would allow us to estimate the total transmission of the lenses TODO:
-    where is this document is this message below still relevant?  There is
-    latex document that explains the formula.  Can be adapted to use different
-    thicknesses for each lens, and different apex distances, but this would
-    require changing the format of lens_set, which would mean changing a whole
-    bunch of other programs too.
+    These would allow us to estimate the total transmission of the lenses.
 
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     material : str, optional
@@ -667,10 +689,11 @@ def calc_trans_lens_set(energy, lens_set, material=None, density=None,
         Material density in g/cm^3
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP. Default = 900e-6
+        Radial size of x-ray beam before focusing in meters.
     disk_thickness : float, optional
-        Defaults to 1.0e-3
+        Disk Thickness in meters. Defaults to 1.0e-3.
     apex_distance : float, optional
-        Defaults to 30e-6
+        Apex Distance in meters. Defaults to 30e-6.
 
     Returns
     -------
@@ -725,14 +748,19 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     size_fwhm : float
+        Beam Full Width at the Half Maximum. (in meters)
     distance : float
+        Distance from the lenses to the sample. (in meters)
     n_max : int, optional
+        Number of lenses.
     max_each : int, optional
     lens_radii : list, optional
+          [numer1, lensthick1, number2, lensthick2...]
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP. Defaults to 500e-6.
+        Radial size of x-ray beam before focusing in meters.
     eff_rad0 : float, optional
 
     Returns
@@ -769,18 +797,16 @@ def calc_lens_set(energy, size_fwhm, distance, n_max=25, max_each=5,
                     sets[ind] = num
                 else:
                     continue
-            elif teff_rad is not None:
+            else:
                 eff_rads.append(teff_rad)
                 sets.append(num)
-                size_fwhm = calc_beam_fwhm(energy, lens_set + [1, eff_rad0],
-                                           distance=distance,
-                                           source_distance=None,
-                                           fwhm_unfocused=fwhm_unfocused,
-                                           printsummary=False)
-                sizes.append(size_fwhm)
-                focal_length = calc_focal_length(energy,
-                                                 lens_set + [1, eff_rad0])
-                foc_lens.append(focal_length)
+                sizes.append(calc_beam_fwhm(energy, lens_set + [1, eff_rad0],
+                                            distance=distance,
+                                            source_distance=None,
+                                            fwhm_unfocused=fwhm_unfocused,
+                                            printsummary=False))
+                foc_lens.append(calc_focal_length(energy,
+                                                  lens_set + [1, eff_rad0]))
 
     sizes = np.asarray(sizes)
     sets = np.asarray(sets)
@@ -814,6 +840,7 @@ def find_radius(energy, distance=None, material=None, density=None):
     Returns
     -------
     radius : float
+        Radius of curvature in meters.
 
     Examples
     --------
@@ -891,7 +918,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     Parameters
     ----------
     energy : number
-        Beam Energy
+        Beam Energy in KeV
     lens_set : list
         [numer1, lensthick1, number2, lensthick2...]
     spot_size_fwhm :
@@ -901,6 +928,7 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
         Material density in g/cm^3
     fwhm_unfocused : float, optional
         This is about 400 microns at XPP. Defaults to 500e-6
+        Radial size of x-ray beam before focusing in meters.
 
     Returns
     -------
@@ -925,11 +953,10 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     waist = lam / np.pi * focal_length / w_unfocused
     rayleigh_range = np.pi * waist ** 2 / lam
 
-    logger.info("waist          : %.3e" % waist)
-    logger.info("waist FWHM     : %.3e" % (waist
-                                           * FWHM_SIGMA_CONVERSION / 2.0))
-    logger.info("rayleigh_range : %.3e" % rayleigh_range)
-    logger.info("focal length   : %.3e" % focal_length)
+    logger.info("waist          : %.3e", waist)
+    logger.info("waist FWHM     : %.3e", waist * FWHM_SIGMA_CONVERSION / 2.0)
+    logger.info("rayleigh_range : %.3e", rayleigh_range)
+    logger.info("focal length   : %.3e", focal_length)
 
     w = gaussian_fwhm_to_sigma(spot_size_fwhm) * 2
     delta_z = rayleigh_range * np.sqrt((w / waist) ** 2 - 1)
@@ -937,3 +964,417 @@ def find_z_pos(energy, lens_set, spot_size_fwhm, material=None,
     z2 = focal_length + delta_z
     z_position = (z1, z2)
     return z_position
+
+
+def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
+             size_vertical=None, exclude=None, max_tot_number_of_lenses=25,
+             max_each=5, focus_before_sample=False):
+    """
+    Macro to help plan for what lens set to use.
+
+    Parameters
+    ----------
+    energy : number
+        Beam energy in KeV
+    z_offset : float
+        Distance from sample to lens_z=0 in meters
+    z_range : list
+        Array or tuple of 2 values: minimum and maximum z pos in meters
+    beam_size_unfocused : float
+        Radial size of x-ray beam before focusing in meters
+    size_horizontal : array-like
+    size_vertical : None, int or tuple of ints, optional
+    exclude : list
+        List with excluded sets of lenses
+    max_tot_number_of_lenses : int
+        Number of lenses.
+    max_each : int
+    focus_before_sample : bool
+
+    Examples
+    --------
+    >>> plan_set(energy=1, z_offset=-10, z_range=[1, 40],
+                           beam_size_unfocused=3, size_horizontal=9,
+                           size_vertical=None, exclude=[],
+                           max_tot_number_of_lenses=1,
+                           max_each=5, focus_before_sample=False)
+
+    N   foc_len/m   Min/um   Max/um   Trans/%  Set
+    0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+    1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+    2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+    3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+    4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+    5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+    6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+    7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+    8  4.27 10733237.2 38151078.0   0.0  1 x 3000um
+
+    Where:
+    `foc_len` - is the focal length in um
+    `Min` - Beam full width at half maximum for minimum z position
+    `Max` - Beam full width at half maximum for maximum z position
+    `Trans` - is the lens transmission in %.
+
+    Notes
+    -----
+    When providing a large number to `max_tot_number_of_lenses`,
+    it will take some time to run the calculations, for example:
+    `max_tot_number_of_lenses=25` will take ~ 2 min
+    """
+    global _plan_set_test_res
+    exclude = exclude or []
+
+    if None in (z_offset, z_range, beam_size_unfocused):
+        logger.error('Cannot plan_set. At least one of z_offset,'
+                     ' z_range, beam_size_unfocused not defined.')
+        return
+    focus_before_sample = int(focus_before_sample)
+    if size_vertical is not None:
+        size_calc_1 = np.max(size_horizontal, size_vertical)
+    else:
+        size_calc_1 = size_horizontal
+
+    t_lens_radii = LENS_RADII
+    for rad in exclude:
+        t_lens_radii.remove(rad)
+
+    sets, effrads, sizes, foc_lens = calc_lens_set(
+        energy=energy,
+        size_fwhm=size_calc_1,
+        distance=z_offset,
+        n_max=max_tot_number_of_lenses,
+        max_each=max_each,
+        lens_radii=LENS_RADII,
+    )
+
+    distances = np.asarray([
+            calc_distance_for_size(
+                size_calc_1,
+                list(chain(*list(zip(set, t_lens_radii)))),
+                energy=energy,
+                fwhm_unfocused=beam_size_unfocused,
+            )[focus_before_sample] for set in sets])
+
+    good_sets = np.logical_and(
+        distances > np.min(z_offset + np.asarray(z_range)),
+        distances < np.max(z_offset + np.asarray(z_range)))
+
+    sets = sets[good_sets]
+    size_range_min = np.asarray([
+            calc_beam_fwhm(
+                energy,
+                list(chain(*list(zip(set, t_lens_radii)))),
+                distance=z_offset - min(z_range),
+                fwhm_unfocused=beam_size_unfocused,
+                printsummary=False,
+            ) for set in sets])
+
+    size_range_max = np.asarray([
+        calc_beam_fwhm(
+            energy,
+            list(chain(*list(zip(set, t_lens_radii)))),
+            distance=z_offset - max(z_range),
+            fwhm_unfocused=beam_size_unfocused,
+            printsummary=False,
+        ) for set in sets])
+
+    sizes = sizes[good_sets]
+    effrads = effrads[good_sets]
+    distances = distances[good_sets]
+    foclens = foc_lens[good_sets]
+    transms = np.asarray(
+        [lens_transmission(radius=ter, fwhm=beam_size_unfocused, energy=energy)
+            for ter in effrads])
+    Nlenses_s = np.sum(sets, 1)
+
+    # used for testing
+    num = []
+    f_m = []
+    min_um = []
+    max_um = []
+    t_percent = []
+
+    resstring = " N   foc_len/m   Min/um   Max/um   Trans/%  Set\n"
+    zips = list(
+        zip(sets, size_range_min, size_range_max,
+            effrads, transms, Nlenses_s, foclens)
+    )
+
+    t = "{:2d} {:5.2f} {:8.1f} {:8.1f} {:5.1f}  "
+    for n, z in enumerate(zips):
+        the_set, sizemin, sizemax, eff_rad, transm, n_lenses, foclen = z
+        logger.debug('eff_rad: %s', eff_rad)
+        logger.debug('n_lenses: %s', n_lenses)
+
+        num.append(n)
+        f_m.append(foclen)
+        min_um.append(sizemin * 1e6)
+        max_um.append(sizemax * 1e6)
+        t_percent.append(transm * 100)
+
+        resstring += t.format(n, foclen, sizemin * 1e6,
+                              sizemax * 1e6, transm * 100)
+        resstring += ", ".join(
+            [
+                "%d x %dum" % (setLensno, t_lens_radii[m] * 1e6)
+                for m, setLensno in enumerate(the_set)
+                if setLensno > 0
+            ]
+        )
+        resstring += "\n"
+    logger.info('\n %s', resstring)
+    _plan_set_test_res = num, f_m, min_um, max_um, t_percent
+
+
+def lens_transmission(radius, fwhm, num=1, energy=None, id_material="IF1",
+                      lens_thicknes=None):
+    """
+    Find the CRL (Compound Refractive Lens) transmission.
+
+    Parameters
+    ----------
+    radius : float
+        Effective radius of curvature in meters
+    fwhm : float
+        Incident beam size on the lens in meters
+    num : int
+        Number of lenses in the stack
+    energy : number
+        Photon energy in KeV
+    id_material : str
+        Lens material, Defaults to `IF1`
+    lens_thickness : float
+        Lens thickness in meters
+
+    Returns
+    -------
+    trans : float
+        Lens Transmission
+    """
+    lens_thicknes = lens_thicknes or APEX_DISTANCE
+    id_material = alias.get(id_material, id_material)
+    waist = 2 * gaussian_fwhm_to_sigma(fwhm)
+    x = np.linspace(-2 * fwhm, 2 * fwhm, 101)
+    y = x
+    intensity = np.zeros((len(x), len(y)))
+    thickness = np.zeros((len(x), len(y)))
+    for i in range(len(x)):
+        for j in range(len(y)):
+            intensity[i, j] = (
+                np.abs(np.exp(-2 * (x[i] ** 2 + y[j] ** 2) / waist ** 2))
+                * 2
+                / waist ** 2
+                / np.pi
+                * (x[2] - x[1]) ** 2
+            )
+            thickness[i, j] = ((x[i] ** 2 + y[j] ** 2) / radius + num *
+                               lens_thicknes)
+    d = density.get(id_material)
+    att_length = get_att_len(energy, id_material, d)
+    trans_intensity = intensity * np.exp(-thickness / att_length)
+    trans = np.sum(trans_intensity)
+    return trans
+
+
+# Material density in g/cm^3
+density = {
+    "H": 0.00008988,
+    "He": 0.0001785,
+    "Li": 0.543,
+    "Be": 1.85,
+    "B": 2.34,
+    "C": 3.5,
+    "N": 0.0012506,
+    "O": 0.001429,
+    "F": 0.001696,
+    "Ne": 0.0008999,
+    "Na": 0.971,
+    "Mg": 1.738,
+    "Al": 2.698,
+    "Si": 2.3296,
+    "P": 1.82,
+    "S": 2.067,
+    "Cl": 0.003214,
+    "Ar": 0.0017837,
+    "K": 0.862,
+    "Ca": 1.54,
+    "Sc": 2.989,
+    "Ti": 4.54,
+    "V": 6.11,
+    "Cr": 7.15,
+    "Mn": 7.44,
+    "Fe": 7.874,
+    "Co": 8.86,
+    "Ni": 8.912,
+    "Cu": 8.96,
+    "Zn": 7.134,
+    "Ga": 5.907,
+    "Ge": 5.323,
+    "As": 5.776,
+    "Se": 4.809,
+    "Br": 3.122,
+    "Kr": 0.003733,
+    "Rb": 1.532,
+    "Sr": 2.64,
+    "Y": 4.469,
+    "Zr": 6.506,
+    "Nb": 8.57,
+    "Mo": 10.22,
+    "Tc": 11.5,
+    "Ru": 12.37,
+    "Rh": 12.41,
+    "Pd": 12.02,
+    "Ag": 10.501,
+    "Cd": 8.69,
+    "In": 7.31,
+    "Sn": 7.287,
+    "Sb": 6.685,
+    "Te": 6.232,
+    "I": 4.93,
+    "Xe": 0.005887,
+    "Cs": 1.873,
+    "Ba": 3.594,
+    "La": 6.145,
+    "Ce": 6.77,
+    "Pr": 6.773,
+    "Nd": 7.007,
+    "Pm": 7.26,
+    "Sm": 7.52,
+    "Eu": 5.243,
+    "Gd": 7.895,
+    "Tb": 8.229,
+    "Dy": 8.55,
+    "Ho": 8.795,
+    "Er": 9.066,
+    "Tm": 9.321,
+    "Yb": 6.965,
+    "Lu": 9.84,
+    "Hf": 13.31,
+    "Ta": 16.654,
+    "W": 19.25,
+    "WC": 15.8,
+    "Re": 21.02,
+    "Os": 22.61,
+    "Ir": 22.56,
+    "Pt": 21.46,
+    "Au": 19.282,
+    "Hg": 13.5336,
+    "Tl": 11.85,
+    "Pb": 11.342,
+    "Bi": 9.807,
+    "Po": 9.32,
+    "At": 7,
+    "Rn": 0.00973,
+    "Fr": 1.87,
+    "Ra": 5.5,
+    "Ac": 10.07,
+    "Th": 11.72,
+    "Pa": 15.37,
+    "U": 18.95,
+    "Np": 20.45,
+    "Pu": 19.84,
+    "H2O": 1.0,
+    "B4C": 2.52,
+    "SiC": 3.217,
+    "SiO2": 2.2,
+    "Al2O3": 3.97,
+    "ZnSe": 5.42,
+    "ZnTe": 6.34,
+    "CdS": 6.749,
+    "CdSe": 7.01,
+    "CdTe": 7.47,
+    "BN": 3.49,
+    "GaSb": 5.619,
+    "GaAs": 5.316,
+    "GaMnAs": 5.316,
+    "GaP": 4.13,
+    "InP": 4.787,
+    "InAs": 5.66,
+    "InSb": 5.775,
+    "TaC": 13.9,
+    "TiB2": 4.52,
+    "YAG": 4.55,
+    "CuBe": 8.96,
+    "ZnO": 5.606,
+    "SiC2": 3.217,
+    "AlN": 3.3,
+    "Si3N4": 3.44,
+    "CaF2": 3.18,
+    "LiF": 2.635,
+    "KF": 2.48,
+    "PbF2": 8.24,
+    "SrF2": 4.24,
+    "KBr": 2.75,
+    "ZrO2": 5.6,
+    "Gd3Ga5O12": 7.08,
+    "CaSiO5": 2.4,
+    "LaMnO3": 5.7,
+    "LaAlO3": 6.52,
+    "La0.7Sr0.3MnO3": 6.17,
+    "La0.5Ca0.5MnO3": 6.3,
+    "Fe.68Cr.2Ni.1Mn.02": 8.03,
+    "CaSO4H4O2": 2.32,
+    "C10H8O4": 1.4,
+    "C22H10N2O5": 1.43,
+    "C3H6O": 0.79,
+    "C5H8O2": 1.19,
+    "C2F4": 2.2,
+    "C7H8": 0.867,
+    "Y3Al5O12": 4.56,
+    "CHN.3O7.6": 1.06,
+    "C1.5H0.3O4.3N0.4PCa2.2": 1.92,
+    ("Be0.9983O0.0003Al0.0001Ca0.0002C0.0003Cr0.000035Co0.000005Cu0.00005Fe0."
+     "0003Pb0.000005Mg0.00006Mn0.00003Mo0.00001Ni0.0002Si0.0001Ag0.000005Ti0."
+     "00001Zn0.0001"): 1.85,
+    ("Be.994O.004Al.0005B.000003Cd.0000002Ca.0001C.0006Cr.0001Co.00001Cu."
+     "0001Fe.0008Pb.00002Li.000003Mg.00049Mn.0001Mo.00002Ni.0002N.0003Si."
+     "0004Ag.00001"): 1.85,
+}
+
+
+# Chemical Formula Aliases
+alias = {
+    "Air": "N1.562O.42C.0003Ar.0094",
+    "air": "N1.562O.42C.0003Ar.0094",
+    "C*": "C",
+    "mylar": "C10H8O4",
+    "Mylar": "C10H8O4",
+    "polyimide": "C22H10N2O5",
+    "Polyimide": "C22H10N2O5",
+    "kapton": "C22H10N2O5",
+    "Kapton": "C22H10N2O5",
+    "304SS": "Fe.68Cr.2Ni.1Mn.02",
+    "Acetone": "C3H6O",
+    "acetone": "C3H6O",
+    "PMMA": "C5H8O2",
+    "Teflon": "C2F4",
+    "teflon": "C2F4",
+    "Toluene": "C7H8",
+    "toluene": "C7H8",
+    "FS": "SiO2",
+    "GGG": "Gd3Ga5O12",
+    "quartz": "SiO2",
+    "Quartz": "SiO2",
+    "Silica": "SiO2",
+    "silica": "SiO2",
+    "water": "H2O",
+    "Water": "H2O",
+    "Calcite": "CaCO3",
+    "calcite": "CaCO3",
+    "YAG": "Y3Al5O12",
+    "yag": "Y3Al5O12",
+    "Sapphire": "Al2O3",
+    "sapphire": "Al2O3",
+    "Blood": "CHN.3O7.6",
+    "LMSO": "La0.7Sr0.3MnO3",
+    "blood": "CHN.3O7.6",
+    "Bone": "C1.5H0.3O4.3N0.4PCa2.2",
+    "bone": "C1.5H0.3O4.3N0.4PCa2.2",
+    "IF1": ("Be0.9983O0.0003Al0.0001Ca0.0002C0.0003Cr0.000035Co0.000005Cu0."
+            "00005Fe0.0003Pb0.000005Mg0.00006Mn0.00003Mo0.00001Ni0.0002Si0."
+            "0001Ag0.000005Ti0.00001Zn0.0001"),
+    "PF60": ("Be.994O.004Al.0005B.000003Cd.0000002Ca.0001C.0006Cr.0001Co."
+             "00001Cu.0001Fe.0008Pb.00002Li.000003Mg.00049Mn.0001Mo.00002Ni."
+             "0002N.0003Si.0004Ag.00001"),
+}
