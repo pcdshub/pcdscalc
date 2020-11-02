@@ -10,7 +10,7 @@ import numpy as np
 import xraydb as xdb
 
 logger = logging.getLogger(__name__)
-# global variable to be help with testing the plan_set function
+# global variable to help with testing the plan_set function
 _plan_set_test_res = None
 
 # Constant for converting between FWHM and sigma of a Gaussian function.
@@ -87,8 +87,7 @@ def configure_lens_set_file(lens_file_path):
     """
     global LENS_SET_FILE
     if not os.path.exists(lens_file_path):
-        err_msg = ('Provided invalid path for lens set file: %s',
-                   lens_file_path)
+        err_msg = f'Provided invalid path for lens set file: {lens_file_path}'
         logger.error(err_msg)
         raise FileNotFoundError(err_msg)
     LENS_SET_FILE = os.path.abspath(lens_file_path)
@@ -196,12 +195,12 @@ def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
     elif filename is None:
         filename = LENS_SET_FILE
     if not os.path.exists(filename):
-        err_msg = ('Provided invalid path for lens set file: %s', filename)
+        err_msg = f'Provided invalid path for lens set file: {filename}'
         logger.error(err_msg)
         raise FileNotFoundError(err_msg)
     if os.stat(filename).st_size == 0:
-        err_msg = ('The file is empyt: %s, use set_lens_set_to_file to write '
-                   'set lenses to the file.', filename)
+        err_msg = (f'The file is empty: {filename}, use set_lens_set_to_file '
+                   'to write set lenses to the file.')
         logger.error(err_msg)
         raise ValueError(err_msg)
     with open(filename) as lens_file:
@@ -215,9 +214,9 @@ def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
             return sets
 
         if set_number_top_to_bot not in range(1, len(sets)):
-            err_msg = ('Provided an invalid set_number_top_to_bottom %s,'
-                       'please provide a number from 1 to %s ',
-                       set_number_top_to_bot, len(sets))
+            err_msg = ('Provided an invalid set_number_top_to_bottom: '
+                       f'{set_number_top_to_bot}, please provide a number '
+                       f'from 1 to {len(sets)}')
             logger.error(err_msg)
             raise ValueError(err_msg)
     # if only one set in the list, return the list
@@ -983,8 +982,8 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
         Array or tuple of 2 values: minimum and maximum z pos in meters
     beam_size_unfocused : float
         Radial size of x-ray beam before focusing in meters
-    size_horiz
-    size_vert
+    size_horizontal : array-like
+    size_vertical : None, int or tuple of ints, optional
     exclude : list
         List with excluded sets of lenses
     max_tot_number_of_lenses : int
