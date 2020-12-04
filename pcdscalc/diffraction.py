@@ -24,13 +24,10 @@ def energy_to_wavelength(energy):
 
     Returns
     -------
-    lam : float
+    wavelength : float
         Wavelength [m].
     """
-    if not energy:
-        raise ZeroDivisionError('Energy cannot be 0.')
-    lam = (WAVELENGTH_TO_ENERGY_LAMBDA / energy) / units["ang"]
-    return lam
+    return (WAVELENGTH_TO_ENERGY_LAMBDA / energy) / units["ang"]
 
 
 def wavelength_to_energy(wavelength):
@@ -47,10 +44,7 @@ def wavelength_to_energy(wavelength):
     energy : number
         Photon Energy in eV.
     """
-    if not wavelength:
-        raise ZeroDivisionError('Wavelength cannot be 0.')
-    energy = WAVELENGTH_TO_ENERGY_LAMBDA / (wavelength * units["ang"])
-    return energy
+    return WAVELENGTH_TO_ENERGY_LAMBDA / (wavelength * units["ang"])
 
 
 def get_lom_geometry(energy, material_id, reflection):
@@ -100,11 +94,7 @@ def bragg_angle(material_id, hkl, energy=None):
     material_id = check_id(material_id)
     energy = get_energy(energy=energy)
     d = d_space(material_id, hkl)
-    res = energy_to_wavelength(energy) / 2 / d
-    if -np.pi / 2 < res > np.pi / 2:
-        raise ValueError('Expression does not evaluate to a number between the'
-                         ' arcsin limits [-pi/2, pi/2]')
-    theta = np.arcsin(res)
+    theta = np.arcsin(energy_to_wavelength(energy) / 2 / d)
     return np.degrees(theta)
 
 
