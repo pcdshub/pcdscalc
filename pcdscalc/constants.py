@@ -1,212 +1,206 @@
+""""Module to hold constants."""
 import numpy as np
-from .be_lens_calcs import alias
-
-# TODO: find a better number
-_manual_energy = 9.8
-
-
-def set_energy(energy):
-    """
-    Set a global, manual, working energy for doing offline calcs.
-    """
-    global _manual_energy
-    _manual_energy = energy
-
-
-def check_id(material_id):
-    """Check to see if you are using an alias. Return the chemical formula."""
-    try:
-        return alias[material_id]
-    except Exception:
-        return material_id
-
-
-def cosd(angle):
-    """Cos of an angle specified in degrees."""
-    arad = np.deg2rad(angle)
-    x = np.cos(arad)
-    return x
-
-
-def sind(angle):
-    """Sin of an angle specified in degrees."""
-    arad = np.deg2rad(angle)
-    x = np.sin(arad)
-    return x
-
-
-def asind(angle):
-    """Arcsin in degrees. Closed interval of [-pi/2, pi/2]."""
-    a = np.arcsin(angle)
-    a = np.rad2deg(a)
-    return a
-
-
-def get_energy(energy=None, correct_ev=True):
-    """
-    Get working energy.
-
-    Convert to eV if correct_ev == True
-    If energy passed in, return it, otherwise return manual_energy if set, or
-    machine energy otherwise.
-
-    Parameters
-    ----------
-    energy : number
-        Photon energy in eV or keV.
-    correct_ev : bool
-        Indicates if energy should be converted to eV.
-
-    Returns
-    -------
-    en : number
-        Photon energy in eV or keV.
-    """
-    en = None
-    if energy is not None:
-        en = energy
-    elif _manual_energy is not None:
-        en = _manual_energy
-    else:
-        # en = _ePv.get()
-        # TODO: we need a way of getting the actual energy here.
-        pass
-    if correct_ev:
-        en = to_ev(en)
-        pass
-    return en
-
-
-def to_ev(energy):
-    """Return photon energy in eV if specified in eV or keV."""
-    if energy < 100:
-        energy = energy * 1000.0
-    return energy * 1.0
-
-
-def energy_to_wavelength(energy, sub_100_energy=False):
-    """
-    Compute photon wavelength in m.
-
-    Parameters
-    ----------
-    energy : number
-        Photon energy in eV or keV.
-    sub_100_energy : bool
-        Set `sub_100_energy` to False if working at sub-100 eV energies.
-    """
-    if sub_100_energy:
-        energy = energy
-    else:
-        energy = to_ev(energy)
-    lam = (12398.4 / energy) / units["ang"]
-    return lam
-
-
-def get_geometry(energy, material_id, reflection):
-    """
-    Calculate the geometry.
-
-    Parameters
-    ----------
-    energy : number
-        Photon energy in .
-    material_id : str
-        Chemical formula.
-    reflection : tuple
-        The reflection. E.g.: `(1,1,1)`.
-
-    Returns
-    -------
-    thm, zm : tuple
-    """
-    th = bragg_angle(material_id, reflection, energy) * np.pi / 180
-    zm = 300 / np.tan(2 * th)
-    thm = np.rad2deg(th)
-    return thm, zm
-
-
-def bragg_angle(material_id, hkl, energy=None):
-    """
-    Compute the Bragg angle in deg.
-
-    Computes the bragg angle of the specified material, reflection and photon
-    energy.
-
-    Parameters
-    ----------
-    material_id : str
-        Chemical formula. Defaults to `Si`.
-    hkl : tuple
-        The reflection. Defaults to `(1,1,1)`.
-    energy : number
-        The photon energy in eV or keV.
-    """
-    material_id = check_id(material_id)
-    energy = get_energy(energy=energy, correct_ev=True)
-    d = d_space(material_id, hkl)
-    theta = asind(energy_to_wavelength(energy) / 2 / d)
-    return theta
-
-
-def wavelength_to_energy(wavelength):
-    """
-    Compute photon energy in eV.
-
-    Parameters
-    ----------
-    wavelength : number
-        The photon wavelength in m.
-    """
-    energy = 12398.4 / (wavelength * units["ang"])
-    return energy
+# Material density in g/cm^3
+density = {
+    "H": 0.00008988,
+    "He": 0.0001785,
+    "Li": 0.543,
+    "Be": 1.85,
+    "B": 2.34,
+    "C": 3.5,
+    "N": 0.0012506,
+    "O": 0.001429,
+    "F": 0.001696,
+    "Ne": 0.0008999,
+    "Na": 0.971,
+    "Mg": 1.738,
+    "Al": 2.698,
+    "Si": 2.3296,
+    "P": 1.82,
+    "S": 2.067,
+    "Cl": 0.003214,
+    "Ar": 0.0017837,
+    "K": 0.862,
+    "Ca": 1.54,
+    "Sc": 2.989,
+    "Ti": 4.54,
+    "V": 6.11,
+    "Cr": 7.15,
+    "Mn": 7.44,
+    "Fe": 7.874,
+    "Co": 8.86,
+    "Ni": 8.912,
+    "Cu": 8.96,
+    "Zn": 7.134,
+    "Ga": 5.907,
+    "Ge": 5.323,
+    "As": 5.776,
+    "Se": 4.809,
+    "Br": 3.122,
+    "Kr": 0.003733,
+    "Rb": 1.532,
+    "Sr": 2.64,
+    "Y": 4.469,
+    "Zr": 6.506,
+    "Nb": 8.57,
+    "Mo": 10.22,
+    "Tc": 11.5,
+    "Ru": 12.37,
+    "Rh": 12.41,
+    "Pd": 12.02,
+    "Ag": 10.501,
+    "Cd": 8.69,
+    "In": 7.31,
+    "Sn": 7.287,
+    "Sb": 6.685,
+    "Te": 6.232,
+    "I": 4.93,
+    "Xe": 0.005887,
+    "Cs": 1.873,
+    "Ba": 3.594,
+    "La": 6.145,
+    "Ce": 6.77,
+    "Pr": 6.773,
+    "Nd": 7.007,
+    "Pm": 7.26,
+    "Sm": 7.52,
+    "Eu": 5.243,
+    "Gd": 7.895,
+    "Tb": 8.229,
+    "Dy": 8.55,
+    "Ho": 8.795,
+    "Er": 9.066,
+    "Tm": 9.321,
+    "Yb": 6.965,
+    "Lu": 9.84,
+    "Hf": 13.31,
+    "Ta": 16.654,
+    "W": 19.25,
+    "WC": 15.8,
+    "Re": 21.02,
+    "Os": 22.61,
+    "Ir": 22.56,
+    "Pt": 21.46,
+    "Au": 19.282,
+    "Hg": 13.5336,
+    "Tl": 11.85,
+    "Pb": 11.342,
+    "Bi": 9.807,
+    "Po": 9.32,
+    "At": 7,
+    "Rn": 0.00973,
+    "Fr": 1.87,
+    "Ra": 5.5,
+    "Ac": 10.07,
+    "Th": 11.72,
+    "Pa": 15.37,
+    "U": 18.95,
+    "Np": 20.45,
+    "Pu": 19.84,
+    "H2O": 1.0,
+    "B4C": 2.52,
+    "SiC": 3.217,
+    "SiO2": 2.2,
+    "Al2O3": 3.97,
+    "ZnSe": 5.42,
+    "ZnTe": 6.34,
+    "CdS": 6.749,
+    "CdSe": 7.01,
+    "CdTe": 7.47,
+    "BN": 3.49,
+    "GaSb": 5.619,
+    "GaAs": 5.316,
+    "GaMnAs": 5.316,
+    "GaP": 4.13,
+    "InP": 4.787,
+    "InAs": 5.66,
+    "InSb": 5.775,
+    "TaC": 13.9,
+    "TiB2": 4.52,
+    "YAG": 4.55,
+    "CuBe": 8.96,
+    "ZnO": 5.606,
+    "SiC2": 3.217,
+    "AlN": 3.3,
+    "Si3N4": 3.44,
+    "CaF2": 3.18,
+    "LiF": 2.635,
+    "KF": 2.48,
+    "PbF2": 8.24,
+    "SrF2": 4.24,
+    "KBr": 2.75,
+    "ZrO2": 5.6,
+    "Gd3Ga5O12": 7.08,
+    "CaSiO5": 2.4,
+    "LaMnO3": 5.7,
+    "LaAlO3": 6.52,
+    "La0.7Sr0.3MnO3": 6.17,
+    "La0.5Ca0.5MnO3": 6.3,
+    "Fe.68Cr.2Ni.1Mn.02": 8.03,
+    "CaSO4H4O2": 2.32,
+    "C10H8O4": 1.4,
+    "C22H10N2O5": 1.43,
+    "C3H6O": 0.79,
+    "C5H8O2": 1.19,
+    "C2F4": 2.2,
+    "C7H8": 0.867,
+    "Y3Al5O12": 4.56,
+    "CHN.3O7.6": 1.06,
+    "C1.5H0.3O4.3N0.4PCa2.2": 1.92,
+    ("Be0.9983O0.0003Al0.0001Ca0.0002C0.0003Cr0.000035Co0.000005Cu0.00005Fe0."
+     "0003Pb0.000005Mg0.00006Mn0.00003Mo0.00001Ni0.0002Si0.0001Ag0.000005Ti0."
+     "00001Zn0.0001"): 1.85,
+    ("Be.994O.004Al.0005B.000003Cd.0000002Ca.0001C.0006Cr.0001Co.00001Cu."
+     "0001Fe.0008Pb.00002Li.000003Mg.00049Mn.0001Mo.00002Ni.0002N.0003Si."
+     "0004Ag.00001"): 1.85,
+}
 
 
-def d_space(material_id, hkl):
-    """
-    Compute the d spacing (m) of the specified material and reflection.
-
-    Parameters
-    ----------
-    material_id : str
-        Chemical fomula. E.g.: `Si`
-    hkl : tuple
-        Miller Indices, the reflection. E.g.: `(1,1,1)`
-    """
-    material_id = check_id(material_id)
-    h_index = hkl[0]
-    k_index = hkl[1]
-    l_index = hkl[2]
-
-    lp = lattice_parameters[material_id]
-    a = lp[0] / units["ang"]
-    b = lp[1] / units["ang"]
-    c = lp[2] / units["ang"]
-    alpha = lp[3]
-    beta = lp[4]
-    gamma = lp[5]
-
-    ca = cosd(alpha)
-    cb = cosd(beta)
-    cg = cosd(gamma)
-    sa = sind(alpha)
-    sb = sind(beta)
-    sg = sind(gamma)
-
-    inv_d_sqr = (
-        1 / (1 + 2 * ca * cb * cg - ca ** 2 - cb ** 2 - cg ** 2)
-        * (
-            h_index ** 2 * sa ** 2 / a ** 2
-            + k_index ** 2 * sb ** 2 / b ** 2
-            + l_index ** 2 * sg ** 2 / c ** 2
-            + 2 * h_index * k_index * (ca * cb - cg) / a / b
-            + 2 * k_index * l_index * (cb * cg - ca) / b / c
-            + 2 * h_index * l_index * (ca * cg - cb) / a / c
-        )
-    )
-    d = inv_d_sqr ** -0.5
-    return d
-
+# Chemical Formula Aliases
+alias = {
+    "Air": "N1.562O.42C.0003Ar.0094",
+    "air": "N1.562O.42C.0003Ar.0094",
+    "C*": "C",
+    "mylar": "C10H8O4",
+    "Mylar": "C10H8O4",
+    "polyimide": "C22H10N2O5",
+    "Polyimide": "C22H10N2O5",
+    "kapton": "C22H10N2O5",
+    "Kapton": "C22H10N2O5",
+    "304SS": "Fe.68Cr.2Ni.1Mn.02",
+    "Acetone": "C3H6O",
+    "acetone": "C3H6O",
+    "PMMA": "C5H8O2",
+    "Teflon": "C2F4",
+    "teflon": "C2F4",
+    "Toluene": "C7H8",
+    "toluene": "C7H8",
+    "FS": "SiO2",
+    "GGG": "Gd3Ga5O12",
+    "quartz": "SiO2",
+    "Quartz": "SiO2",
+    "Silica": "SiO2",
+    "silica": "SiO2",
+    "water": "H2O",
+    "Water": "H2O",
+    "Calcite": "CaCO3",
+    "calcite": "CaCO3",
+    "YAG": "Y3Al5O12",
+    "yag": "Y3Al5O12",
+    "Sapphire": "Al2O3",
+    "sapphire": "Al2O3",
+    "Blood": "CHN.3O7.6",
+    "LMSO": "La0.7Sr0.3MnO3",
+    "blood": "CHN.3O7.6",
+    "Bone": "C1.5H0.3O4.3N0.4PCa2.2",
+    "bone": "C1.5H0.3O4.3N0.4PCa2.2",
+    "IF1": ("Be0.9983O0.0003Al0.0001Ca0.0002C0.0003Cr0.000035Co0.000005Cu0."
+            "00005Fe0.0003Pb0.000005Mg0.00006Mn0.00003Mo0.00001Ni0.0002Si0."
+            "0001Ag0.000005Ti0.00001Zn0.0001"),
+    "PF60": ("Be.994O.004Al.0005B.000003Cd.0000002Ca.0001C.0006Cr.0001Co."
+             "00001Cu.0001Fe.0008Pb.00002Li.000003Mg.00049Mn.0001Mo.00002Ni."
+             "0002N.0003Si.0004Ag.00001"),
+}
 
 # Crystal Lattice parameters (a, b, c, alpha, beta, gamma)
 # a,b,c in angstroms
