@@ -100,6 +100,13 @@ def d_space(material_id, hkl):
     """
     Compute the d spacing (m) of the specified material and reflection.
 
+    The d-spacing can be described as the distance between planes of atoms
+    that give rise to diffraction peaks. Each peak in a diffractogram results
+    from a corresponding d-spacing. The planes of atoms can be referred to a
+    3D coordinate system and so can be described as a direction within the
+    crystal. So d-spacing as well as having a dimension, usually quoted in
+    Ångstroms, can be labelled with a plane direction hkl.
+
     Parameters
     ----------
     material_id : str
