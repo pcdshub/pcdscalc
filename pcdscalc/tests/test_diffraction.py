@@ -42,7 +42,7 @@ def test_get_geometry(energy, material, reflection, expected):
                          pytest.param('C', (1, 1, 1), 10e3, 17.51878596767417),
                          pytest.param('C', (2, 2, 2), 10e3, 37.01592462373143),
                          pytest.param('Si', (2, 2, 2), 7e3, 34.39310890947986),
-                         pytest.param('C', (2, 2, 2), None, 37.90277660759642)
+                         pytest.param('C', (2, 2, 2), 9.8e3, 37.90277660759642)
                          ])
 def test_bragg_angle(material_id, hkl, energy, expected):
     # tested agains the old code

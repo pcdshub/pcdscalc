@@ -6,8 +6,7 @@ require energy in eV.
 """
 import numpy as np
 
-from .common import check_id, get_energy
-from .constants import lattice_parameters, units
+from .constants import lattice_parameters, units, alias
 
 # wavelength/energy = 12398.4 (A) / E(eV)
 WAVELENGTH_TO_ENERGY_LAMBDA = 12398.4
@@ -49,7 +48,7 @@ def wavelength_to_energy(wavelength):
 
 def get_lom_geometry(energy, material_id, reflection):
     """
-    Calculate the Large Offset Monochromator geometry.
+    Calculate the Large Offset Monochromator's crystal geometry.
 
     Parameters
     ----------
@@ -70,7 +69,7 @@ def get_lom_geometry(energy, material_id, reflection):
     return thm, zm
 
 
-def bragg_angle(material_id, hkl, energy=None):
+def bragg_angle(material_id, hkl, energy):
     """
     Compute the Bragg angle in deg.
 
@@ -91,8 +90,7 @@ def bragg_angle(material_id, hkl, energy=None):
     theta : number
         Theta in degrees.
     """
-    material_id = check_id(material_id)
-    energy = get_energy(energy=energy)
+    material_id = alias.get(material_id, material_id)
     d = d_space(material_id, hkl)
     theta = np.arcsin(energy_to_wavelength(energy) / 2 / d)
     return np.degrees(theta)
@@ -114,7 +112,7 @@ def d_space(material_id, hkl):
     d : number
         Inverse d_space squared.
     """
-    material_id = check_id(material_id)
+    material_id = alias.get(material_id, material_id)
     h_index, k_index, l_index = hkl
     lp = lattice_parameters[material_id]
     # a, b, c in angstroms
