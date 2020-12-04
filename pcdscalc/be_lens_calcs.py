@@ -1129,7 +1129,7 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
     _plan_set_test_res = num, f_m, min_um, max_um, t_percent
 
 
-def lens_transmission(radius, fwhm, num=1, energy=None, id_material="IF1",
+def lens_transmission(radius, fwhm, energy, num=1, id_material="IF1",
                       lens_thicknes=None):
     """
     Find the CRL (Compound Refractive Lens) transmission.
