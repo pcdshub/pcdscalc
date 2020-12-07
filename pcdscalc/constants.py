@@ -157,7 +157,7 @@ density = {
 
 
 # Chemical Formula Aliases
-alias = {
+chemical_name_to_formula = {
     "Air": "N1.562O.42C.0003Ar.0094",
     "air": "N1.562O.42C.0003Ar.0094",
     "C*": "C",
