@@ -7,6 +7,7 @@ require energy in eV.
 import numpy as np
 
 from .constants import lattice_parameters, units, alias
+from .common import cosd, sind, asind
 
 # wavelength/energy = 12398.4 (A) / E(eV)
 WAVELENGTH_TO_ENERGY_LAMBDA = 12398.4
@@ -92,8 +93,8 @@ def bragg_angle(material_id, hkl, energy):
     """
     material_id = alias.get(material_id, material_id)
     d = d_space(material_id, hkl)
-    theta = np.arcsin(energy_to_wavelength(energy) / 2 / d)
-    return np.degrees(theta)
+    theta = asind(energy_to_wavelength(energy) / 2 / d)
+    return theta
 
 
 def d_space(material_id, hkl):
@@ -128,16 +129,13 @@ def d_space(material_id, hkl):
     a = a / units["ang"]
     b = b / units["ang"]
     c = c / units["ang"]
-    alpha = np.radians(alpha)
-    beta = np.radians(beta)
-    gamma = np.radians(gamma)
 
-    cos_alpha = np.cos(alpha)
-    cos_beta = np.cos(beta)
-    cos_gamma = np.cos(gamma)
-    sin_alpha = np.sin(alpha)
-    sin_beta = np.sin(beta)
-    sin_gamma = np.sin(gamma)
+    cos_alpha = cosd(alpha)
+    cos_beta = cosd(beta)
+    cos_gamma = cosd(gamma)
+    sin_alpha = sind(alpha)
+    sin_beta = sind(beta)
+    sin_gamma = sind(gamma)
 
     inv_d_sqr = (
         1 / (1 + 2 * cos_alpha * cos_beta * cos_gamma - cos_alpha ** 2
