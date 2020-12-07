@@ -73,3 +73,29 @@ def test_atand(x, expected):
     res = common.atand(x)
     logger.debug('Expected: %s Received: %s', expected, res)
     assert np.isclose(expected, res)
+
+
+@pytest.mark.parametrize('energy, expected', [
+                         pytest.param(2e3, 6.1992e-10),
+                         pytest.param(10e3, 1.23984e-10),
+                         pytest.param(9e3, 1.3776e-10),
+                         pytest.param(8e3, 1.5498e-10)
+                         ])
+def test_energy_to_wavelength(energy, expected):
+    # tested agains the old code
+    res = common.energy_to_wavelength(energy)
+    logger.debug('Expected: %s Received: %s', expected, res)
+    assert np.isclose(expected, res)
+
+
+@pytest.mark.parametrize('wavelength, expected', [
+                         pytest.param(100, 1.23984e-08),
+                         pytest.param(9, 1.3775999999999998e-07),
+                         pytest.param(7, 1.7712e-07),
+                         pytest.param(0.8, 1.5498e-06)
+                         ])
+def test_wavelength_to_energy(wavelength, expected):
+    # tested agains the old code
+    res = common.wavelength_to_energy(wavelength)
+    logger.debug('Expected: %s Received: %s', expected, res)
+    assert np.isclose(expected, res)

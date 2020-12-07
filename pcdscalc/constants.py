@@ -1,5 +1,10 @@
 """"Module to hold constants."""
 import numpy as np
+
+# wavelength/energy = 12398.4 (A) / E(eV)
+WAVELENGTH_TO_ENERGY_LAMBDA = 12398.4
+
+
 # Material density in g/cm^3
 density = {
     "H": 0.00008988,

@@ -9,7 +9,7 @@ from itertools import chain, product
 import numpy as np
 import xraydb as xdb
 
-from .constants import density, alias
+from .constants import density, chemical_name_to_formula
 
 logger = logging.getLogger(__name__)
 # global variable to help with testing the plan_set function
@@ -1155,7 +1155,7 @@ def lens_transmission(radius, fwhm, energy, num=1, id_material="IF1",
         Lens Transmission
     """
     lens_thicknes = lens_thicknes or APEX_DISTANCE
-    id_material = alias.get(id_material, id_material)
+    id_material = chemical_name_to_formula.get(id_material, id_material)
     waist = 2 * gaussian_fwhm_to_sigma(fwhm)
     x = np.linspace(-2 * fwhm, 2 * fwhm, 101)
     y = x

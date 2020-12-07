@@ -1,5 +1,6 @@
 """Module that holds common calculations."""
 import numpy as np
+from .constants import WAVELENGTH_TO_ENERGY_LAMBDA, units
 
 
 def cosd(angle):
@@ -110,3 +111,37 @@ def atand(x):
     """
     angle = np.arctan(x)
     return np.rad2deg(angle)
+
+
+def energy_to_wavelength(energy):
+    """
+    Compute photon wavelength in m.
+
+    Parameters
+    ----------
+    energy : number
+        Photon energy in eV.
+
+    Returns
+    -------
+    wavelength : float
+        Wavelength [m].
+    """
+    return (WAVELENGTH_TO_ENERGY_LAMBDA / energy) / units["ang"]
+
+
+def wavelength_to_energy(wavelength):
+    """
+    Compute photon energy in eV.
+
+    Parameters
+    ----------
+    wavelength : number
+        The photon wavelength in m.
+
+    Returns
+    -------
+    energy : number
+        Photon Energy in eV.
+    """
+    return WAVELENGTH_TO_ENERGY_LAMBDA / (wavelength * units["ang"])

@@ -6,45 +6,8 @@ require energy in eV.
 """
 import numpy as np
 
-from .constants import lattice_parameters, units, alias
-from .common import cosd, sind, asind
-
-# wavelength/energy = 12398.4 (A) / E(eV)
-WAVELENGTH_TO_ENERGY_LAMBDA = 12398.4
-
-
-def energy_to_wavelength(energy):
-    """
-    Compute photon wavelength in m.
-
-    Parameters
-    ----------
-    energy : number
-        Photon energy in eV.
-
-    Returns
-    -------
-    wavelength : float
-        Wavelength [m].
-    """
-    return (WAVELENGTH_TO_ENERGY_LAMBDA / energy) / units["ang"]
-
-
-def wavelength_to_energy(wavelength):
-    """
-    Compute photon energy in eV.
-
-    Parameters
-    ----------
-    wavelength : number
-        The photon wavelength in m.
-
-    Returns
-    -------
-    energy : number
-        Photon Energy in eV.
-    """
-    return WAVELENGTH_TO_ENERGY_LAMBDA / (wavelength * units["ang"])
+from .constants import lattice_parameters, units, chemical_name_to_formula
+from .common import cosd, sind, asind, energy_to_wavelength
 
 
 def get_lom_geometry(energy, material_id, reflection):
@@ -91,7 +54,7 @@ def bragg_angle(material_id, hkl, energy):
     theta : number
         Theta in degrees.
     """
-    material_id = alias.get(material_id, material_id)
+    material_id = chemical_name_to_formula.get(material_id, material_id)
     d = d_space(material_id, hkl)
     theta = asind(energy_to_wavelength(energy) / 2 / d)
     return theta
@@ -121,7 +84,7 @@ def d_space(material_id, hkl):
         The lattice plane spacing d in Bragg's Law for the chosen plane
         indicated by the Miller indices.
     """
-    material_id = alias.get(material_id, material_id)
+    material_id = chemical_name_to_formula.get(material_id, material_id)
     h_index, k_index, l_index = hkl
     lp = lattice_parameters[material_id]
     # a, b, c in angstroms
