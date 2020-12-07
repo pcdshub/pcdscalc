@@ -118,7 +118,8 @@ def d_space(material_id, hkl):
     Returns
     -------
     d : number
-        Inverse d_space squared.
+        The lattice plane spacing d in Bragg's Law for the chosen plane
+        indicated by the Miller indices.
     """
     material_id = alias.get(material_id, material_id)
     h_index, k_index, l_index = hkl
