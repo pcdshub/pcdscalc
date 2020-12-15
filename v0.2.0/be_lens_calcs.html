@@ -1,0 +1,1011 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Beryllium Lens Calculations &mdash; pcdscalc  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/doctr-versions-menu.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to pcdscalc’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pcdscalc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Beryllium Lens Calculations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/pcdshub/pcdscalc">Github Repository</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pcdscalc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Beryllium Lens Calculations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/be_lens_calcs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="beryllium-lens-calculations">
+<h1>Beryllium Lens Calculations<a class="headerlink" href="#beryllium-lens-calculations" title="Permalink to this headline">¶</a></h1>
+<p>This module contains multiple calculations to assist adjusting the Be Lenses to focus the beam.</p>
+<p>Here is a quick example of how you would get started with this module.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pcdscalc</span> <span class="kn">import</span> <span class="n">be_lens_calcs</span> <span class="k">as</span> <span class="n">be</span>
+</pre></div>
+</div>
+<p>Configure the defaults used for calculations:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">be</span><span class="o">.</span><span class="n">configure_defaults</span><span class="p">(</span><span class="n">distance</span><span class="o">=</span><span class="mf">3.852</span><span class="p">,</span> <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="mf">800e-6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">be</span><span class="o">.</span><span class="n">DISTANCE</span>
+<span class="go">3.852</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">be</span><span class="o">.</span><span class="n">FWHM_UNFOCUSED</span>
+<span class="go">0.0008</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following defaults will be used if not configured with <a class="reference internal" href="#pcdscalc.be_lens_calcs.configure_defaults" title="pcdscalc.be_lens_calcs.configure_defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pcdscalc.be_lens_calcs.configure_defaults()</span></code></a> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># full width at half maximum unfocused</span>
+<span class="n">FWHM_UNFOCUSED</span> <span class="o">=</span> <span class="mf">500e-6</span>
+
+<span class="c1"># Disk Thickness</span>
+<span class="n">DISK_THICKNESS</span> <span class="o">=</span> <span class="mf">1.0e-3</span>
+
+<span class="c1"># Apex of the lens</span>
+<span class="n">APEX_DISTANCE</span> <span class="o">=</span> <span class="mf">30e-6</span>
+
+<span class="c1"># Distance from the lenses to the sample</span>
+<span class="n">DISTANCE</span> <span class="o">=</span> <span class="mf">4.0</span>
+
+<span class="c1"># Atomic symbol for element</span>
+<span class="n">MATERIAL</span> <span class="o">=</span> <span class="s1">&#39;Be&#39;</span>
+
+<span class="c1"># Set of Be lenses with thicknesses:</span>
+<span class="n">LENS_RADII</span> <span class="o">=</span> <span class="p">[</span><span class="mf">50e-6</span><span class="p">,</span> <span class="mf">100e-6</span><span class="p">,</span> <span class="mf">200e-6</span><span class="p">,</span> <span class="mf">300e-6</span><span class="p">,</span> <span class="mf">500e-6</span><span class="p">,</span> <span class="mf">1000e-6</span><span class="p">,</span> <span class="mf">1500e-6</span><span class="p">,</span> <span class="mf">2000e-6</span><span class="p">,</span> <span class="mf">3000e-6</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>Configure the path to the lens_set file that will be used in multiple calculations:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">be</span><span class="o">.</span><span class="n">configure_lens_set_file</span><span class="p">(</span><span class="s1">&#39;/path/for/current/be_lens_file&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Store sets in the <cite>be_lens_file</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sets_list</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.0002</span><span class="p">],</span>
+<span class="go">                 [1, 0.0001, 1, 0.0003],</span>
+<span class="go">                 [2, 0.0001, 1, 0.0005]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_lens_set_to_file</span><span class="p">(</span><span class="n">sets_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get the first set that was stored in the <cite>be_lens_file</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">be</span><span class="o">.</span><span class="n">get_lens_set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">[3, 0.0001, 1, 0.0002]</span>
+</pre></div>
+</div>
+<p>Get the whole stack of lens sets from the <cite>be_lens_file</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">be</span><span class="o">.</span><span class="n">get_lens_set</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[[3, 0.0001, 1, 0.0002],</span>
+<span class="go"> [1, 0.0001, 1, 0.0003, 1, 0.0005],</span>
+<span class="go"> [2, 0.0001, 1, 0.0005]]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Be lens holders can take 3 different sets that could be set before experiments so that only the relevant beamline section is vented once. These sets can be stored in a file with the <code class="xref py py-meth docutils literal notranslate"><span class="pre">pcdscalc.be_lens_cals.set_lens_set_to_file()</span></code> function, and they can be accessed in other calculations with <code class="xref py py-func docutils literal notranslate"><span class="pre">pcsdcalc.be_lens_cals.get_lens_set()</span></code>. The file containing the lens sets could be then saved to a specific experiment so users know which stack was used for the beamtime.</p>
+</div>
+<p>For more examples please look at each individual function’s <cite>Example</cite> section.</p>
+<span class="target" id="module-pcdscalc.be_lens_calcs"></span><p>Module for Beryllium Lens Calculations.</p>
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_beam_fwhm">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_beam_fwhm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">lens_set</span></em>, <em class="sig-param"><span class="n">distance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_distance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">printsummary</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_beam_fwhm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_beam_fwhm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate beam Full Width at the Half Maximum.</p>
+<p>Calculate beam parameters for certain lenses configuration and energy at a
+given distance. FWHM -  Full Width at the Half Maximum Optionally some
+other parameters can be set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
+</dd>
+<dt><strong>distance</strong><span class="classifier">float</span></dt><dd><p>Distance from the lenses to the sample is 3.852 m at XPP. (in meters)</p>
+</dd>
+<dt><strong>source_distance</strong><span class="classifier">float, optional</span></dt><dd><p>Distance from source to lenses. This is about 160 m at XPP. (in meters)</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>This is about 400 microns at XPP.
+This is about 900 microns at MEC.
+Radial size of x-ray beam before focusing in meters.</p>
+</dd>
+<dt><strong>printsummary</strong><span class="classifier">bool, optional</span></dt><dd><p>Prints summary of parameters/calculations if <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>size_fwhm</strong><span class="classifier">float</span></dt><dd><p>Beam Full Width at the Half Maximum in meters.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_beam_fwhm</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">lens_set</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">],</span> <span class="n">distance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="go">                   material=&#39;Be&#39;, fwhm_unfocused=800e-6)</span>
+<span class="go">0.0008373516816325981</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_distance_for_size">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_distance_for_size</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size_fwhm</span></em>, <em class="sig-param"><span class="n">lens_set</span></em>, <em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_distance_for_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_distance_for_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance for size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>size_fwhm</strong><span class="classifier">float</span></dt><dd><p>Beam Full Width at the Half Maximum in meters.</p>
+</dd>
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
+</dd>
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>This is about 400 microns at XPP.
+Radial size of x-ray beam before focusing in meters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>distance</strong><span class="classifier">float</span></dt><dd><p>Distance in meters</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_distance_for_size</span><span class="p">(</span><span class="mf">0.023</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">],</span> <span class="mi">8</span><span class="p">,</span> <span class="mf">0.078</span><span class="p">)</span>
+<span class="go">array([32.00383702, 58.77068253])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_focal_length">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_focal_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">lens_set</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_focal_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_focal_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Focal Length for certain lenses configuration and energy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2 …]</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>focal_length</strong><span class="classifier">float</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_focal_length</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s1">&#39;Be&#39;</span><span class="p">)</span>
+<span class="go">11256.040424758363</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_focal_length_for_single_lens">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_focal_length_for_single_lens</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_focal_length_for_single_lens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_focal_length_for_single_lens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Focal Length for a single lens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in in KeV</p>
+</dd>
+<dt><strong>radius</strong><span class="classifier">float</span></dt><dd><p>Radius of curvature (in meters)</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>focal_length</strong><span class="classifier">float</span></dt><dd><p>The focal length for a single lens</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_focal_length_for_single_lens</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s1">&#39;Be&#39;</span><span class="p">)</span>
+<span class="go">2814.0101061895903</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_lens_aperture_radius">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_lens_aperture_radius</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">disk_thickness</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apex_distance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_lens_aperture_radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_lens_aperture_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the lens aperture radius.</p>
+<p>It is of importance to optimize which lens radius to use at a specific
+photon energy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>radius</strong><span class="classifier">float</span></dt><dd></dd>
+<dt><strong>disk_thickness</strong><span class="classifier">float, optional</span></dt><dd><p>Disk Thickness in meters. Defaults to 1.0e-3.</p>
+</dd>
+<dt><strong>apex_distance</strong><span class="classifier">float, optional</span></dt><dd><p>Apex Distance in meters. Defaults to 30e-6</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>aperture_radius</strong><span class="classifier">float</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_lens_aperture_radius</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">disk_thickness</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+<span class="go">                              apex_distance=30e-6)</span>
+<span class="go">0.06228964600958975</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_lens_set">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_lens_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">size_fwhm</span></em>, <em class="sig-param"><span class="n">distance</span></em>, <em class="sig-param"><span class="n">n_max</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">max_each</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">lens_radii</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">eff_rad0</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_lens_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_lens_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate lens set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>size_fwhm</strong><span class="classifier">float</span></dt><dd><p>Beam Full Width at the Half Maximum. (in meters)</p>
+</dd>
+<dt><strong>distance</strong><span class="classifier">float</span></dt><dd><p>Distance from the lenses to the sample. (in meters)</p>
+</dd>
+<dt><strong>n_max</strong><span class="classifier">int, optional</span></dt><dd><p>Number of lenses.</p>
+</dd>
+<dt><strong>max_each</strong><span class="classifier">int, optional</span></dt><dd></dd>
+<dt><strong>lens_radii</strong><span class="classifier">list, optional</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
+</dd>
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>This is about 400 microns at XPP. Defaults to 500e-6.
+Radial size of x-ray beam before focusing in meters.</p>
+</dd>
+<dt><strong>eff_rad0</strong><span class="classifier">float, optional</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>lens_sets</strong><span class="classifier">tuple</span></dt><dd><p>Lens sets</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_lens_set</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">size_fwhm</span><span class="o">=</span><span class="mf">0.54</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_trans_for_single_lens">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_trans_for_single_lens</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disk_thickness</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apex_distance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_trans_for_single_lens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_trans_for_single_lens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the transmission for a single lens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>radius</strong><span class="classifier">float</span></dt><dd></dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>This is about 400 microns at XPP.
+Radial size of x-ray beam before focusing in meters.</p>
+</dd>
+<dt><strong>disk_thickness</strong><span class="classifier">float, optional</span></dt><dd><p>Disk Thickness in meters. Defaults to 1.0e-3.</p>
+</dd>
+<dt><strong>apex_distance</strong><span class="classifier">float, optional</span></dt><dd><p>Apex Distance in meters. Defaults to 30e-6.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>transmission</strong><span class="classifier">float</span></dt><dd><p>Transmission for a single lens</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_trans_for_single_lens</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;Be&#39;</span><span class="p">,</span>
+<span class="go">                               density=None, fwhm_unfocused=800e-6,</span>
+<span class="go">                               disk_thickness=1.0e-3, apex_distance=30e-6)</span>
+<span class="go">0.9921954096643786</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.calc_trans_lens_set">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">calc_trans_lens_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">lens_set</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disk_thickness</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apex_distance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_trans_lens_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_trans_lens_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate  the transmission of a lens set.</p>
+<p>These would allow us to estimate the total transmission of the lenses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>This is about 400 microns at XPP. Default = 900e-6
+Radial size of x-ray beam before focusing in meters.</p>
+</dd>
+<dt><strong>disk_thickness</strong><span class="classifier">float, optional</span></dt><dd><p>Disk Thickness in meters. Defaults to 1.0e-3.</p>
+</dd>
+<dt><strong>apex_distance</strong><span class="classifier">float, optional</span></dt><dd><p>Apex Distance in meters. Defaults to 30e-6.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>transmission</strong><span class="classifier">float</span></dt><dd><p>Transmission for a set of lens</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_trans_lens_set</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">lens_set</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span>
+<span class="go">                        material=&#39;Be&#39;, density=None,</span>
+<span class="go">                        fwhm_unfocused=400e-6)</span>
+<span class="go">0.955752311215339</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.configure_defaults">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">configure_defaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disk_thickness</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apex_distance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lens_radii</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#configure_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.configure_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>Full width at half maximum unfocused in meters.</p>
+</dd>
+<dt><strong>disk_thickness</strong><span class="classifier">float, optional</span></dt><dd><p>Disk thickness in meters.</p>
+</dd>
+<dt><strong>apex_distance</strong><span class="classifier">float, optional</span></dt><dd><p>Apex Distance in meters.</p>
+</dd>
+<dt><strong>distance</strong><span class="classifier">float, optional</span></dt><dd><p>Distance from the lenses to the sample in meters.</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>lens_radii</strong><span class="classifier">list</span></dt><dd><p>Set of Be lenses with thicknesses in meters.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">configure_defaults</span><span class="p">(</span><span class="n">distance</span><span class="o">=</span><span class="mf">3.852</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.configure_lens_set_file">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">configure_lens_set_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lens_file_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#configure_lens_set_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.configure_lens_set_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the path to the lens set file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lens_file_path</strong><span class="classifier">str</span></dt><dd><p>Path to the lens_set file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.find_energy">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">find_energy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lens_set</span></em>, <em class="sig-param"><span class="n">distance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#find_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.find_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the energy that would focus at a given distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
+</dd>
+<dt><strong>distance</strong><span class="classifier">float, optional</span></dt><dd></dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">float</span></dt><dd><p>Energy</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_energy</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mf">200e-6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">500e-6</span><span class="p">],</span> <span class="n">distance</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">7.0100555419921875</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.find_radius">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">find_radius</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">distance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#find_radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.find_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the radius of curvature.</p>
+<p>Find the radius of curvature of the lens that would focus the energy at the
+distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy</p>
+</dd>
+<dt><strong>distance</strong><span class="classifier">float, optional</span></dt><dd></dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>radius</strong><span class="classifier">float</span></dt><dd><p>Radius of curvature in meters.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_radius</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;Be&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">4.2643770090253954e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.find_z_pos">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">find_z_pos</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">lens_set</span></em>, <em class="sig-param"><span class="n">spot_size_fwhm</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#find_z_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.find_z_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the Be Lens distances.</p>
+<p>Find the two distances the Be lens needs to be at to get the spotsize in
+the chamber center.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
+</dd>
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
+</dd>
+<dt><strong>spot_size_fwhm :</strong></dt><dd></dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+<dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>This is about 400 microns at XPP. Defaults to 500e-6
+Radial size of x-ray beam before focusing in meters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>z_position</strong><span class="classifier">tuple</span></dt><dd><p>(z1, z2)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lens_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mf">200e-6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">500e-6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_z_pos</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">lens_set</span><span class="o">=</span><span class="n">lens_set</span><span class="p">,</span> <span class="n">spot_size_fwhm</span><span class="o">=</span><span class="mf">0.09</span><span class="p">,</span>
+<span class="go">               material=&#39;Be&#39;, density=None, fwhm_unfocused=800e-6)</span>
+<span class="go">(-2339.797291538794, 2350.2195511913483)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.gaussian_fwhm_to_sigma">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">gaussian_fwhm_to_sigma</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fwhm</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#gaussian_fwhm_to_sigma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.gaussian_fwhm_to_sigma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert between FWHM and sigma of a Gaussian function.</p>
+<p>sigma = FWHM / 2.35482004503</p>
+<p><a class="reference external" href="https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/">https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fwhm</strong><span class="classifier">float</span></dt><dd><p>Full Width at the Half Maximum.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>sigma</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gaussian_fwhm_to_sigma</span><span class="p">(</span><span class="mf">0.023</span><span class="p">)</span>
+<span class="go">0.009767200703316157</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.gaussian_sigma_to_fwhm">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">gaussian_sigma_to_fwhm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#gaussian_sigma_to_fwhm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.gaussian_sigma_to_fwhm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert between FWHM and sigma of a Gaussian function.</p>
+<p>FWHM = 2.35482004503 * sigma</p>
+<p><a class="reference external" href="https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/">https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sigma</strong><span class="classifier">float</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>FWHM -  Full Width at the Half Maximum</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gaussian_sigma_to_fwhm</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="go">0.7064460135089999</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.get_att_len">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">get_att_len</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#get_att_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.get_att_len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attenuation length (in meter) of a material.</p>
+<p>The X-ray beam intensity I(x) at depth x in a material is a function of the
+attenuation coefficient mu, and can be calculated by the Beer-Lambert law.
+The Absorption Length (or Attenuation Length) is defined as the distance
+into a material where the x-ray beam intensity has decreased to a value of
+1/e (~ 40%) of the incident beam intensity (Io).</p>
+<p>(1/e) = e^(-mu * x)
+ln(1/e) = ln(e^(-mu * x))
+1 = mu * x
+x = 1/mu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy given in KeV</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>att_len</strong><span class="classifier">float</span></dt><dd><p>Attenuation length (in meters)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If an invalid symbol is provided for material.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_att_len</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;Be&#39;</span><span class="p">)</span>
+<span class="go">0.004810113254120656</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.get_delta">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">get_delta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">material</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#get_delta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.get_delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate delta for a given material at a given energy.</p>
+<p>Anomalous components of the index of refraction for a material, using the
+tabulated scattering components from Chantler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>x-ray energy in KeV</p>
+</dd>
+<dt><strong>material</strong><span class="classifier">str, optional</span></dt><dd><p>Atomic symbol for element, defaults to ‘Be’.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Material density in g/cm^3</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>delta</strong><span class="classifier">float</span></dt><dd><p>Real part of index of refraction</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If an invalid symbol is provided for material.</p>
+</dd>
+<dt>ZeroDivisionError</dt><dd><p>When energy is 0.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_delta</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;Au&#39;</span><span class="p">)</span>
+<span class="go">4.728879989419882e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.get_lens_set">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">get_lens_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">set_number_top_to_bot</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">get_all</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#get_lens_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.get_lens_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the lens set from the file provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>set_number_top_to_bot</strong><span class="classifier">int</span></dt><dd><p>The Be lens holders can take 3 different sets that we usually set
+before experiments, this is to specify what number set.</p>
+</dd>
+<dt><strong>filename</strong><span class="classifier">str, optional</span></dt><dd><p>File path of the lens_set file.</p>
+</dd>
+<dt><strong>get_all</strong><span class="classifier">bool</span></dt><dd><p>Indicates if it should return the entire stack of lens.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2 …]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.lens_transmission">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">lens_transmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">fwhm</span></em>, <em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">id_material</span><span class="o">=</span><span class="default_value">'IF1'</span></em>, <em class="sig-param"><span class="n">lens_thicknes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#lens_transmission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.lens_transmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the CRL (Compound Refractive Lens) transmission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>radius</strong><span class="classifier">float</span></dt><dd><p>Effective radius of curvature in meters</p>
+</dd>
+<dt><strong>fwhm</strong><span class="classifier">float</span></dt><dd><p>Incident beam size on the lens in meters</p>
+</dd>
+<dt><strong>num</strong><span class="classifier">int</span></dt><dd><p>Number of lenses in the stack</p>
+</dd>
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Photon energy in KeV</p>
+</dd>
+<dt><strong>id_material</strong><span class="classifier">str</span></dt><dd><p>Lens material, Defaults to <cite>IF1</cite></p>
+</dd>
+<dt><strong>lens_thickness</strong><span class="classifier">float</span></dt><dd><p>Lens thickness in meters</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>trans</strong><span class="classifier">float</span></dt><dd><p>Lens Transmission</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.photon_to_wavelength">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">photon_to_wavelength</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#photon_to_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.photon_to_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the wavelength in micrometers.</p>
+<p>Use photon energy in electronvolts. The equation is approximately: λ[µm] =
+1.2398 / E[eV]. The photon energy at 1 μm wavelength, the wavelength of
+near infrared radiation, is approximately 1.2398 eV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Photon energy in electronvolts</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Wavelength in micrometers</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">photon_to_wavelength</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="go">0.154975</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.plan_set">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">plan_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">energy</span></em>, <em class="sig-param"><span class="n">z_offset</span></em>, <em class="sig-param"><span class="n">z_range</span></em>, <em class="sig-param"><span class="n">beam_size_unfocused</span></em>, <em class="sig-param"><span class="n">size_horizontal</span></em>, <em class="sig-param"><span class="n">size_vertical</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_tot_number_of_lenses</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">max_each</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">focus_before_sample</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#plan_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.plan_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro to help plan for what lens set to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam energy in KeV</p>
+</dd>
+<dt><strong>z_offset</strong><span class="classifier">float</span></dt><dd><p>Distance from sample to lens_z=0 in meters</p>
+</dd>
+<dt><strong>z_range</strong><span class="classifier">list</span></dt><dd><p>Array or tuple of 2 values: minimum and maximum z pos in meters</p>
+</dd>
+<dt><strong>beam_size_unfocused</strong><span class="classifier">float</span></dt><dd><p>Radial size of x-ray beam before focusing in meters</p>
+</dd>
+<dt><strong>size_horizontal</strong><span class="classifier">array-like</span></dt><dd></dd>
+<dt><strong>size_vertical</strong><span class="classifier">None, int or tuple of ints, optional</span></dt><dd></dd>
+<dt><strong>exclude</strong><span class="classifier">list</span></dt><dd><p>List with excluded sets of lenses</p>
+</dd>
+<dt><strong>max_tot_number_of_lenses</strong><span class="classifier">int</span></dt><dd><p>Number of lenses.</p>
+</dd>
+<dt><strong>max_each</strong><span class="classifier">int</span></dt><dd></dd>
+<dt><strong>focus_before_sample</strong><span class="classifier">bool</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When providing a large number to <cite>max_tot_number_of_lenses</cite>,
+it will take some time to run the calculations, for example:
+<cite>max_tot_number_of_lenses=25</cite> will take ~ 2 min</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plan_set</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z_offset</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">z_range</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+<span class="go">                       beam_size_unfocused=3, size_horizontal=9,</span>
+<span class="go">                       size_vertical=None, exclude=[],</span>
+<span class="go">                       max_tot_number_of_lenses=1,</span>
+<span class="go">                       max_each=5, focus_before_sample=False)</span>
+</pre></div>
+</div>
+<p>N   foc_len/m   Min/um   Max/um   Trans/%  Set
+0  0.07 466994229.0 2112064677.4   0.0  1 x 50um
+1  0.14 234997114.5 1057532338.7   0.0  1 x 100um
+2  0.28 118998557.3 530266169.4   0.0  1 x 200um
+3  0.43 80332371.5 354510779.6   0.0  1 x 300um
+4  0.71 49399422.9 213906467.7   0.0  1 x 500um
+5  1.42 26199711.5 108453233.9   0.0  1 x 1000um
+6  2.13 18466474.3 73302155.9   0.0  1 x 1500um
+7  2.84 14599855.7 55726616.9   0.0  1 x 2000um
+8  4.27 10733237.2 38151078.0   0.0  1 x 3000um</p>
+<p>Where:
+<cite>foc_len</cite> - is the focal length in um
+<cite>Min</cite> - Beam full width at half maximum for minimum z position
+<cite>Max</cite> - Beam full width at half maximum for maximum z position
+<cite>Trans</cite> - is the lens transmission in %.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pcdscalc.be_lens_calcs.set_lens_set_to_file">
+<code class="sig-prename descclassname">pcdscalc.be_lens_calcs.</code><code class="sig-name descname">set_lens_set_to_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_of_sets</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">make_backup</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#set_lens_set_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.set_lens_set_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write lens set to a file.</p>
+<p>The Be lens holders can take 3 different sets that we usually set before
+few experiments so we only vent the relevant beamline section once. We then
+store these sets into a config file that we can call from some methods.
+Later, we save this config file to the specific experiment so users can
+make sure that they know which stack was used for there beamtime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>list_of_sets</strong><span class="classifier">list</span></dt><dd><p>List of lists with lens sets.</p>
+</dd>
+<dt><strong>filename</strong><span class="classifier">str, optional</span></dt><dd><p>Path to the filename to set the lens sets list to.
+This should be a .npy format file.</p>
+</dd>
+<dt><strong>make_backup</strong><span class="classifier">bool, optional</span></dt><dd><p>To indicate if a backup file should be created or not.
+Defaults to <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_sets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.0002</span><span class="p">],</span>
+<span class="go">                    [1, 0.0001, 1, 0.0003, 1, 0.0005],</span>
+<span class="go">                    [2, 0.0001, 1, 0.0005]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_lens_set_to_file</span><span class="p">(</span><span class="n">list_of_sets</span><span class="p">,</span> <span class="s1">&#39;../path/to/lens_set&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pcdscalc’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
