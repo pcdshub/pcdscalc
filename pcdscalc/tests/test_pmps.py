@@ -48,10 +48,12 @@ def test_get_bitmask(lower, upper, allow, expected):
 
 @pytest.mark.parametrize(
     "energy,bitmask,expected",
-    [(0, bm1, True), (16, bm1, False), (30, bm1, True), (40, bm1, False),
+    [(-1, allow_all, False), (100, allow_all, False), (16, allow_all, True),
+     (0, allow_none, False), (15, allow_none, False), (30, allow_none, False),
+     (0, bm1, True), (16, bm1, False), (30, bm1, True), (40, bm1, False),
      (0, bm2, False), (16, bm2, True), (30, bm2, False), (-1, bm2, False),
-     (7, bm3, False), (16, bm3, True), (17, bm3, True), (30, bm3, False),
-     (0, bm4, True), (16, bm4, False), (17, bm4, False), (30, bm4, True),
+     (7, bm3, False), (16, bm3, False), (16.5, bm3, True), (17, bm3, False),
+     (15.5, bm4, True), (16, bm4, False), (16.5, bm4, False), (17, bm4, False),
     ])
 def test_check_bitmask(energy, bitmask, expected):
     logger.debug(f'test_check_bitmask({energy}, {bitmask}, {expected}')
