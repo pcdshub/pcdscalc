@@ -11,6 +11,7 @@ Welcome to pcdscalc's documentation!
    :caption: Contents:
 
    be_lens_calcs.rst
+   pmps.rst
 
 .. toctree::
    :maxdepth: 1

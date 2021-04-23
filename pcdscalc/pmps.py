@@ -1,5 +1,7 @@
 """
 Calculation utilities related to the LCLS PMPS system.
+
+Here you will find functions related to eV bitmasks.
 """
 import math
 
