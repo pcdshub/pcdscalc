@@ -143,9 +143,17 @@ def check_bitmask(energy, bitmask, line, bounds=None):
     """
     bounds = bounds or select_bitmask_boundaries(line)
 
+    # Boundary energy exists in two ranges, so we can get two answers
+    answers = []
     prev = 0
     for bit, ev in enumerate(bounds):
-        if prev <= energy < ev:
-            return bool((bitmask >> bit) % 2)
-    # We get here if energy is negative or too large
-    return False
+        if prev <= energy <= ev:
+            ok = bool((bitmask >> bit) % 2)
+            answers.append(ok)
+        prev = ev
+
+    if not answers:
+        # We get here if energy is negative or too large
+        return False
+    else:
+        return all(answers)
