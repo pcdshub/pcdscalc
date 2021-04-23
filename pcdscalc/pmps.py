@@ -1,6 +1,7 @@
 """
 Calculation utilities related to the LCLS PMPS system.
 """
+import math
 
 LFE = [1000 + n * 1000 for n in range(32)]
 KFE = [1000 + n * 100 for n in range(32)]
@@ -33,12 +34,15 @@ def select_bitmask_boundaries(line):
     raise ValueError(f'{line} is neither lfe or kfe!.')
 
 
-def get_bitmask(lower, upper, allow, line):
+def get_bitmask(lower, upper, allow, line, bounds=None):
     """
     Given a range of eV values, calculate the appropriate pmps bitmask.
 
     This saves you the effort of checking up on the eV ranges and
     remembering how the bitmask is assembled.
+
+    If the lower or upper fall within a range (not on the border), then that
+    range is always considered unsafe.
 
     The rules for the bitmasks are:
         - The nth bit of the bitmask represents a range from the n-1th value
@@ -76,28 +80,37 @@ def get_bitmask(lower, upper, allow, line):
         If the string begins with "k" or "s" (kfe, sxr), we'll
         use the soft-xray bitmask.
 
+    bounds: list of numbers, optional
+        Custom boundaries to use instead of the default soft-xray
+        or hard-xray lines. Useful for testing.
+
     Returns
     -------
     bitmask: int
     """
-    bounds = select_bitmask_boundaries(line)
-    bitmask = 0
+    # Be lenient on input args
+    if upper < lower:
+        lower, upper = upper, lower
 
-    prev = 0
-    for bit, ev in enumerate(bounds):
-        if lower <= prev and upper >= ev:
-            bitmask += 2**bit
-        prev = ev
+    if allow:
+        bounds = bounds or select_bitmask_boundaries(line)
+        bitmask = 0
 
-    if not allow:
-        # TODO this isn't quite right
-        # the boundary of the range needs special care, the 0 needs to leak in
-        # e.g. 00111000 needs to become 1000011
-        return ~bitmask
-    return bitmask
+        prev = 0
+        for bit, ev in enumerate(bounds):
+            if lower <= prev and upper >= ev:
+                bitmask += 2**bit
+            prev = ev
+        return bitmask
+
+    # An exclusion range is just two inclusion ranges
+    else:
+        lower_range = get_bitmask(0, lower, True, line)
+        upper_range = get_bitmask(upper, math.inf, True, line)
+        return lower_range | upper_range
 
 
-def check_bitmask(energy, bitmask, line):
+def check_bitmask(energy, bitmask, line, bounds=None):
     """
     Given an energy and a bitmask, tell us if our energy is allowed.
 
@@ -119,9 +132,20 @@ def check_bitmask(energy, bitmask, line):
         If the string begins with "k" or "s" (kfe, sxr), we'll
         use the soft-xray bitmask.
 
+    bounds: list of numbers, optional
+        Custom boundaries to use instead of the default soft-xray
+        or hard-xray lines. Useful for testing.
+
     Returns
     -------
     energy_allowed: bool
         True if the energy is allowed.
     """
-    pass
+    bounds = bounds or select_bitmask_boundaries(line)
+
+    prev = 0
+    for bit, ev in enumerate(bounds):
+        if prev <= energy < ev:
+            return bool((bitmask >> bit) % 2)
+    # We get here if energy is negative or too large
+    return False
