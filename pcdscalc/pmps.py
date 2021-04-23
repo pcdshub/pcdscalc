@@ -5,8 +5,44 @@ Here you will find functions related to eV bitmasks.
 """
 import math
 
-LFE = [1000 + n * 1000 for n in range(32)]
-KFE = [1000 + n * 100 for n in range(32)]
+# Source for these values:
+# lcls-twincat-pmps/PMPS/GVLs/PMPS_GVL.TcGVL
+LFE = [
+    1.7E3,
+    2.5E3,
+    5.0E3,
+    7.0E3,
+    7.7E3,
+    8.9E3,
+    10.0E3,
+    11.1E3,
+    12.0E3,
+    14.0E3,
+    16.0E3,
+    16.9E3,
+    18.0E3,
+    20.0E3,
+    22.0E3,
+    24.0E3,
+    ]
+KFE = [
+    250,
+    270,
+    350,
+    400,
+    450,
+    540,
+    850,
+    1.15E3,
+    1.25E3,
+    1.45E3,
+    1.55E3,
+    1.65E3,
+    1.75E3,
+    1.82E3,
+    2.0E3,
+    2.3E3,
+    ]
 
 
 def select_bitmask_boundaries(line):
