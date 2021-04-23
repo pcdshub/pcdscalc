@@ -157,3 +157,62 @@ def check_bitmask(energy, bitmask, line, bounds=None):
         return False
     else:
         return all(answers)
+
+
+def check_actual_range(lower, upper, allow, line, bounds=None):
+    """
+    Returns the actual effective range given bitmask precision.
+
+    Because of the granularity of the bitmask, most range specifications
+    exclude more energy values than requested.
+
+    Parameters
+    ----------
+    lower: number
+        The value in eV for the lower bound of the range.
+
+    upper: number
+        The value in eV for the upper bound of the range.
+
+    allow: bool
+        True if we want a bitmask that only includes this range,
+        False if we want a bitmask that only excludes this range.
+
+    line: str
+        String representation of which line's bitmask to use.
+        If the string begins with "l" or "h" (lfe, hxr), we'll
+        use the hard-xray bitmask.
+        If the string begins with "k" or "s" (kfe, sxr), we'll
+        use the soft-xray bitmask.
+
+    bounds: list of numbers, optional
+        Custom boundaries to use instead of the default soft-xray
+        or hard-xray lines. Useful for testing.
+
+    Returns
+    -------
+    ranges: tuples
+        A (lower, upper) pair that represents a range of allowed
+        (or forbidden) energy values. The endpoints of the range
+        are considered unsafe.
+    """
+    bitmask = get_bitmask(lower, upper, allow, line, bounds=bounds)
+    if not allow:
+        bitmask = ~bitmask
+    lowest = math.inf
+    highest = -math.inf
+    updated_range = False
+
+    prev = 0
+    for bit, ev in enumerate(bounds):
+        ok = bool((bitmask >> bit) % 2)
+        if ok:
+            lowest = min(lowest, prev)
+            highest = max(highest, ev)
+            updated_range = True
+        prev = ev
+    if updated_range:
+        return (lowest, highest)
+    else:
+        # The range is empty: return an empty range instead of inf inf.
+        return (lower, lower)
