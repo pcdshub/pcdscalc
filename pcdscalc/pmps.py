@@ -105,8 +105,8 @@ def get_bitmask(lower, upper, allow, line, bounds=None):
 
     # An exclusion range is just two inclusion ranges
     else:
-        lower_range = get_bitmask(0, lower, True, line)
-        upper_range = get_bitmask(upper, math.inf, True, line)
+        lower_range = get_bitmask(0, lower, True, line, bounds=bounds)
+        upper_range = get_bitmask(upper, math.inf, True, line, bounds=bounds)
         return lower_range | upper_range
 
 
