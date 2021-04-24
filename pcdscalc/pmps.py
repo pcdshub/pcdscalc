@@ -126,6 +126,10 @@ def get_bitmask(lower, upper, allow, line, bounds=None):
     -------
     bitmask: int
     """
+    # Help the user if they accidently pass a negative
+    if lower < 0 or upper < 0:
+        raise ValueError('get_bitmask is only valid for positive inputs')
+
     # Be lenient on input args
     if upper < lower:
         lower, upper = upper, lower
