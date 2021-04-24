@@ -3,7 +3,8 @@ import logging
 import pytest
 
 from pcdscalc.pmps import (LFE, KFE, select_bitmask_boundaries,
-                           get_bitmask, check_bitmask, check_actual_range)
+                           get_bitmask, check_bitmask, check_actual_range,
+                           describe_bitmask)
 
 
 logger = logging.getLogger(__name__)
@@ -68,6 +69,15 @@ def test_check_bitmask(energy, bitmask, expected):
      (9.5, 15.5, False, (9, 16)),
      (10.4, 10.6, True, (10.4, 10.4))])
 def test_actual_range(lower, upper, allow, expected):
+    logger.debug(f'test_actual_range({lower}, {upper}, {allow}, {expected})')
     span = check_actual_range(lower, upper, allow, 'tst',
                               bounds=test_boundaries)
     assert span == expected
+
+
+@pytest.mark.parametrize(
+    "test_input",
+    [allow_none, allow_all, bm1, bm2, bm3, bm4])
+def test_describe_bitmask(test_input):
+    logger.debug(f'test_describe_bitmask({test_input})')
+    describe_bitmask(test_input, 'tst', bounds=test_boundaries)

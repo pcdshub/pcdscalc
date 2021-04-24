@@ -254,3 +254,46 @@ def check_actual_range(lower, upper, allow, line, bounds=None):
     else:
         # The range is empty: return an empty range instead of inf inf.
         return (lower, lower)
+
+
+def describe_bitmask(bitmask, line, bounds=None):
+    """
+    Print a text description of a bitmask.
+
+    This will describe what the bitmask means.
+
+    Parameters
+    ----------
+    bitmask: int
+        The bits to describe. Typically an output of `get_bitmask`.
+
+    line: str
+        String representation of which line's bitmask to use.
+        If the string begins with "l" or "h" (lfe, hxr), we'll
+        use the hard-xray bitmask.
+        If the string begins with "k" or "s" (kfe, sxr), we'll
+        use the soft-xray bitmask.
+
+    bounds: list of numbers, optional
+        Custom boundaries to use instead of the default soft-xray
+        or hard-xray lines. Useful for testing.
+    """
+    bounds = bounds or select_bitmask_boundaries(line)
+    lines = []
+
+    width = 0
+    for bound in bounds:
+        width = max(width, len(str(bound)))
+
+    prev = 0
+    for bit, ev in enumerate(bounds):
+        val = (bitmask >> bit) % 2
+        count = bit + 1
+        if val:
+            text = 'allowed'
+        else:
+            text = 'disallowed'
+        line = f'Bit {count:2}: {val} ({prev:{width}}, {ev:{width}}) {text}'
+        lines.append(line)
+        prev = ev
+    print('\n'.join(lines))
