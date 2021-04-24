@@ -39,8 +39,30 @@ def test_select_bounds(test_input, expected):
      (15.5, 100, True,   0b1111_1111_1111_1111_0000_0000_0000_0000),
      (14.5, 21.5, True,  0b0000_0000_0001_1111_1000_0000_0000_0000),
      (14.5, 21.5, False, 0b1111_1111_1100_0000_0011_1111_1111_1111),
-     (15, 20, True,      0b0000_0000_0000_1111_1000_0000_0000_0000)])
+     (15, 20, True,      0b0000_0000_0000_1111_1000_0000_0000_0000),
+     (15, 20, False,     0b1111_1111_1111_0000_0111_1111_1111_1111)])
 def test_get_bitmask(lower, upper, allow, expected):
+    """
+    Test that the correct bitmask is created.
+
+    Explanation of test cases 3 to 8 (first two are obvious):
+    3. Allow between 0 and 15, exclude the 15.5 point because we can't allow
+       points like 15.6 and they share a range. Therefore, enable bits 1
+       through 15 (bit 1 allows 0 to 1, bit 15 allows 14 to 15).
+    4. Allow between 16 and 32, exclude the 15.5 point because we can't allow
+       points like 15.4 and they share a range. Cut off at 32 for the top of
+       the bitmask range. Therefore, enable bits 17 through 32 (bit 17 allows
+       16 to 17).
+    5. Allow between 15 and 21, exclude the exact points because we can't allow
+       any points outside the range. Enable bits 16 to 21 (bit 16 allows 15 to
+       16, bit 21 allows 20 to 21).
+    6. Allow between 0 and 14 and between 22 and 32. Turn off bits 15 to 22
+       (bit 15 allows 14 to 15, bit 22 allows 21 to 22). Exclude the boundary
+       bits for the same reasonings as above.
+    7. Allow exactly between 15 and 20. Turn on bits 16 to 20 (bit 16 allows 15
+       to 16, bit 20 allows 19 to 20)
+    8. Turn off bits 16 to 20 (bit 16 allows 15 to 16, bit 20 allows 19 to 20)
+    """
     logger.debug(f'test_get_bitmask({lower}, {upper}, {allow}, {expected})')
     bitmask = get_bitmask(lower, upper, allow, 'tst', bounds=test_boundaries)
     assert bitmask == expected
