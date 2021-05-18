@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -164,8 +167,8 @@
 <p>Calculation utilities related to the LCLS PMPS system.</p>
 <p>Here you will find functions related to eV bitmasks.</p>
 <dl class="py function">
-<dt id="pcdscalc.pmps.check_actual_range">
-<code class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></code><code class="sig-name descname"><span class="pre">check_actual_range</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_actual_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_actual_range" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pcdscalc.pmps.check_actual_range">
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">check_actual_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_actual_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_actual_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the actual effective range given bitmask precision.</p>
 <p>Because of the granularity of the bitmask, most range specifications
 exclude more energy values than requested.</p>
@@ -202,8 +205,8 @@ are considered unsafe.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pcdscalc.pmps.check_bitmask">
-<code class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></code><code class="sig-name descname"><span class="pre">check_bitmask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_bitmask" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pcdscalc.pmps.check_bitmask">
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">check_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_bitmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an energy and a bitmask, tell us if our energy is allowed.</p>
 <p>This is the same calculation the PMPS is doing internally to determine
 if it is safe for beam to proceed.</p>
@@ -235,8 +238,8 @@ or hard-xray lines. Useful for testing.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pcdscalc.pmps.describe_bitmask">
-<code class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></code><code class="sig-name descname"><span class="pre">describe_bitmask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#describe_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.describe_bitmask" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pcdscalc.pmps.describe_bitmask">
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">describe_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#describe_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.describe_bitmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print a text description of a bitmask.</p>
 <p>This will describe what the bitmask means.</p>
 <dl class="field-list simple">
@@ -259,8 +262,8 @@ or hard-xray lines. Useful for testing.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pcdscalc.pmps.get_bitmask">
-<code class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></code><code class="sig-name descname"><span class="pre">get_bitmask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#get_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.get_bitmask" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pcdscalc.pmps.get_bitmask">
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">get_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#get_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.get_bitmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a range of eV values, calculate the appropriate pmps bitmask.</p>
 <p>This saves you the effort of checking up on the eV ranges and
 remembering how the bitmask is assembled.</p>
@@ -323,8 +326,8 @@ or hard-xray lines. Useful for testing.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pcdscalc.pmps.select_bitmask_boundaries">
-<code class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></code><code class="sig-name descname"><span class="pre">select_bitmask_boundaries</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#select_bitmask_boundaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.select_bitmask_boundaries" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pcdscalc.pmps.select_bitmask_boundaries">
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">select_bitmask_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#select_bitmask_boundaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.select_bitmask_boundaries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a line, select the bitmask boundaries to use.</p>
 <p>These are hard-coded for now but in theory this could be loaded from
 a database, an EPICS PV, or some other source.</p>
