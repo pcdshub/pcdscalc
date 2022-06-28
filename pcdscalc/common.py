@@ -1,5 +1,6 @@
 """Module that holds common calculations."""
 import numpy as np
+
 from .constants import WAVELENGTH_TO_ENERGY_LAMBDA, units
 
 

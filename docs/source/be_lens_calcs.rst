@@ -2,11 +2,11 @@ Beryllium Lens Calculations
 ===========================
 This module contains multiple calculations to assist adjusting the Be Lenses to focus the beam.
 
-Here is a quick example of how you would get started with this module. 
+Here is a quick example of how you would get started with this module.
 
 >>> from pcdscalc import be_lens_calcs as be
 
-Configure the defaults used for calculations: 
+Configure the defaults used for calculations:
 
 >>> be.configure_defaults(distance=3.852, fwhm_unfocused=800e-6)
 >>> be.DISTANCE
@@ -14,11 +14,11 @@ Configure the defaults used for calculations:
 >>> be.FWHM_UNFOCUSED
 0.0008
 
-.. note:: 
+.. note::
 
    The following defaults will be used if not configured with :meth:`pcdscalc.be_lens_calcs.configure_defaults` function:
 
-   .. code:: 
+   .. code::
 
       # full width at half maximum unfocused
       FWHM_UNFOCUSED = 500e-6
@@ -66,7 +66,7 @@ Get the whole stack of lens sets from the `be_lens_file`:
    The Be lens holders can take 3 different sets that could be set before experiments so that only the relevant beamline section is vented once. These sets can be stored in a file with the :meth:`pcdscalc.be_lens_cals.set_lens_set_to_file` function, and they can be accessed in other calculations with :func:`pcsdcalc.be_lens_cals.get_lens_set`. The file containing the lens sets could be then saved to a specific experiment so users know which stack was used for the beamtime.
 
 
-For more examples please look at each individual function's `Example` section. 
+For more examples please look at each individual function's `Example` section.
 
 .. currentmodule:: pcdscalc.be_lens_calcs
 

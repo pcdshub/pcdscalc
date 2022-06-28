@@ -2,10 +2,9 @@ import logging
 
 import pytest
 
-from pcdscalc.pmps import (LFE, KFE, select_bitmask_boundaries,
-                           get_bitmask, check_bitmask, check_actual_range,
-                           describe_bitmask)
-
+from pcdscalc.pmps import (KFE, LFE, check_actual_range, check_bitmask,
+                           describe_bitmask, get_bitmask,
+                           select_bitmask_boundaries)
 
 logger = logging.getLogger(__name__)
 
