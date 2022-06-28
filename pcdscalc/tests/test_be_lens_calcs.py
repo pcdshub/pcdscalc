@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
+
 from pcdscalc import be_lens_calcs
 
 logger = logging.getLogger(__name__)

@@ -9,7 +9,7 @@ from itertools import chain, product
 import numpy as np
 import xraydb as xdb
 
-from .constants import density, chemical_name_to_formula
+from .constants import chemical_name_to_formula, density
 
 logger = logging.getLogger(__name__)
 # global variable to help with testing the plan_set function

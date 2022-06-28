@@ -6,8 +6,8 @@ require energy in eV.
 """
 import numpy as np
 
-from .constants import lattice_parameters, units, chemical_name_to_formula
-from .common import cosd, sind, asind, energy_to_wavelength
+from .common import asind, cosd, energy_to_wavelength, sind
+from .constants import chemical_name_to_formula, lattice_parameters, units
 
 
 def get_lom_geometry(energy, material_id, reflection):

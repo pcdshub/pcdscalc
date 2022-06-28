@@ -1,6 +1,8 @@
 import logging
+
 import numpy as np
 import pytest
+
 from pcdscalc import common
 
 logger = logging.getLogger(__name__)
