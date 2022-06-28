@@ -7,6 +7,7 @@ repos:
     -   id: no-commit-to-branch
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
+        exclude: pcdscalc/tests/test_lens_sets/.*
     -   id: check-ast
     -   id: check-case-conflict
     -   id: check-json
