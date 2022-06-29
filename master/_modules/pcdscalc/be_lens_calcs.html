@@ -80,7 +80,6 @@
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">product</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">xraydb</span> <span class="k">as</span> <span class="nn">xdb</span>
 
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">chemical_name_to_formula</span><span class="p">,</span> <span class="n">density</span>
 
@@ -392,6 +391,7 @@
 <span class="sd">    &gt;&gt;&gt; get_att_len(energy=8, material=&#39;Be&#39;)</span>
 <span class="sd">    0.004810113254120656</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">xraydb</span> <span class="k">as</span> <span class="nn">xdb</span>
     <span class="n">material</span> <span class="o">=</span> <span class="n">material</span> <span class="ow">or</span> <span class="n">MATERIAL</span>
     <span class="n">density</span> <span class="o">=</span> <span class="n">density</span> <span class="ow">or</span> <span class="n">xdb</span><span class="o">.</span><span class="n">atomic_density</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -438,6 +438,7 @@
 <span class="sd">    &gt;&gt;&gt; get_delta(energy=8, material=&#39;Au&#39;)</span>
 <span class="sd">    4.728879989419882e-05</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">xraydb</span> <span class="k">as</span> <span class="nn">xdb</span>
     <span class="n">material</span> <span class="o">=</span> <span class="n">material</span> <span class="ow">or</span> <span class="n">MATERIAL</span>
     <span class="c1"># xray_delta_beta returns (delta, beta, atlen), wehre delta : real part of</span>
     <span class="c1"># index of refraction, and takes x-ray energy in eV.</span>
