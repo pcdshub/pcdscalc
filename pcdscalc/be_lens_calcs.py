@@ -7,7 +7,6 @@ from datetime import date
 from itertools import chain, product
 
 import numpy as np
-import xraydb as xdb
 
 from .constants import chemical_name_to_formula, density
 
@@ -319,6 +318,7 @@ def get_att_len(energy, material=None, density=None):
     >>> get_att_len(energy=8, material='Be')
     0.004810113254120656
     """
+    import xraydb as xdb
     material = material or MATERIAL
     density = density or xdb.atomic_density(material)
     try:
@@ -365,6 +365,7 @@ def get_delta(energy, material=None, density=None):
     >>> get_delta(energy=8, material='Au')
     4.728879989419882e-05
     """
+    import xraydb as xdb
     material = material or MATERIAL
     # xray_delta_beta returns (delta, beta, atlen), wehre delta : real part of
     # index of refraction, and takes x-ray energy in eV.
