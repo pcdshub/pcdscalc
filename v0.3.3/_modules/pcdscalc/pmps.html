@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pcdscalc.pmps &mdash; pcdscalc  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/doctr-versions-menu.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> pcdscalc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../be_lens_calcs.html">Beryllium Lens Calculations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pmps.html">PMPS Utilities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/pcdshub/pcdscalc">Github Repository</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pcdscalc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>pcdscalc.pmps</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pcdscalc.pmps</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculation utilities related to the LCLS PMPS system.</span>
+
+<span class="sd">Here you will find functions related to eV bitmasks.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># Source for these values:</span>
+<span class="c1"># lcls-twincat-pmps/PMPS/GVLs/PMPS_GVL.TcGVL</span>
+<span class="n">LFE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mf">1.0E3</span><span class="p">,</span>
+    <span class="mf">1.7E3</span><span class="p">,</span>
+    <span class="mf">2.1E3</span><span class="p">,</span>
+    <span class="mf">2.5E3</span><span class="p">,</span>
+    <span class="mf">3.8E3</span><span class="p">,</span>
+    <span class="mf">4.0E3</span><span class="p">,</span>
+    <span class="mf">5.0E3</span><span class="p">,</span>
+    <span class="mf">7.0E3</span><span class="p">,</span>
+    <span class="mf">7.5E3</span><span class="p">,</span>
+    <span class="mf">7.7E3</span><span class="p">,</span>
+    <span class="mf">8.9E3</span><span class="p">,</span>
+    <span class="mf">10.0E3</span><span class="p">,</span>
+    <span class="mf">11.1E3</span><span class="p">,</span>
+    <span class="mf">12.0E3</span><span class="p">,</span>
+    <span class="mf">13.0E3</span><span class="p">,</span>
+    <span class="mf">13.5E3</span><span class="p">,</span>
+    <span class="mf">14.0E3</span><span class="p">,</span>
+    <span class="mf">16.9E3</span><span class="p">,</span>
+    <span class="mf">18.0E3</span><span class="p">,</span>
+    <span class="mf">20.0E3</span><span class="p">,</span>
+    <span class="mf">22.0E3</span><span class="p">,</span>
+    <span class="mf">24.0E3</span><span class="p">,</span>
+    <span class="mf">25.0E3</span><span class="p">,</span>
+    <span class="mf">25.5E3</span><span class="p">,</span>
+    <span class="mf">26.0E3</span><span class="p">,</span>
+    <span class="mf">27.0E3</span><span class="p">,</span>
+    <span class="mf">28.0E3</span><span class="p">,</span>
+    <span class="mf">28.5E3</span><span class="p">,</span>
+    <span class="mf">29.0E3</span><span class="p">,</span>
+    <span class="mf">30.0E3</span><span class="p">,</span>
+    <span class="mf">60.0E3</span><span class="p">,</span>
+    <span class="mf">90.0E3</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="n">KFE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">100</span><span class="p">,</span>
+    <span class="mi">250</span><span class="p">,</span>
+    <span class="mi">270</span><span class="p">,</span>
+    <span class="mi">350</span><span class="p">,</span>
+    <span class="mi">400</span><span class="p">,</span>
+    <span class="mi">450</span><span class="p">,</span>
+    <span class="mi">480</span><span class="p">,</span>
+    <span class="mi">530</span><span class="p">,</span>
+    <span class="mi">680</span><span class="p">,</span>
+    <span class="mi">730</span><span class="p">,</span>
+    <span class="mi">850</span><span class="p">,</span>
+    <span class="mf">1.10E3</span><span class="p">,</span>
+    <span class="mf">1.15E3</span><span class="p">,</span>
+    <span class="mf">1.25E3</span><span class="p">,</span>
+    <span class="mf">1.45E3</span><span class="p">,</span>
+    <span class="mf">1.50E3</span><span class="p">,</span>
+    <span class="mf">1.55E3</span><span class="p">,</span>
+    <span class="mf">1.65E3</span><span class="p">,</span>
+    <span class="mf">1.70E3</span><span class="p">,</span>
+    <span class="mf">1.75E3</span><span class="p">,</span>
+    <span class="mf">1.82E3</span><span class="p">,</span>
+    <span class="mf">1.85E3</span><span class="p">,</span>
+    <span class="mf">2.00E3</span><span class="p">,</span>
+    <span class="mf">2.20E3</span><span class="p">,</span>
+    <span class="mf">2.50E3</span><span class="p">,</span>
+    <span class="mf">2.80E3</span><span class="p">,</span>
+    <span class="mf">3.00E3</span><span class="p">,</span>
+    <span class="mf">3.15E3</span><span class="p">,</span>
+    <span class="mf">3.50E3</span><span class="p">,</span>
+    <span class="mf">4.00E3</span><span class="p">,</span>
+    <span class="mf">5.30E3</span><span class="p">,</span>
+    <span class="mf">7.00E3</span>
+    <span class="p">]</span>
+
+
+<div class="viewcode-block" id="select_bitmask_boundaries"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.select_bitmask_boundaries">[docs]</a><span class="k">def</span> <span class="nf">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a line, select the bitmask boundaries to use.</span>
+
+<span class="sd">    These are hard-coded for now but in theory this could be loaded from</span>
+<span class="sd">    a database, an EPICS PV, or some other source.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    line: str</span>
+<span class="sd">        String representation of which line&#39;s bitmask to use.</span>
+<span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
+<span class="sd">        use the hard-xray bitmask.</span>
+<span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
+<span class="sd">        use the soft-xray bitmask.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    boundaries: list of floats</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">LFE</span>
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">KFE</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1"> is neither lfe or kfe!.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask">[docs]</a><span class="k">def</span> <span class="nf">get_bitmask</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">allow</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a range of eV values, calculate the appropriate pmps bitmask.</span>
+
+<span class="sd">    This saves you the effort of checking up on the eV ranges and</span>
+<span class="sd">    remembering how the bitmask is assembled.</span>
+
+<span class="sd">    If the lower or upper fall within a range (not on the border), then that</span>
+<span class="sd">    range is always considered unsafe.</span>
+
+<span class="sd">    The rules for the bitmasks are:</span>
+<span class="sd">        - The nth bit of the bitmask represents a range from the n-1th value</span>
+<span class="sd">          to the nth value</span>
+<span class="sd">        - If the bit is 1, the range is allowed and is safe.</span>
+<span class="sd">        - If the bit is 0, the range is not allowed and is not safe.</span>
+<span class="sd">        - eVs above the highest boundary are never safe</span>
+<span class="sd">        - negative eVs are never safe</span>
+
+<span class="sd">    Some examples:</span>
+<span class="sd">        - bitmask 00 -&gt; no beam range is safe</span>
+<span class="sd">        - bitmask 01 -&gt; only the lowest boundary and below are safe</span>
+<span class="sd">        - bitmask 11 -&gt; only the two lowest boundaries and below are safe</span>
+<span class="sd">        - bitmask 10 -&gt; only the space between the lowest and second-lowest</span>
+<span class="sd">                        boundaries are safe.</span>
+<span class="sd">        - bitmask all 1s -&gt; every eV is OK except for above the highest</span>
+<span class="sd">                            boundary and except for negative eV</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lower: number</span>
+<span class="sd">        The value in eV for the lower bound of the range.</span>
+
+<span class="sd">    upper: number</span>
+<span class="sd">        The value in eV for the upper bound of the range.</span>
+
+<span class="sd">    allow: bool</span>
+<span class="sd">        True if we want a bitmask that only includes this range,</span>
+<span class="sd">        False if we want a bitmask that only excludes this range.</span>
+
+<span class="sd">    line: str</span>
+<span class="sd">        String representation of which line&#39;s bitmask to use.</span>
+<span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
+<span class="sd">        use the hard-xray bitmask.</span>
+<span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
+<span class="sd">        use the soft-xray bitmask.</span>
+
+<span class="sd">    bounds: list of numbers, optional</span>
+<span class="sd">        Custom boundaries to use instead of the default soft-xray</span>
+<span class="sd">        or hard-xray lines. Useful for testing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bitmask: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Help the user if they accidently pass a negative</span>
+    <span class="k">if</span> <span class="n">lower</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">upper</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;get_bitmask is only valid for positive inputs&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Be lenient on input args</span>
+    <span class="k">if</span> <span class="n">upper</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">:</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span>
+
+    <span class="k">if</span> <span class="n">allow</span><span class="p">:</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span> <span class="ow">or</span> <span class="n">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">bitmask</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">prev</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">lower</span> <span class="o">&lt;=</span> <span class="n">prev</span> <span class="ow">and</span> <span class="n">upper</span> <span class="o">&gt;=</span> <span class="n">ev</span><span class="p">:</span>
+                <span class="n">bitmask</span> <span class="o">+=</span> <span class="mi">2</span><span class="o">**</span><span class="n">bit</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">ev</span>
+        <span class="k">return</span> <span class="n">bitmask</span>
+
+    <span class="c1"># An exclusion range is just two inclusion ranges</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lower_range</span> <span class="o">=</span> <span class="n">get_bitmask</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+        <span class="n">upper_range</span> <span class="o">=</span> <span class="n">get_bitmask</span><span class="p">(</span><span class="n">upper</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lower_range</span> <span class="o">|</span> <span class="n">upper_range</span></div>
+
+
+<div class="viewcode-block" id="check_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_bitmask">[docs]</a><span class="k">def</span> <span class="nf">check_bitmask</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">bitmask</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an energy and a bitmask, tell us if our energy is allowed.</span>
+
+<span class="sd">    This is the same calculation the PMPS is doing internally to determine</span>
+<span class="sd">    if it is safe for beam to proceed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    energy: number</span>
+<span class="sd">        The value in eV for the energy to check.</span>
+
+<span class="sd">    bitmask: int</span>
+<span class="sd">        The bits to check against. Typically an output of `get_bitmask`.</span>
+
+<span class="sd">    line: str</span>
+<span class="sd">        String representation of which line&#39;s bitmask to use.</span>
+<span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
+<span class="sd">        use the hard-xray bitmask.</span>
+<span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
+<span class="sd">        use the soft-xray bitmask.</span>
+
+<span class="sd">    bounds: list of numbers, optional</span>
+<span class="sd">        Custom boundaries to use instead of the default soft-xray</span>
+<span class="sd">        or hard-xray lines. Useful for testing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    energy_allowed: bool</span>
+<span class="sd">        True if the energy is allowed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span> <span class="ow">or</span> <span class="n">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="c1"># Boundary energy exists in two ranges, so we can get two answers</span>
+    <span class="n">answers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prev</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">prev</span> <span class="o">&lt;=</span> <span class="n">energy</span> <span class="o">&lt;=</span> <span class="n">ev</span><span class="p">:</span>
+            <span class="n">ok</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">((</span><span class="n">bitmask</span> <span class="o">&gt;&gt;</span> <span class="n">bit</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">answers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ok</span><span class="p">)</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">ev</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">answers</span><span class="p">:</span>
+        <span class="c1"># We get here if energy is negative or too large</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">answers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_actual_range"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_actual_range">[docs]</a><span class="k">def</span> <span class="nf">check_actual_range</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">allow</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the actual effective range given bitmask precision.</span>
+
+<span class="sd">    Because of the granularity of the bitmask, most range specifications</span>
+<span class="sd">    exclude more energy values than requested.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lower: number</span>
+<span class="sd">        The value in eV for the lower bound of the range.</span>
+
+<span class="sd">    upper: number</span>
+<span class="sd">        The value in eV for the upper bound of the range.</span>
+
+<span class="sd">    allow: bool</span>
+<span class="sd">        True if we want a bitmask that only includes this range,</span>
+<span class="sd">        False if we want a bitmask that only excludes this range.</span>
+
+<span class="sd">    line: str</span>
+<span class="sd">        String representation of which line&#39;s bitmask to use.</span>
+<span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
+<span class="sd">        use the hard-xray bitmask.</span>
+<span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
+<span class="sd">        use the soft-xray bitmask.</span>
+
+<span class="sd">    bounds: list of numbers, optional</span>
+<span class="sd">        Custom boundaries to use instead of the default soft-xray</span>
+<span class="sd">        or hard-xray lines. Useful for testing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ranges: tuples</span>
+<span class="sd">        A (lower, upper) pair that represents a range of allowed</span>
+<span class="sd">        (or forbidden) energy values. The endpoints of the range</span>
+<span class="sd">        are considered unsafe.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bitmask</span> <span class="o">=</span> <span class="n">get_bitmask</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">allow</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allow</span><span class="p">:</span>
+        <span class="n">bitmask</span> <span class="o">=</span> <span class="o">~</span><span class="n">bitmask</span>
+    <span class="n">lowest</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">highest</span> <span class="o">=</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">updated_range</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">prev</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">((</span><span class="n">bitmask</span> <span class="o">&gt;&gt;</span> <span class="n">bit</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="n">lowest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">lowest</span><span class="p">,</span> <span class="n">prev</span><span class="p">)</span>
+            <span class="n">highest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">highest</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
+            <span class="n">updated_range</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">ev</span>
+    <span class="k">if</span> <span class="n">updated_range</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">lowest</span><span class="p">,</span> <span class="n">highest</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># The range is empty: return an empty range instead of inf inf.</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="describe_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.describe_bitmask">[docs]</a><span class="k">def</span> <span class="nf">describe_bitmask</span><span class="p">(</span><span class="n">bitmask</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print a text description of a bitmask.</span>
+
+<span class="sd">    This will describe what the bitmask means.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bitmask: int</span>
+<span class="sd">        The bits to describe. Typically an output of `get_bitmask`.</span>
+
+<span class="sd">    line: str</span>
+<span class="sd">        String representation of which line&#39;s bitmask to use.</span>
+<span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
+<span class="sd">        use the hard-xray bitmask.</span>
+<span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
+<span class="sd">        use the soft-xray bitmask.</span>
+
+<span class="sd">    bounds: list of numbers, optional</span>
+<span class="sd">        Custom boundaries to use instead of the default soft-xray</span>
+<span class="sd">        or hard-xray lines. Useful for testing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span> <span class="ow">or</span> <span class="n">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">bound</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bound</span><span class="p">)))</span>
+
+    <span class="n">prev</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">bitmask</span> <span class="o">&gt;&gt;</span> <span class="n">bit</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">bit</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;allowed&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;disallowed&#39;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Bit </span><span class="si">{</span><span class="n">count</span><span class="si">:</span><span class="s1">2</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">prev</span><span class="si">:{</span><span class="n">width</span><span class="si">}}</span><span class="s1">, </span><span class="si">{</span><span class="n">ev</span><span class="si">:{</span><span class="n">width</span><span class="si">}}</span><span class="s1">) </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">ev</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
