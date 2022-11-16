@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script src="_static/doctr-versions-menu.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -41,7 +42,31 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Beryllium Lens Calculations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Beryllium Lens Calculations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_beam_fwhm"><code class="docutils literal notranslate"><span class="pre">calc_beam_fwhm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_distance_for_size"><code class="docutils literal notranslate"><span class="pre">calc_distance_for_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_focal_length"><code class="docutils literal notranslate"><span class="pre">calc_focal_length()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_focal_length_for_single_lens"><code class="docutils literal notranslate"><span class="pre">calc_focal_length_for_single_lens()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_lens_aperture_radius"><code class="docutils literal notranslate"><span class="pre">calc_lens_aperture_radius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_lens_set"><code class="docutils literal notranslate"><span class="pre">calc_lens_set()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_trans_for_single_lens"><code class="docutils literal notranslate"><span class="pre">calc_trans_for_single_lens()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.calc_trans_lens_set"><code class="docutils literal notranslate"><span class="pre">calc_trans_lens_set()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.configure_defaults"><code class="docutils literal notranslate"><span class="pre">configure_defaults()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.configure_lens_set_file"><code class="docutils literal notranslate"><span class="pre">configure_lens_set_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.find_energy"><code class="docutils literal notranslate"><span class="pre">find_energy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.find_radius"><code class="docutils literal notranslate"><span class="pre">find_radius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.find_z_pos"><code class="docutils literal notranslate"><span class="pre">find_z_pos()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.gaussian_fwhm_to_sigma"><code class="docutils literal notranslate"><span class="pre">gaussian_fwhm_to_sigma()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.gaussian_sigma_to_fwhm"><code class="docutils literal notranslate"><span class="pre">gaussian_sigma_to_fwhm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.get_att_len"><code class="docutils literal notranslate"><span class="pre">get_att_len()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.get_delta"><code class="docutils literal notranslate"><span class="pre">get_delta()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.get_lens_set"><code class="docutils literal notranslate"><span class="pre">get_lens_set()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.lens_transmission"><code class="docutils literal notranslate"><span class="pre">lens_transmission()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.photon_to_wavelength"><code class="docutils literal notranslate"><span class="pre">photon_to_wavelength()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.plan_set"><code class="docutils literal notranslate"><span class="pre">plan_set()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.be_lens_calcs.set_lens_set_to_file"><code class="docutils literal notranslate"><span class="pre">set_lens_set_to_file()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pmps.html">PMPS Utilities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
@@ -62,8 +87,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Beryllium Lens Calculations</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Beryllium Lens Calculations</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/be_lens_calcs.rst.txt" rel="nofollow"> View page source</a>
       </li>
