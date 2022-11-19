@@ -300,19 +300,50 @@ def describe_bitmask(bitmask, line, bounds=None):
 
     Parameters
     ----------
-    bitmask: int
+    bitmask : int
         The bits to describe. Typically an output of `get_bitmask`.
 
-    line: str
+    line : str
         String representation of which line's bitmask to use.
         If the string begins with "l" or "h" (lfe, hxr), we'll
         use the hard-xray bitmask.
         If the string begins with "k" or "s" (kfe, sxr), we'll
         use the soft-xray bitmask.
 
-    bounds: list of numbers, optional
+    bounds : list of numbers, optional
         Custom boundaries to use instead of the default soft-xray
         or hard-xray lines. Useful for testing.
+    """
+    lines = get_bitmask_desc(bitmask=bitmask, line=line, bounds=bounds)
+    print('\n'.join(lines))
+
+
+def get_bitmask_desc(bitmask, line, bounds=None):
+    """
+    Return a text description of a bitmask.
+
+    This will describe what the bitmask means.
+
+    Parameters
+    ----------
+    bitmask : int
+        The bits to describe. Typically an output of `get_bitmask`.
+
+    line : str
+        String representation of which line's bitmask to use.
+        If the string begins with "l" or "h" (lfe, hxr), we'll
+        use the hard-xray bitmask.
+        If the string begins with "k" or "s" (kfe, sxr), we'll
+        use the soft-xray bitmask.
+
+    bounds : list of numbers, optional
+        Custom boundaries to use instead of the default soft-xray
+        or hard-xray lines. Useful for testing.
+
+    Returns
+    -------
+    desc : list of str
+        Description lines that describe what the bitmask means.
     """
     bounds = bounds or select_bitmask_boundaries(line)
     lines = []
@@ -332,4 +363,4 @@ def describe_bitmask(bitmask, line, bounds=None):
         line = f'Bit {count:2}: {val} ({prev:{width}}, {ev:{width}}) {text}'
         lines.append(line)
         prev = ev
-    print('\n'.join(lines))
+    return lines
