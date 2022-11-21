@@ -78,6 +78,7 @@
 <span class="sd">Here you will find functions related to eV bitmasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="c1"># Source for these values:</span>
 <span class="c1"># lcls-twincat-pmps/PMPS/GVLs/PMPS_GVL.TcGVL</span>
@@ -151,7 +152,7 @@
     <span class="p">]</span>
 
 
-<div class="viewcode-block" id="select_bitmask_boundaries"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.select_bitmask_boundaries">[docs]</a><span class="k">def</span> <span class="nf">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+<div class="viewcode-block" id="select_bitmask_boundaries"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.select_bitmask_boundaries">[docs]</a><span class="k">def</span> <span class="nf">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a line, select the bitmask boundaries to use.</span>
 
@@ -178,7 +179,13 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1"> is neither lfe or kfe!.&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask">[docs]</a><span class="k">def</span> <span class="nf">get_bitmask</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">allow</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask">[docs]</a><span class="k">def</span> <span class="nf">get_bitmask</span><span class="p">(</span>
+    <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">allow</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a range of eV values, calculate the appropriate pmps bitmask.</span>
 
@@ -258,7 +265,12 @@
         <span class="k">return</span> <span class="n">lower_range</span> <span class="o">|</span> <span class="n">upper_range</span></div>
 
 
-<div class="viewcode-block" id="check_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_bitmask">[docs]</a><span class="k">def</span> <span class="nf">check_bitmask</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">bitmask</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="check_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_bitmask">[docs]</a><span class="k">def</span> <span class="nf">check_bitmask</span><span class="p">(</span>
+    <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">bitmask</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given an energy and a bitmask, tell us if our energy is allowed.</span>
 
@@ -307,7 +319,13 @@
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">answers</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_actual_range"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_actual_range">[docs]</a><span class="k">def</span> <span class="nf">check_actual_range</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">allow</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="check_actual_range"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_actual_range">[docs]</a><span class="k">def</span> <span class="nf">check_actual_range</span><span class="p">(</span>
+    <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">allow</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the actual effective range given bitmask precision.</span>
 
@@ -339,7 +357,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ranges: tuples</span>
+<span class="sd">    ranges: tuple</span>
 <span class="sd">        A (lower, upper) pair that represents a range of allowed</span>
 <span class="sd">        (or forbidden) energy values. The endpoints of the range</span>
 <span class="sd">        are considered unsafe.</span>
@@ -366,7 +384,11 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="describe_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.describe_bitmask">[docs]</a><span class="k">def</span> <span class="nf">describe_bitmask</span><span class="p">(</span><span class="n">bitmask</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="describe_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.describe_bitmask">[docs]</a><span class="k">def</span> <span class="nf">describe_bitmask</span><span class="p">(</span>
+    <span class="n">bitmask</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print a text description of a bitmask.</span>
 
@@ -374,19 +396,54 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bitmask: int</span>
+<span class="sd">    bitmask : int</span>
 <span class="sd">        The bits to describe. Typically an output of `get_bitmask`.</span>
 
-<span class="sd">    line: str</span>
+<span class="sd">    line : str</span>
 <span class="sd">        String representation of which line&#39;s bitmask to use.</span>
 <span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
 <span class="sd">        use the hard-xray bitmask.</span>
 <span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
 <span class="sd">        use the soft-xray bitmask.</span>
 
-<span class="sd">    bounds: list of numbers, optional</span>
+<span class="sd">    bounds : list of numbers, optional</span>
 <span class="sd">        Custom boundaries to use instead of the default soft-xray</span>
 <span class="sd">        or hard-xray lines. Useful for testing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">get_bitmask_desc</span><span class="p">(</span><span class="n">bitmask</span><span class="o">=</span><span class="n">bitmask</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_bitmask_desc"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask_desc">[docs]</a><span class="k">def</span> <span class="nf">get_bitmask_desc</span><span class="p">(</span>
+    <span class="n">bitmask</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a text description of a bitmask.</span>
+
+<span class="sd">    This will describe what the bitmask means.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bitmask : int</span>
+<span class="sd">        The bits to describe. Typically an output of `get_bitmask`.</span>
+
+<span class="sd">    line : str</span>
+<span class="sd">        String representation of which line&#39;s bitmask to use.</span>
+<span class="sd">        If the string begins with &quot;l&quot; or &quot;h&quot; (lfe, hxr), we&#39;ll</span>
+<span class="sd">        use the hard-xray bitmask.</span>
+<span class="sd">        If the string begins with &quot;k&quot; or &quot;s&quot; (kfe, sxr), we&#39;ll</span>
+<span class="sd">        use the soft-xray bitmask.</span>
+
+<span class="sd">    bounds : list of numbers, optional</span>
+<span class="sd">        Custom boundaries to use instead of the default soft-xray</span>
+<span class="sd">        or hard-xray lines. Useful for testing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    desc : list of str</span>
+<span class="sd">        Description lines that describe what the bitmask means.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span> <span class="ow">or</span> <span class="n">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
@@ -406,7 +463,7 @@
         <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Bit </span><span class="si">{</span><span class="n">count</span><span class="si">:</span><span class="s1">2</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">prev</span><span class="si">:{</span><span class="n">width</span><span class="si">}}</span><span class="s1">, </span><span class="si">{</span><span class="n">ev</span><span class="si">:{</span><span class="n">width</span><span class="si">}}</span><span class="s1">) </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="n">prev</span> <span class="o">=</span> <span class="n">ev</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">lines</span></div>
 </pre></div>
 
            </div>

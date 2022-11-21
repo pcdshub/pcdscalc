@@ -47,6 +47,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#pcdscalc.pmps.check_bitmask"><code class="docutils literal notranslate"><span class="pre">check_bitmask()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pcdscalc.pmps.describe_bitmask"><code class="docutils literal notranslate"><span class="pre">describe_bitmask()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pcdscalc.pmps.get_bitmask"><code class="docutils literal notranslate"><span class="pre">get_bitmask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pcdscalc.pmps.get_bitmask_desc"><code class="docutils literal notranslate"><span class="pre">get_bitmask_desc()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pcdscalc.pmps.select_bitmask_boundaries"><code class="docutils literal notranslate"><span class="pre">select_bitmask_boundaries()</span></code></a></li>
 </ul>
 </li>
@@ -86,7 +87,7 @@
 <p>Here you will find functions related to eV bitmasks.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pcdscalc.pmps.check_actual_range">
-<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">check_actual_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_actual_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_actual_range" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">check_actual_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_actual_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_actual_range" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the actual effective range given bitmask precision.</p>
 <p>Because of the granularity of the bitmask, most range specifications
 exclude more energy values than requested.</p>
@@ -113,7 +114,7 @@ or hard-xray lines. Useful for testing.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>ranges: tuples</dt><dd><p>A (lower, upper) pair that represents a range of allowed
+<dt>ranges: tuple</dt><dd><p>A (lower, upper) pair that represents a range of allowed
 (or forbidden) energy values. The endpoints of the range
 are considered unsafe.</p>
 </dd>
@@ -124,7 +125,7 @@ are considered unsafe.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pcdscalc.pmps.check_bitmask">
-<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">check_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_bitmask" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">check_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitmask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/pcdscalc/pmps.html#check_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.check_bitmask" title="Permalink to this definition"></a></dt>
 <dd><p>Given an energy and a bitmask, tell us if our energy is allowed.</p>
 <p>This is the same calculation the PMPS is doing internally to determine
 if it is safe for beam to proceed.</p>
@@ -157,21 +158,21 @@ or hard-xray lines. Useful for testing.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pcdscalc.pmps.describe_bitmask">
-<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">describe_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#describe_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.describe_bitmask" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">describe_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pcdscalc/pmps.html#describe_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.describe_bitmask" title="Permalink to this definition"></a></dt>
 <dd><p>Print a text description of a bitmask.</p>
 <p>This will describe what the bitmask means.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bitmask: int</strong></dt><dd><p>The bits to describe. Typically an output of <cite>get_bitmask</cite>.</p>
+<dt><strong>bitmask</strong><span class="classifier">int</span></dt><dd><p>The bits to describe. Typically an output of <cite>get_bitmask</cite>.</p>
 </dd>
-<dt><strong>line: str</strong></dt><dd><p>String representation of which line’s bitmask to use.
+<dt><strong>line</strong><span class="classifier">str</span></dt><dd><p>String representation of which line’s bitmask to use.
 If the string begins with “l” or “h” (lfe, hxr), we’ll
 use the hard-xray bitmask.
 If the string begins with “k” or “s” (kfe, sxr), we’ll
 use the soft-xray bitmask.</p>
 </dd>
-<dt><strong>bounds: list of numbers, optional</strong></dt><dd><p>Custom boundaries to use instead of the default soft-xray
+<dt><strong>bounds</strong><span class="classifier">list of numbers, optional</span></dt><dd><p>Custom boundaries to use instead of the default soft-xray
 or hard-xray lines. Useful for testing.</p>
 </dd>
 </dl>
@@ -181,7 +182,7 @@ or hard-xray lines. Useful for testing.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pcdscalc.pmps.get_bitmask">
-<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">get_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#get_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.get_bitmask" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">get_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pcdscalc/pmps.html#get_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.get_bitmask" title="Permalink to this definition"></a></dt>
 <dd><p>Given a range of eV values, calculate the appropriate pmps bitmask.</p>
 <p>This saves you the effort of checking up on the eV ranges and
 remembering how the bitmask is assembled.</p>
@@ -244,8 +245,38 @@ or hard-xray lines. Useful for testing.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="pcdscalc.pmps.get_bitmask_desc">
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">get_bitmask_desc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pcdscalc/pmps.html#get_bitmask_desc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.get_bitmask_desc" title="Permalink to this definition"></a></dt>
+<dd><p>Return a text description of a bitmask.</p>
+<p>This will describe what the bitmask means.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bitmask</strong><span class="classifier">int</span></dt><dd><p>The bits to describe. Typically an output of <cite>get_bitmask</cite>.</p>
+</dd>
+<dt><strong>line</strong><span class="classifier">str</span></dt><dd><p>String representation of which line’s bitmask to use.
+If the string begins with “l” or “h” (lfe, hxr), we’ll
+use the hard-xray bitmask.
+If the string begins with “k” or “s” (kfe, sxr), we’ll
+use the soft-xray bitmask.</p>
+</dd>
+<dt><strong>bounds</strong><span class="classifier">list of numbers, optional</span></dt><dd><p>Custom boundaries to use instead of the default soft-xray
+or hard-xray lines. Useful for testing.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>desc</strong><span class="classifier">list of str</span></dt><dd><p>Description lines that describe what the bitmask means.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pcdscalc.pmps.select_bitmask_boundaries">
-<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">select_bitmask_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/pmps.html#select_bitmask_boundaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.select_bitmask_boundaries" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pcdscalc.pmps.</span></span><span class="sig-name descname"><span class="pre">select_bitmask_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pcdscalc/pmps.html#select_bitmask_boundaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.pmps.select_bitmask_boundaries" title="Permalink to this definition"></a></dt>
 <dd><p>Given a line, select the bitmask boundaries to use.</p>
 <p>These are hard-coded for now but in theory this could be loaded from
 a database, an EPICS PV, or some other source.</p>
