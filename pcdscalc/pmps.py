@@ -4,6 +4,7 @@ Calculation utilities related to the LCLS PMPS system.
 Here you will find functions related to eV bitmasks.
 """
 import math
+from typing import List, Optional, Tuple
 
 # Source for these values:
 # lcls-twincat-pmps/PMPS/GVLs/PMPS_GVL.TcGVL
@@ -77,7 +78,7 @@ KFE = [
     ]
 
 
-def select_bitmask_boundaries(line):
+def select_bitmask_boundaries(line: str) -> List[float]:
     """
     Given a line, select the bitmask boundaries to use.
 
@@ -104,7 +105,13 @@ def select_bitmask_boundaries(line):
     raise ValueError(f'{line} is neither lfe or kfe!.')
 
 
-def get_bitmask(lower, upper, allow, line, bounds=None):
+def get_bitmask(
+    lower: float,
+    upper: float,
+    allow: bool,
+    line: str,
+    bounds: Optional[List[float]] = None,
+) -> int:
     """
     Given a range of eV values, calculate the appropriate pmps bitmask.
 
@@ -184,7 +191,12 @@ def get_bitmask(lower, upper, allow, line, bounds=None):
         return lower_range | upper_range
 
 
-def check_bitmask(energy, bitmask, line, bounds=None):
+def check_bitmask(
+    energy: float,
+    bitmask: int,
+    line: str,
+    bounds: Optional[List[float]] = None,
+) -> bool:
     """
     Given an energy and a bitmask, tell us if our energy is allowed.
 
@@ -233,7 +245,13 @@ def check_bitmask(energy, bitmask, line, bounds=None):
         return all(answers)
 
 
-def check_actual_range(lower, upper, allow, line, bounds=None):
+def check_actual_range(
+    lower: float,
+    upper: float,
+    allow: bool,
+    line: str,
+    bounds: Optional[List[float]] = None,
+) -> Tuple[float, float]:
     """
     Returns the actual effective range given bitmask precision.
 
@@ -265,7 +283,7 @@ def check_actual_range(lower, upper, allow, line, bounds=None):
 
     Returns
     -------
-    ranges: tuples
+    ranges: tuple
         A (lower, upper) pair that represents a range of allowed
         (or forbidden) energy values. The endpoints of the range
         are considered unsafe.
@@ -292,7 +310,11 @@ def check_actual_range(lower, upper, allow, line, bounds=None):
         return (lower, lower)
 
 
-def describe_bitmask(bitmask, line, bounds=None):
+def describe_bitmask(
+    bitmask: int,
+    line: str,
+    bounds: Optional[List[float]] = None,
+) -> None:
     """
     Print a text description of a bitmask.
 
@@ -300,19 +322,54 @@ def describe_bitmask(bitmask, line, bounds=None):
 
     Parameters
     ----------
-    bitmask: int
+    bitmask : int
         The bits to describe. Typically an output of `get_bitmask`.
 
-    line: str
+    line : str
         String representation of which line's bitmask to use.
         If the string begins with "l" or "h" (lfe, hxr), we'll
         use the hard-xray bitmask.
         If the string begins with "k" or "s" (kfe, sxr), we'll
         use the soft-xray bitmask.
 
-    bounds: list of numbers, optional
+    bounds : list of numbers, optional
         Custom boundaries to use instead of the default soft-xray
         or hard-xray lines. Useful for testing.
+    """
+    lines = get_bitmask_desc(bitmask=bitmask, line=line, bounds=bounds)
+    print('\n'.join(lines))
+
+
+def get_bitmask_desc(
+    bitmask: int,
+    line: str,
+    bounds: Optional[List[float]] = None,
+) -> List[str]:
+    """
+    Return a text description of a bitmask.
+
+    This will describe what the bitmask means.
+
+    Parameters
+    ----------
+    bitmask : int
+        The bits to describe. Typically an output of `get_bitmask`.
+
+    line : str
+        String representation of which line's bitmask to use.
+        If the string begins with "l" or "h" (lfe, hxr), we'll
+        use the hard-xray bitmask.
+        If the string begins with "k" or "s" (kfe, sxr), we'll
+        use the soft-xray bitmask.
+
+    bounds : list of numbers, optional
+        Custom boundaries to use instead of the default soft-xray
+        or hard-xray lines. Useful for testing.
+
+    Returns
+    -------
+    desc : list of str
+        Description lines that describe what the bitmask means.
     """
     bounds = bounds or select_bitmask_boundaries(line)
     lines = []
@@ -332,4 +389,4 @@ def describe_bitmask(bitmask, line, bounds=None):
         line = f'Bit {count:2}: {val} ({prev:{width}}, {ev:{width}}) {text}'
         lines.append(line)
         prev = ev
-    print('\n'.join(lines))
+    return lines
