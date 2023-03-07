@@ -4,7 +4,7 @@ Calculation utilities related to the LCLS PMPS system.
 Here you will find functions related to eV bitmasks.
 """
 import math
-from typing import List, Optional, Tuple
+from typing import Optional
 
 # Source for these values:
 # lcls-twincat-pmps/PMPS/GVLs/PMPS_GVL.TcGVL
