@@ -78,7 +78,7 @@ KFE = [
     ]
 
 
-def select_bitmask_boundaries(line: str) -> List[float]:
+def select_bitmask_boundaries(line: str) -> list[float]:
     """
     Given a line, select the bitmask boundaries to use.
 
@@ -110,7 +110,7 @@ def get_bitmask(
     upper: float,
     allow: bool,
     line: str,
-    bounds: Optional[List[float]] = None,
+    bounds: Optional[list[float]] = None,
 ) -> int:
     """
     Given a range of eV values, calculate the appropriate pmps bitmask.
@@ -195,7 +195,7 @@ def check_bitmask(
     energy: float,
     bitmask: int,
     line: str,
-    bounds: Optional[List[float]] = None,
+    bounds: Optional[list[float]] = None,
 ) -> bool:
     """
     Given an energy and a bitmask, tell us if our energy is allowed.
@@ -250,8 +250,8 @@ def check_actual_range(
     upper: float,
     allow: bool,
     line: str,
-    bounds: Optional[List[float]] = None,
-) -> Tuple[float, float]:
+    bounds: Optional[list[float]] = None,
+) -> tuple[float, float]:
     """
     Returns the actual effective range given bitmask precision.
 
@@ -313,7 +313,7 @@ def check_actual_range(
 def describe_bitmask(
     bitmask: int,
     line: str,
-    bounds: Optional[List[float]] = None,
+    bounds: Optional[list[float]] = None,
 ) -> None:
     """
     Print a text description of a bitmask.
@@ -343,8 +343,8 @@ def describe_bitmask(
 def get_bitmask_desc(
     bitmask: int,
     line: str,
-    bounds: Optional[List[float]] = None,
-) -> List[str]:
+    bounds: Optional[list[float]] = None,
+) -> list[str]:
     """
     Return a text description of a bitmask.
 
