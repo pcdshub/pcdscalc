@@ -1051,27 +1051,36 @@ def plan_set(energy, z_offset, z_range, beam_size_unfocused, size_horizontal,
         lens_radii=LENS_RADII,
     )
 
-    distances = np.asarray([
+    distances = np.asarray(
+        [
             calc_distance_for_size(
                 size_calc_1,
                 list(chain(*list(zip(set, t_lens_radii)))),
                 energy=energy,
                 fwhm_unfocused=beam_size_unfocused,
-            )[focus_before_sample] for set in sets])
+            )[focus_before_sample]
+            for set in sets
+        ]
+    )
 
     good_sets = np.logical_and(
         distances > np.min(z_offset + np.asarray(z_range)),
-        distances < np.max(z_offset + np.asarray(z_range)))
+        distances < np.max(z_offset + np.asarray(z_range))
+    )
 
     sets = sets[good_sets]
-    size_range_min = np.asarray([
+    size_range_min = np.asarray(
+        [
             calc_beam_fwhm(
                 energy,
                 list(chain(*list(zip(set, t_lens_radii)))),
                 distance=z_offset - min(z_range),
                 fwhm_unfocused=beam_size_unfocused,
                 printsummary=False,
-            ) for set in sets])
+            )
+            for set in sets
+        ]
+    )
 
     size_range_max = np.asarray([
         calc_beam_fwhm(

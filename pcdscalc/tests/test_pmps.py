@@ -24,7 +24,7 @@ bm4 = 0b1111_1111_1111_1110_1111_1111_1111_1111
     "test_input,expected",
     [('k', KFE), ('kfe', KFE), ('sxr', KFE),
      ('L', LFE), ('LFE', LFE), ('HXR', LFE)]
-    )
+)
 def test_select_bounds(test_input, expected):
     logger.debug(f'test_select_bounds({test_input}, {expected})')
     assert select_bitmask_boundaries(test_input) is expected
@@ -34,12 +34,14 @@ def test_select_bounds(test_input, expected):
     "lower,upper,allow,expected",
     [(0, 100, True, allow_all),
      (0, 100, False, allow_none),
-     (0, 15.5, True,     0b0000_0000_0000_0000_0111_1111_1111_1111),
-     (15.5, 100, True,   0b1111_1111_1111_1111_0000_0000_0000_0000),
-     (14.5, 21.5, True,  0b0000_0000_0001_1111_1000_0000_0000_0000),
-     (14.5, 21.5, False, 0b1111_1111_1100_0000_0011_1111_1111_1111),
-     (15, 20, True,      0b0000_0000_0000_1111_1000_0000_0000_0000),
-     (15, 20, False,     0b1111_1111_1111_0000_0111_1111_1111_1111)])
+     (0, 15.5, True,     0b0000_0000_0000_0000_0111_1111_1111_1111),  # noqa: E241
+     (15.5, 100, True,   0b1111_1111_1111_1111_0000_0000_0000_0000),  # noqa: E241
+     (14.5, 21.5, True,  0b0000_0000_0001_1111_1000_0000_0000_0000),  # noqa: E241
+     (14.5, 21.5, False, 0b1111_1111_1100_0000_0011_1111_1111_1111),  # noqa: E241
+     (15, 20, True,      0b0000_0000_0000_1111_1000_0000_0000_0000),  # noqa: E241
+     (15, 20, False,     0b1111_1111_1111_0000_0111_1111_1111_1111),  # noqa: E241
+     ]
+)
 def test_get_bitmask(lower, upper, allow, expected):
     """
     Test that the correct bitmask is created.

@@ -41,7 +41,8 @@ LFE = [
     30.0E3,
     60.0E3,
     90.0E3,
-    ]
+]
+
 KFE = [
     100,
     250,
@@ -75,7 +76,7 @@ KFE = [
     4.00E3,
     5.30E3,
     7.00E3
-    ]
+]
 
 
 def select_bitmask_boundaries(line: str) -> list[float]:
