@@ -10,13 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/doctr-versions-menu.js"></script>
+        <script src="../../_static/docs-versions-menu.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -27,11 +25,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> pcdscalc
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pcdscalc
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -60,7 +62,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
       <li class="breadcrumb-item active">pcdscalc.be_lens_calcs</li>
       <li class="wy-breadcrumbs-aside">
@@ -114,7 +116,7 @@
 <div class="viewcode-block" id="configure_defaults"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.configure_defaults">[docs]</a><span class="k">def</span> <span class="nf">configure_defaults</span><span class="p">(</span><span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disk_thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">apex_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lens_radii</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configure defaults.</span>
 
 <span class="sd">    Parameters</span>
@@ -152,7 +154,7 @@
 
 
 <div class="viewcode-block" id="configure_lens_set_file"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.configure_lens_set_file">[docs]</a><span class="k">def</span> <span class="nf">configure_lens_set_file</span><span class="p">(</span><span class="n">lens_file_path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configure the path to the lens set file.</span>
 
 <span class="sd">    Parameters</span>
@@ -170,7 +172,7 @@
 
 
 <div class="viewcode-block" id="photon_to_wavelength"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.photon_to_wavelength">[docs]</a><span class="k">def</span> <span class="nf">photon_to_wavelength</span><span class="p">(</span><span class="n">energy</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the wavelength in micrometers.</span>
 
 <span class="sd">    Use photon energy in electronvolts. The equation is approximately: λ[µm] =</span>
@@ -195,7 +197,7 @@
 
 
 <div class="viewcode-block" id="gaussian_sigma_to_fwhm"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.gaussian_sigma_to_fwhm">[docs]</a><span class="k">def</span> <span class="nf">gaussian_sigma_to_fwhm</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert between FWHM and sigma of a Gaussian function.</span>
 
 <span class="sd">    FWHM = 2.35482004503 * sigma</span>
@@ -219,7 +221,7 @@
 
 
 <div class="viewcode-block" id="gaussian_fwhm_to_sigma"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.gaussian_fwhm_to_sigma">[docs]</a><span class="k">def</span> <span class="nf">gaussian_fwhm_to_sigma</span><span class="p">(</span><span class="n">fwhm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert between FWHM and sigma of a Gaussian function.</span>
 
 <span class="sd">    sigma = FWHM / 2.35482004503</span>
@@ -244,7 +246,7 @@
 
 
 <div class="viewcode-block" id="get_lens_set"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.get_lens_set">[docs]</a><span class="k">def</span> <span class="nf">get_lens_set</span><span class="p">(</span><span class="n">set_number_top_to_bot</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">get_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the lens set from the file provided.</span>
 
 <span class="sd">    Parameters</span>
@@ -303,7 +305,7 @@
 
 <div class="viewcode-block" id="set_lens_set_to_file"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.set_lens_set_to_file">[docs]</a><span class="k">def</span> <span class="nf">set_lens_set_to_file</span><span class="p">(</span><span class="n">list_of_sets</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">make_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write lens set to a file.</span>
 
 <span class="sd">    The Be lens holders can take 3 different sets that we usually set before</span>
@@ -354,7 +356,7 @@
 
 
 <div class="viewcode-block" id="get_att_len"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.get_att_len">[docs]</a><span class="k">def</span> <span class="nf">get_att_len</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the attenuation length (in meter) of a material.</span>
 
 <span class="sd">    The X-ray beam intensity I(x) at depth x in a material is a function of the</span>
@@ -407,7 +409,7 @@
 
 
 <div class="viewcode-block" id="get_delta"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.get_delta">[docs]</a><span class="k">def</span> <span class="nf">get_delta</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate delta for a given material at a given energy.</span>
 
 <span class="sd">    Anomalous components of the index of refraction for a material, using the</span>
@@ -457,7 +459,7 @@
 
 <div class="viewcode-block" id="calc_focal_length_for_single_lens"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_focal_length_for_single_lens">[docs]</a><span class="k">def</span> <span class="nf">calc_focal_length_for_single_lens</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                       <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the Focal Length for a single lens.</span>
 
 <span class="sd">    Parameters</span>
@@ -489,7 +491,7 @@
 
 
 <div class="viewcode-block" id="calc_focal_length"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_focal_length">[docs]</a><span class="k">def</span> <span class="nf">calc_focal_length</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">lens_set</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the Focal Length for certain lenses configuration and energy.</span>
 
 <span class="sd">    Parameters</span>
@@ -534,7 +536,7 @@
 <div class="viewcode-block" id="calc_beam_fwhm"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_beam_fwhm">[docs]</a><span class="k">def</span> <span class="nf">calc_beam_fwhm</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">lens_set</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printsummary</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate beam Full Width at the Half Maximum.</span>
 
 <span class="sd">    Calculate beam parameters for certain lenses configuration and energy at a</span>
@@ -611,7 +613,7 @@
 
 <div class="viewcode-block" id="calc_distance_for_size"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_distance_for_size">[docs]</a><span class="k">def</span> <span class="nf">calc_distance_for_size</span><span class="p">(</span><span class="n">size_fwhm</span><span class="p">,</span> <span class="n">lens_set</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span>
                            <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the distance for size.</span>
 
 <span class="sd">    Parameters</span>
@@ -658,7 +660,7 @@
 
 <div class="viewcode-block" id="calc_lens_aperture_radius"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_lens_aperture_radius">[docs]</a><span class="k">def</span> <span class="nf">calc_lens_aperture_radius</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">disk_thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">apex_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the lens aperture radius.</span>
 
 <span class="sd">    It is of importance to optimize which lens radius to use at a specific</span>
@@ -693,7 +695,7 @@
                                <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">disk_thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">apex_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the transmission for a single lens.</span>
 
 <span class="sd">    Parameters</span>
@@ -749,7 +751,7 @@
                         <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">disk_thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">apex_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate  the transmission of a lens set.</span>
 
 <span class="sd">    These would allow us to estimate the total transmission of the lenses.</span>
@@ -819,7 +821,7 @@
 <div class="viewcode-block" id="calc_lens_set"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_lens_set">[docs]</a><span class="k">def</span> <span class="nf">calc_lens_set</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">size_fwhm</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">n_max</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">max_each</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
                   <span class="n">lens_radii</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eff_rad0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate lens set.</span>
 
 <span class="sd">    Parameters</span>
@@ -898,7 +900,7 @@
 
 
 <div class="viewcode-block" id="find_radius"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.find_radius">[docs]</a><span class="k">def</span> <span class="nf">find_radius</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the radius of curvature.</span>
 
 <span class="sd">    Find the radius of curvature of the lens that would focus the energy at the</span>
@@ -933,7 +935,7 @@
 
 
 <div class="viewcode-block" id="find_energy"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.find_energy">[docs]</a><span class="k">def</span> <span class="nf">find_energy</span><span class="p">(</span><span class="n">lens_set</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the energy that would focus at a given distance.</span>
 
 <span class="sd">    Parameters</span>
@@ -986,7 +988,7 @@
 
 <div class="viewcode-block" id="find_z_pos"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.find_z_pos">[docs]</a><span class="k">def</span> <span class="nf">find_z_pos</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">lens_set</span><span class="p">,</span> <span class="n">spot_size_fwhm</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the Be Lens distances.</span>
 
 <span class="sd">    Find the two distances the Be lens needs to be at to get the spotsize in</span>
@@ -1046,7 +1048,7 @@
 <div class="viewcode-block" id="plan_set"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.plan_set">[docs]</a><span class="k">def</span> <span class="nf">plan_set</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">z_offset</span><span class="p">,</span> <span class="n">z_range</span><span class="p">,</span> <span class="n">beam_size_unfocused</span><span class="p">,</span> <span class="n">size_horizontal</span><span class="p">,</span>
              <span class="n">size_vertical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tot_number_of_lenses</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
              <span class="n">max_each</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">focus_before_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Macro to help plan for what lens set to use.</span>
 
 <span class="sd">    Parameters</span>
@@ -1125,27 +1127,36 @@
         <span class="n">lens_radii</span><span class="o">=</span><span class="n">LENS_RADII</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">[</span>
             <span class="n">calc_distance_for_size</span><span class="p">(</span>
                 <span class="n">size_calc_1</span><span class="p">,</span>
                 <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">t_lens_radii</span><span class="p">)))),</span>
                 <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span>
                 <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="n">beam_size_unfocused</span><span class="p">,</span>
-            <span class="p">)[</span><span class="n">focus_before_sample</span><span class="p">]</span> <span class="k">for</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">])</span>
+            <span class="p">)[</span><span class="n">focus_before_sample</span><span class="p">]</span>
+            <span class="k">for</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">sets</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
 
     <span class="n">good_sets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
         <span class="n">distances</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">z_offset</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z_range</span><span class="p">)),</span>
-        <span class="n">distances</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">z_offset</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z_range</span><span class="p">)))</span>
+        <span class="n">distances</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">z_offset</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z_range</span><span class="p">))</span>
+    <span class="p">)</span>
 
     <span class="n">sets</span> <span class="o">=</span> <span class="n">sets</span><span class="p">[</span><span class="n">good_sets</span><span class="p">]</span>
-    <span class="n">size_range_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span>
+    <span class="n">size_range_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">[</span>
             <span class="n">calc_beam_fwhm</span><span class="p">(</span>
                 <span class="n">energy</span><span class="p">,</span>
                 <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">t_lens_radii</span><span class="p">)))),</span>
                 <span class="n">distance</span><span class="o">=</span><span class="n">z_offset</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">z_range</span><span class="p">),</span>
                 <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="n">beam_size_unfocused</span><span class="p">,</span>
                 <span class="n">printsummary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span> <span class="k">for</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">sets</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
 
     <span class="n">size_range_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span>
         <span class="n">calc_beam_fwhm</span><span class="p">(</span>
@@ -1206,7 +1217,7 @@
 
 <div class="viewcode-block" id="lens_transmission"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.lens_transmission">[docs]</a><span class="k">def</span> <span class="nf">lens_transmission</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">fwhm</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">id_material</span><span class="o">=</span><span class="s2">&quot;IF1&quot;</span><span class="p">,</span>
                       <span class="n">lens_thicknes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the CRL (Compound Refractive Lens) transmission.</span>
 
 <span class="sd">    Parameters</span>
@@ -1261,7 +1272,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

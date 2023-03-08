@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beryllium Lens Calculations &mdash; pcdscalc  documentation</title>
@@ -11,13 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
-        <script src="_static/doctr-versions-menu.js"></script>
+        <script src="_static/docs-versions-menu.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> pcdscalc
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pcdscalc
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -87,7 +89,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Beryllium Lens Calculations</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/be_lens_calcs.rst.txt" rel="nofollow"> View page source</a>
@@ -173,7 +175,7 @@
 given distance. FWHM -  Full Width at the Half Maximum Optionally some
 other parameters can be set.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
 </dd>
@@ -195,7 +197,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>size_fwhm</strong><span class="classifier">float</span></dt><dd><p>Beam Full Width at the Half Maximum in meters.</p>
 </dd>
@@ -215,7 +217,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">calc_distance_for_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fwhm_unfocused</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_distance_for_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_distance_for_size" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the distance for size.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>size_fwhm</strong><span class="classifier">float</span></dt><dd><p>Beam Full Width at the Half Maximum in meters.</p>
 </dd>
@@ -228,7 +230,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>distance</strong><span class="classifier">float</span></dt><dd><p>Distance in meters</p>
 </dd>
@@ -247,7 +249,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">calc_focal_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_focal_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_focal_length" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the Focal Length for certain lenses configuration and energy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
 </dd>
@@ -259,7 +261,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>focal_length</strong><span class="classifier">float</span></dt><dd></dd>
 </dl>
@@ -277,7 +279,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">calc_focal_length_for_single_lens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_focal_length_for_single_lens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_focal_length_for_single_lens" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the Focal Length for a single lens.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in in KeV</p>
 </dd>
@@ -289,7 +291,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>focal_length</strong><span class="classifier">float</span></dt><dd><p>The focal length for a single lens</p>
 </dd>
@@ -310,7 +312,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <p>It is of importance to optimize which lens radius to use at a specific
 photon energy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>radius</strong><span class="classifier">float</span></dt><dd></dd>
 <dt><strong>disk_thickness</strong><span class="classifier">float, optional</span></dt><dd><p>Disk Thickness in meters. Defaults to 1.0e-3.</p>
@@ -319,7 +321,7 @@ photon energy.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>aperture_radius</strong><span class="classifier">float</span></dt><dd></dd>
 </dl>
@@ -338,7 +340,7 @@ photon energy.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">calc_lens_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_each</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fwhm_unfocused</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eff_rad0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_lens_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_lens_set" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate lens set.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
 </dd>
@@ -357,7 +359,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <dt><strong>eff_rad0</strong><span class="classifier">float, optional</span></dt><dd></dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>lens_sets</strong><span class="classifier">tuple</span></dt><dd><p>Lens sets</p>
 </dd>
@@ -375,7 +377,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">calc_trans_for_single_lens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fwhm_unfocused</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disk_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apex_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#calc_trans_for_single_lens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.calc_trans_for_single_lens" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the transmission for a single lens.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
 </dd>
@@ -393,7 +395,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>transmission</strong><span class="classifier">float</span></dt><dd><p>Transmission for a single lens</p>
 </dd>
@@ -415,7 +417,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <dd><p>Calculate  the transmission of a lens set.</p>
 <p>These would allow us to estimate the total transmission of the lenses.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
 </dd>
@@ -434,7 +436,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>transmission</strong><span class="classifier">float</span></dt><dd><p>Transmission for a set of lens</p>
 </dd>
@@ -455,7 +457,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">configure_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fwhm_unfocused</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disk_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apex_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#configure_defaults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.configure_defaults" title="Permalink to this definition"></a></dt>
 <dd><p>Configure defaults.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>fwhm_unfocused</strong><span class="classifier">float, optional</span></dt><dd><p>Full width at half maximum unfocused in meters.</p>
 </dd>
@@ -483,7 +485,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">configure_lens_set_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lens_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#configure_lens_set_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.configure_lens_set_file" title="Permalink to this definition"></a></dt>
 <dd><p>Configure the path to the lens set file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>lens_file_path</strong><span class="classifier">str</span></dt><dd><p>Path to the lens_set file.</p>
 </dd>
@@ -497,7 +499,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">find_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lens_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#find_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.find_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Find the energy that would focus at a given distance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2…]</p>
 </dd>
@@ -508,7 +510,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">float</span></dt><dd><p>Energy</p>
 </dd>
@@ -529,7 +531,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 <p>Find the radius of curvature of the lens that would focus the energy at the
 distance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy</p>
 </dd>
@@ -540,7 +542,7 @@ distance.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>radius</strong><span class="classifier">float</span></dt><dd><p>Radius of curvature in meters.</p>
 </dd>
@@ -561,7 +563,7 @@ distance.</p>
 <p>Find the two distances the Be lens needs to be at to get the spotsize in
 the chamber center.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy in KeV</p>
 </dd>
@@ -577,7 +579,7 @@ Radial size of x-ray beam before focusing in meters.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>z_position</strong><span class="classifier">tuple</span></dt><dd><p>(z1, z2)</p>
 </dd>
@@ -600,13 +602,13 @@ Radial size of x-ray beam before focusing in meters.</p>
 <p>sigma = FWHM / 2.35482004503</p>
 <p><a class="reference external" href="https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/">https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>fwhm</strong><span class="classifier">float</span></dt><dd><p>Full Width at the Half Maximum.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>sigma</dt><dd></dd>
 </dl>
@@ -626,12 +628,12 @@ Radial size of x-ray beam before focusing in meters.</p>
 <p>FWHM = 2.35482004503 * sigma</p>
 <p><a class="reference external" href="https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/">https://brainder.org/2011/08/20/gaussian-kernels-convert-fwhm-to-sigma/</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>sigma</strong><span class="classifier">float</span></dt><dd></dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>FWHM -  Full Width at the Half Maximum</dt><dd></dd>
 </dl>
@@ -658,7 +660,7 @@ ln(1/e) = ln(e^(-mu * x))
 1 = mu * x
 x = 1/mu</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam Energy given in KeV</p>
 </dd>
@@ -668,13 +670,13 @@ x = 1/mu</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>att_len</strong><span class="classifier">float</span></dt><dd><p>Attenuation length (in meters)</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ValueError</dt><dd><p>If an invalid symbol is provided for material.</p>
 </dd>
@@ -695,7 +697,7 @@ x = 1/mu</p>
 <p>Anomalous components of the index of refraction for a material, using the
 tabulated scattering components from Chantler.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>x-ray energy in KeV</p>
 </dd>
@@ -705,13 +707,13 @@ tabulated scattering components from Chantler.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>delta</strong><span class="classifier">float</span></dt><dd><p>Real part of index of refraction</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ValueError</dt><dd><p>If an invalid symbol is provided for material.</p>
 </dd>
@@ -732,7 +734,7 @@ tabulated scattering components from Chantler.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">get_lens_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_number_top_to_bot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#get_lens_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.get_lens_set" title="Permalink to this definition"></a></dt>
 <dd><p>Get the lens set from the file provided.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>set_number_top_to_bot</strong><span class="classifier">int</span></dt><dd><p>The Be lens holders can take 3 different sets that we usually set
 before experiments, this is to specify what number set.</p>
@@ -743,7 +745,7 @@ before experiments, this is to specify what number set.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>lens_set</strong><span class="classifier">list</span></dt><dd><p>[numer1, lensthick1, number2, lensthick2 …]</p>
 </dd>
@@ -757,7 +759,7 @@ before experiments, this is to specify what number set.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">lens_transmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IF1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_thicknes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#lens_transmission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.lens_transmission" title="Permalink to this definition"></a></dt>
 <dd><p>Find the CRL (Compound Refractive Lens) transmission.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>radius</strong><span class="classifier">float</span></dt><dd><p>Effective radius of curvature in meters</p>
 </dd>
@@ -773,7 +775,7 @@ before experiments, this is to specify what number set.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>trans</strong><span class="classifier">float</span></dt><dd><p>Lens Transmission</p>
 </dd>
@@ -790,13 +792,13 @@ before experiments, this is to specify what number set.</p>
 1.2398 / E[eV]. The photon energy at 1 μm wavelength, the wavelength of
 near infrared radiation, is approximately 1.2398 eV.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Photon energy in electronvolts</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>Wavelength in micrometers</dt><dd></dd>
 </dl>
@@ -814,7 +816,7 @@ near infrared radiation, is approximately 1.2398 eV.</p>
 <span class="sig-prename descclassname"><span class="pre">pcdscalc.be_lens_calcs.</span></span><span class="sig-name descname"><span class="pre">plan_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_size_unfocused</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_horizontal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tot_number_of_lenses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_each</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focus_before_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pcdscalc/be_lens_calcs.html#plan_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pcdscalc.be_lens_calcs.plan_set" title="Permalink to this definition"></a></dt>
 <dd><p>Macro to help plan for what lens set to use.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>energy</strong><span class="classifier">number</span></dt><dd><p>Beam energy in KeV</p>
 </dd>
@@ -874,7 +876,7 @@ store these sets into a config file that we can call from some methods.
 Later, we save this config file to the specific experiment so users can
 make sure that they know which stack was used for there beamtime.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>list_of_sets</strong><span class="classifier">list</span></dt><dd><p>List of lists with lens sets.</p>
 </dd>
@@ -909,7 +911,7 @@ Defaults to <cite>True</cite>.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
