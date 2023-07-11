@@ -23,8 +23,7 @@ requirements:
   - python >=3.9
   - numpy
   - scipy
-  - sqlalchemy <2.0
-  - xraydb <4.5.0
+  - xraydb
 
 test:
   imports:

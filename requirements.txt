@@ -1,4 +1,3 @@
 numpy
 scipy
-xraydb<4.5.0
-sqlalchemy<2.0
+xraydb
