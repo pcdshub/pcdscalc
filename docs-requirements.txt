@@ -2,7 +2,7 @@
 docs-versions-menu
 numpydoc
 recommonmark
-sphinx
+sphinx<7
 sphinx-copybutton
 sphinx_rtd_theme
 sphinxcontrib-jquery
