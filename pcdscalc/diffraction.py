@@ -221,9 +221,4 @@ def darwin_width(material_id, hkl, energy, T=293):
     vol = unit_cell_volume(material_id)
     dw = (2 * const['eRad'] * lam**2 * np.abs(F)) \
         / (np.pi * vol * sind(2*theta)) / units['rad']
-    print(f"""
-    f = {f}
-    F = {F}
-    vol = {vol}
-    """)
     return dw
