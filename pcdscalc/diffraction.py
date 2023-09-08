@@ -8,9 +8,9 @@ import numpy as np
 import xraylib
 
 import pcdscalc.constants as cst
-from .common import asind, cosd, energy_to_wavelength, sind
-from .constants import units, const
 
+from .common import asind, cosd, energy_to_wavelength, sind
+from .constants import const, units
 
 
 def get_lom_geometry(energy, material_id, reflection):
@@ -126,7 +126,7 @@ def d_space(material_id, hkl):
 def form_factor(material_id, twotheta, energy):
     """
     Returns the atomic form factor for Rayleigh scattering
-    
+
     Parameters
     ----------
     material_id: str
@@ -137,37 +137,37 @@ def form_factor(material_id, twotheta, energy):
     material_id = cst.chemical_name_to_formula.get(material_id, material_id)
     z = cst.element_z[material_id]
     q = xraylib.MomentTransf(energy*1e-3, np.deg2rad(twotheta/2))
-    f = xraylib.FF_Rayl(z,q)
+    f = xraylib.FF_Rayl(z, q)
     return f
 
 
 def structure_factor(material_id, f, hkl, z=None):
     material_id = cst.chemical_name_to_formula.get(material_id, material_id)
     lattice = cst.lattice_type[material_id]
-    h, k, l = hkl
+    h, k, l = hkl  # noqa: E741
 
     if lattice == 'fcc':
-        x1 = np.exp( -1j*np.pi * (k+l) ) 
-        x2 = np.exp( -1j*np.pi * (h+l) ) 
-        x3 = np.exp( -1j*np.pi * (h+k) )
-        F = f * (1 + x1 + x2 + x3 )
+        x1 = np.exp(-1j*np.pi * (k+l))
+        x2 = np.exp(-1j*np.pi * (h+l))
+        x3 = np.exp(-1j*np.pi * (h+k))
+        F = f * (1 + x1 + x2 + x3)
     elif lattice == 'bcc':
-        F = f * ( 1 + np.exp( -1j*np.pi * (h+k+l) ) )  
+        F = f * (1 + np.exp(-1j*np.pi * (h+k+l)))
     elif lattice == 'cubic':
         F = f
     elif lattice == 'diamond':
-        x1 = np.exp( -1j*np.pi * (k+l ))
-        x2 = np.exp( -1j*np.pi * (h+l) )
-        x3 = np.exp( -1j*np.pi * (h+k) )
-        x4 = np.exp( -1j*2*np.pi * (h/4.0 + k/4.0 + l/4.0) )
-        F = f * ( 1 + x1 + x2 + x3 ) * ( 1 + x4 )
+        x1 = np.exp(-1j*np.pi * (k+l))
+        x2 = np.exp(-1j*np.pi * (h+l))
+        x3 = np.exp(-1j*np.pi * (h+k))
+        x4 = np.exp(-1j*2*np.pi * (h/4.0 + k/4.0 + l/4.0))
+        F = f * (1 + x1 + x2 + x3) * (1 + x4)
     elif lattice == 'rhomb':
-        z = cst.latticeParamRhomb[ID]
-        F = f * ( 1 + np.exp( 2*1j*np.pi * (h+k+l) * z ) ) 
+        z = cst.latticeParamRhomb[material_id]
+        F = f * (1 + np.exp(2*1j*np.pi * (h+k+l) * z))
     elif lattice == 'tetr':
         F = f
     elif lattice == 'hcp':
-        F = f * ( 1 + np.exp( 2*1j*np.pi * (h/3.0 + 2*k/3.0 + l/2.0) ) )
+        F = f * (1 + np.exp(2*1j*np.pi * (h/3.0 + 2*k/3.0 + l/2.0)))
     return F
 
 
@@ -195,7 +195,7 @@ def unit_cell_volume(material_id):
 def darwin_width(material_id, hkl, energy, T=293):
     """
     Computes the Darwin width for a specified crystal reflection (degrees)
-    
+
     Parameters
     ----------
     material_id : str
@@ -215,16 +215,15 @@ def darwin_width(material_id, hkl, energy, T=293):
     material_id = cst.chemical_name_to_formula.get(material_id, material_id)
     lam = energy_to_wavelength(energy)
     theta = bragg_angle(material_id, hkl, energy)
-    
+
     f = form_factor(material_id, 2*theta, energy)
     F = structure_factor(material_id, f, hkl)
     vol = unit_cell_volume(material_id)
-    dw = ( 2 * const['eRad'] * lam**2 * np.abs(F) ) \
-        / ( np.pi * vol * sind(2*theta) ) / units['rad']
+    dw = (2 * const['eRad'] * lam**2 * np.abs(F)) \
+        / (np.pi * vol * sind(2*theta)) / units['rad']
     print(f"""
     f = {f}
     F = {F}
     vol = {vol}
     """)
     return dw
-
