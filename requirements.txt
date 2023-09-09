@@ -3,3 +3,4 @@ scipy
 xraylib
 xraydb
 periodictable
+ophyd

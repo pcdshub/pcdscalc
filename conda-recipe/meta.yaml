@@ -26,6 +26,7 @@ requirements:
   - xraylib
   - xraydb
   - periodictable
+  - ophyd
 
 test:
   imports:
