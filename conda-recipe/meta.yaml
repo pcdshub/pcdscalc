@@ -25,6 +25,7 @@ requirements:
   - scipy
   - xraylib
   - xraydb
+  - periodictable
 
 test:
   imports:

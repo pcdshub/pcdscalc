@@ -2,3 +2,4 @@ numpy
 scipy
 xraylib
 xraydb
+periodictable
