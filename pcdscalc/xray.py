@@ -19,7 +19,7 @@ def molecular_mass(material_id):
     return mass
 
 
-def CS_Photo(material_id, energy=None):
+def cs_photo(material_id, energy=None):
     """
     Returns the total photoabsorption cross section in m^2
     NOTE: This is per molecule if chemical formula given
@@ -43,7 +43,7 @@ def CS_Photo(material_id, energy=None):
     return CS
 
 
-def CS_Compt(material_id, energy=None):
+def cs_compt(material_id, energy=None):
     """
     Returns the total Compton (inelastic) cross section in m^2
 
@@ -83,9 +83,9 @@ def attenuation_length(material_id, energy=None, density=None, compton=True):
     energy = get_energy(energy=energy)
     if density is None:
         density = cst.density[material_id]
-    mu_rho = CS_Photo(material_id, energy)
+    mu_rho = cs_photo(material_id, energy)
     if compton:
-        mu_rho += CS_Compt(material_id, energy)
+        mu_rho += cs_compt(material_id, energy)
     mu_rho = const['NA']*mu_rho / molecular_mass(material_id)*density*units['cm']**3
     att_length = 1.0 / mu_rho
     return att_length
