@@ -4,11 +4,6 @@ from ophyd import EpicsSignal
 
 from .constants import WAVELENGTH_TO_ENERGY_LAMBDA, units
 
-try:
-    _energy_pv = EpicsSignal('SIOC:SYS0:ML00:AO627', name='lcls_energy')
-except NotImplementedError:
-    _energy_pv = None
-
 
 def get_energy(energy=None):
     """
@@ -19,6 +14,11 @@ def get_energy(energy=None):
     energy: float
         energy in eV or keV
     """
+    try:
+        _energy_pv = EpicsSignal('SIOC:SYS0:ML00:AO627', name='lcls_energy')
+    except:  # noqa: E722
+        _energy_pv = None
+
     if energy is None:
         if _energy_pv is None:
             raise ValueError('The energy PV is not defined.'
