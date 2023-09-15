@@ -1,7 +1,37 @@
 """Module that holds common calculations."""
 import numpy as np
+from ophyd import EpicsSignal
 
 from .constants import WAVELENGTH_TO_ENERGY_LAMBDA, units
+
+_energy_pv = None
+
+
+def get_energy(energy=None):
+    """
+    Returns energy in eV.
+
+    Parameters
+    ----------
+    energy: float
+        energy in eV or keV
+    """
+    global _energy_pv
+    if _energy_pv is None:
+        try:
+            _energy_pv = EpicsSignal('SIOC:SYS0:ML00:AO627', name='lcls_energy')
+        except:  # noqa: E722
+            _energy_pv = None
+
+    if energy is None:
+        if _energy_pv is None:
+            raise ValueError('The energy PV is not defined.'
+                             'An energy request must be passed.')
+        else:
+            energy = _energy_pv.get()
+    if energy < 100:
+        energy = energy*1e3
+    return energy
 
 
 def cosd(angle):

@@ -1,3 +1,6 @@
 numpy
+ophyd
+periodictable
 scipy
 xraydb
+xraylib

@@ -22,8 +22,11 @@ requirements:
   run:
   - python >=3.9
   - numpy
+  - ophyd
+  - periodictable
   - scipy
   - xraydb
+  - xraylib
 
 test:
   imports:
