@@ -214,7 +214,7 @@ def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
         if get_all:
             return sets
 
-        if set_number_top_to_bot not in range(1, len(sets)):
+        if set_number_top_to_bot not in range(1, len(sets)+1):
             err_msg = ('Provided an invalid set_number_top_to_bottom: '
                        f'{set_number_top_to_bot}, please provide a number '
                        f'from 1 to {len(sets)}')
