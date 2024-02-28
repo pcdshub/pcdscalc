@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pcdscalc.be_lens_calcs &mdash; pcdscalc  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -291,7 +293,7 @@
         <span class="k">if</span> <span class="n">get_all</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sets</span>
 
-        <span class="k">if</span> <span class="n">set_number_top_to_bot</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sets</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">set_number_top_to_bot</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sets</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Provided an invalid set_number_top_to_bottom: &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">set_number_top_to_bot</span><span class="si">}</span><span class="s1">, please provide a number &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;from 1 to </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sets</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -1273,7 +1275,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
