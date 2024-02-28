@@ -218,7 +218,6 @@ def get_lens_set(set_number_top_to_bot, filename=None, get_all=False):
             err_msg = ('Provided an invalid set_number_top_to_bottom: '
                        f'{set_number_top_to_bot}, please provide a number '
                        f'from 1 to {len(sets)}')
-            print('test')
             logger.error(err_msg)
             raise ValueError(err_msg)
     # if only one set in the list, return the list
