@@ -458,6 +458,7 @@ def calc_focal_length(energy, lens_set, material=None, density=None):
 
 
 def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
+                   prefocus_set=None, prefocus_distance=27,
                    material=None, density=None,
                    fwhm_unfocused=None, printsummary=True):
     """
@@ -477,6 +478,10 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
         Distance from the lenses to the sample is 3.852 m at XPP. (in meters)
     source_distance : float, optional
         Distance from source to lenses. This is about 160 m at XPP. (in meters)
+    prefocus_set: list, optional
+        [numer1, lensthick1, number2, lensthick2...]
+    prefocus_distance: float
+        distance from prefocusing lenses to hutch lenses. 27 m for XCS.
     material : str, optional
         Atomic symbol for element, defaults to 'Be'.
     density : float, optional
@@ -505,9 +510,26 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
     # Focal length for certain lenses configuration and energy.
     focal_length = calc_focal_length(energy, lens_set, material, density)
 
+    # Focal length for prefocusing lenses
+    prefocal_length = None
+    if prefocus_set is not None:
+        prefocal_length = calc_focal_length(energy, prefocus_set, material, density)
+
     # Use lens makers equation to find distance to image of source.
     if source_distance is not None:
-        focal_length = 1 / (1 / focal_length - 1 / source_distance)
+
+        if prefocal_length is not None:
+            prefocal_length = 1 / (1 / prefocal_length - 1 / (source_distance-prefocus_distance))
+            # Virtual source from the prefocus lenses (often downstream of the main lens pack)
+            virt_source = prefocus_distance-prefocal_length
+            focal_length = 1 / (1 / focal_length - 1 / virt_source)
+        else:
+            focal_length = 1 / (1 / focal_length - 1 / source_distance)
+
+    elif prefocal_length is not None:
+        # Virtual source from the prefocus lenses (often downstream of the main lens pack)
+        virt_source = prefocus_distance - prefocal_length
+        focal_length = 1 / (1 / focal_length - 1 / virt_source)
 
     lam = photon_to_wavelength(energy) * 1e-9
 
@@ -531,6 +553,10 @@ def calc_beam_fwhm(energy, lens_set, distance=None, source_distance=None,
         logger.info("focal length   : %.3e", focal_length)
         logger.info("size           : %.3e", size)
         logger.info("size FWHM      : %.3e", size_fwhm)
+        if prefocal_length is not None:
+            logger.info("\nPre-focus information:")
+            logger.info("Pre-focus focal length  : %.3e", prefocal_length)
+            logger.info("Virtual source distance : %.3e", virt_source)
 
     return size_fwhm
 
