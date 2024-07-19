@@ -225,6 +225,28 @@ def test_calc_beam_fwhm_with_source_distance(energy_sample, lens_set, dist,
     assert np.isclose(fwhm, expected)
 
 
+@pytest.mark.parametrize('energy_sample, lens_set, dist,'
+                         'fwhm_unf, source_dist, prefocus_set,'
+                         'prefocus_distance, expected', [
+                             pytest.param(8.33, [3, 100e-6], 3.246,
+                                          1000e-6, 360, [2, 1000e-6], 27,
+                                          5.577020772041214e-05),
+                         ])
+def test_calc_beam_fwhm_with_pre_focus(energy_sample, lens_set, dist,
+                                       fwhm_unf, source_dist, prefocus_set,
+                                       prefocus_distance, expected):
+    fwhm = be_lens_calcs.calc_beam_fwhm(energy=energy_sample,
+                                        lens_set=lens_set,
+                                        distance=dist,
+                                        fwhm_unfocused=fwhm_unf,
+                                        source_distance=source_dist,
+                                        prefocus_set=prefocus_set,
+                                        prefocus_distance=prefocus_distance
+                                        )
+    logger.debug('Expected: %s, Received: %s', expected, fwhm)
+    assert np.isclose(fwhm, expected)
+
+
 @pytest.mark.parametrize('energy, lens_set, fwhm_unf, size_fwhm, expect', [
     pytest.param(8, [1, 0.02, 5, 0.004, 2, 1.23, 1, 0.02],
                  800e-6, 0.0007539124064936633, [4.00001653, 134.79627142]),
