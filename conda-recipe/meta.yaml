@@ -21,7 +21,7 @@ requirements:
   - pip
   run:
   - python >=3.9
-  - numpy
+  - numpy <2.0
   - ophyd
   - periodictable
   - scipy
