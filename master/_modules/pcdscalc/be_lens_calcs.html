@@ -537,6 +537,7 @@
 
 
 <div class="viewcode-block" id="calc_beam_fwhm"><a class="viewcode-back" href="../../be_lens_calcs.html#pcdscalc.be_lens_calcs.calc_beam_fwhm">[docs]</a><span class="k">def</span> <span class="nf">calc_beam_fwhm</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">lens_set</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">prefocus_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefocus_distance</span><span class="o">=</span><span class="mi">27</span><span class="p">,</span>
                    <span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">fwhm_unfocused</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printsummary</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -556,6 +557,10 @@
 <span class="sd">        Distance from the lenses to the sample is 3.852 m at XPP. (in meters)</span>
 <span class="sd">    source_distance : float, optional</span>
 <span class="sd">        Distance from source to lenses. This is about 160 m at XPP. (in meters)</span>
+<span class="sd">    prefocus_set: list, optional</span>
+<span class="sd">        [numer1, lensthick1, number2, lensthick2...]</span>
+<span class="sd">    prefocus_distance: float</span>
+<span class="sd">        distance from prefocusing lenses to hutch lenses. 27 m for XCS.</span>
 <span class="sd">    material : str, optional</span>
 <span class="sd">        Atomic symbol for element, defaults to &#39;Be&#39;.</span>
 <span class="sd">    density : float, optional</span>
@@ -584,9 +589,26 @@
     <span class="c1"># Focal length for certain lenses configuration and energy.</span>
     <span class="n">focal_length</span> <span class="o">=</span> <span class="n">calc_focal_length</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">lens_set</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
 
+    <span class="c1"># Focal length for prefocusing lenses</span>
+    <span class="n">prefocal_length</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">prefocus_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prefocal_length</span> <span class="o">=</span> <span class="n">calc_focal_length</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">prefocus_set</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
+
     <span class="c1"># Use lens makers equation to find distance to image of source.</span>
     <span class="k">if</span> <span class="n">source_distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">focal_length</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">focal_length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">source_distance</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">prefocal_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prefocal_length</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">prefocal_length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">source_distance</span><span class="o">-</span><span class="n">prefocus_distance</span><span class="p">))</span>
+            <span class="c1"># Virtual source from the prefocus lenses (often downstream of the main lens pack)</span>
+            <span class="n">virt_source</span> <span class="o">=</span> <span class="n">prefocus_distance</span><span class="o">-</span><span class="n">prefocal_length</span>
+            <span class="n">focal_length</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">focal_length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">virt_source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">focal_length</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">focal_length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">source_distance</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">prefocal_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Virtual source from the prefocus lenses (often downstream of the main lens pack)</span>
+        <span class="n">virt_source</span> <span class="o">=</span> <span class="n">prefocus_distance</span> <span class="o">-</span> <span class="n">prefocal_length</span>
+        <span class="n">focal_length</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">focal_length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">virt_source</span><span class="p">)</span>
 
     <span class="n">lam</span> <span class="o">=</span> <span class="n">photon_to_wavelength</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span>
 
@@ -610,6 +632,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;focal length   : </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">focal_length</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;size           : </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;size FWHM      : </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">size_fwhm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefocal_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Pre-focus information:&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pre-focus focal length  : </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">prefocal_length</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Virtual source distance : </span><span class="si">%.3e</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">virt_source</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">size_fwhm</span></div>
 
