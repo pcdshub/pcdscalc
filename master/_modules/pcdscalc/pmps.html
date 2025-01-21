@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en">
 <head>
@@ -8,16 +10,12 @@
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/docs-versions-menu.js"></script>
+      <script src="../../_static/jquery.js"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+      <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/sphinx_highlight.js"></script>
+      <script src="../../_static/docs-versions-menu.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -82,8 +80,8 @@
 
 <span class="sd">Here you will find functions related to eV bitmasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="c1"># Source for these values:</span>
 <span class="c1"># lcls-twincat-pmps/PMPS/GVLs/PMPS_GVL.TcGVL</span>
@@ -158,7 +156,7 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="select_bitmask_boundaries"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.select_bitmask_boundaries">[docs]</a><span class="k">def</span> <span class="nf">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="select_bitmask_boundaries"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.select_bitmask_boundaries">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">select_bitmask_boundaries</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a line, select the bitmask boundaries to use.</span>
 
@@ -185,7 +183,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1"> is neither lfe or kfe!.&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask">[docs]</a><span class="k">def</span> <span class="nf">get_bitmask</span><span class="p">(</span>
+<div class="viewcode-block" id="get_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_bitmask</span><span class="p">(</span>
     <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">allow</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
@@ -271,7 +269,7 @@
         <span class="k">return</span> <span class="n">lower_range</span> <span class="o">|</span> <span class="n">upper_range</span></div>
 
 
-<div class="viewcode-block" id="check_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_bitmask">[docs]</a><span class="k">def</span> <span class="nf">check_bitmask</span><span class="p">(</span>
+<div class="viewcode-block" id="check_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_bitmask">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_bitmask</span><span class="p">(</span>
     <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">bitmask</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -325,7 +323,7 @@
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">answers</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_actual_range"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_actual_range">[docs]</a><span class="k">def</span> <span class="nf">check_actual_range</span><span class="p">(</span>
+<div class="viewcode-block" id="check_actual_range"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.check_actual_range">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_actual_range</span><span class="p">(</span>
     <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">allow</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
@@ -390,7 +388,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="describe_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.describe_bitmask">[docs]</a><span class="k">def</span> <span class="nf">describe_bitmask</span><span class="p">(</span>
+<div class="viewcode-block" id="describe_bitmask"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.describe_bitmask">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">describe_bitmask</span><span class="p">(</span>
     <span class="n">bitmask</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -420,7 +418,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_bitmask_desc"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask_desc">[docs]</a><span class="k">def</span> <span class="nf">get_bitmask_desc</span><span class="p">(</span>
+<div class="viewcode-block" id="get_bitmask_desc"><a class="viewcode-back" href="../../pmps.html#pcdscalc.pmps.get_bitmask_desc">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_bitmask_desc</span><span class="p">(</span>
     <span class="n">bitmask</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -479,7 +477,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
