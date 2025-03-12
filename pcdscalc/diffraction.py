@@ -9,7 +9,7 @@ import xraylib
 
 import pcdscalc.constants as cst
 
-from .common import asind, cosd, energy_to_wavelength, sind
+from .common import asind, cosd, energy_to_wavelength, get_energy, sind
 from .constants import const, units
 
 
@@ -57,6 +57,7 @@ def bragg_angle(material_id, hkl, energy):
     theta : number
         Theta in degrees.
     """
+    energy = get_energy(energy)
     material_id = cst.chemical_name_to_formula.get(material_id, material_id)
     d = d_space(material_id, hkl)
     theta = asind(energy_to_wavelength(energy) / 2 / d)
@@ -212,6 +213,7 @@ def darwin_width(material_id, hkl, energy, T=293):
     darwin_width : float
         Darwin width in deg of the reflection
     """
+    energy = get_energy(energy)
     material_id = cst.chemical_name_to_formula.get(material_id, material_id)
     lam = energy_to_wavelength(energy)
     theta = bragg_angle(material_id, hkl, energy)
